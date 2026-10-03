@@ -4,6 +4,8 @@ A Squadron-inspired unit tower defence. Hold the gate through waves of creatures
 
 This repository holds the browser prototype, the balance tools and the design notes. Everything is a work in progress, and all numbers are prototype values.
 
+Working on this with Claude? Start with `CLAUDE.md` (how the project works) and `HANDOFF.md` (where the work stopped).
+
 ## Prototype (`prototype/`)
 
 Each file is a single HTML page. Open it in a browser; it only needs an internet connection for the fonts and the three.js library.
