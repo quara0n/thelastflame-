@@ -1,5 +1,7 @@
 # The Last Flame – unit-oppgraderinger, alle tiers (2.–3. okt 2026)
 
+Tier 4-oppgraderingene står i `verdener-og-tiers.md`.
+
 Bygget inn i `prototype/kamptest-2.html` ("Last Flame Kamptest II"). `kamptest-1.html` er den gamle versjonen, urørt.
 Regel: hver unit har grunnversjon + 3 oppgraderinger, kjøpt på én bestemt soldat (velg den på kartet, trykk «Oppgrader»). Samme modell, nytt utstyr per nivå: nivå 1 skulderplater, nivå 2 rød kappe, nivå 3 glødende kam. Gull-ruter over hodet viser nivået. Plass i hæren endres ikke. Selger du, får du 75 % av alt du har brukt, også oppgraderingene.
 Forge og Workshop (felles oppgraderinger for alle units av en type) er beholdt og virker i tillegg.
@@ -27,11 +29,12 @@ Forge og Workshop (felles oppgraderinger for alle units av en type) er beholdt o
   - Siegebreaker 96 % / 124 % (mot Thunderbore)
 - For å få dette ble grunnversjonene av Tier 2 og 3 svakere (f.eks. Ironwall 340 HP i stedet for 640, Huskarl 400 i stedet for 900). Styrken kommer nå fra oppgraderingene.
 
-## Waves balansert på nytt (3. okt 2026)
-- Hele spill simulert (`tools/game_sim.js`): en fornuftig bot-spiller samler, kjøper, oppgraderer og bygger Barracks wave for wave, med den nye økonomien.
-- Hver wave fikk en styrkefaktor (`tools/tune_waves.js`, `tools/wave_factors.json`): fiendenes helse × faktor, skade × kvadratroten av faktoren, slik at boten holder waven (vinner og porten står) ca. så ofte: wave 1–4 alltid, 5–8 ca. 94 %, 9 ca. 88 %, 10 (boss) ca. 75 %, 11–15 ca. 88 %, 16–19 ca. 80 %, 20 (boss) ca. 60 %.
-- Faktorer: 0,9 · 1,6 · 1,4 · 1,1 · 1,1 · 1,4 · 1,6 · 0,8 · 0,9 · 0,7 · 0,9 · 1 · 1 · 0,9 · 0,9 · 0,7 · 1 · 0,9 · 0,9 · 1. Wave 8 ble ca. 20 % lettere, bossen i wave 10 og Treanten i wave 16 ca. 30 % lettere.
-- Sjekk etterpå (20 nye spill): alle kom til wave 20. Wave 1–19 vinnes nesten alltid, og sluttbossen vinnes ca. 65 % av gangene.
+## Waves balansert på nytt (3. okt 2026, alle 30 waves)
+- Hele spill simulert (`tools/game_sim.js`): en fornuftig bot-spiller samler, kjøper, oppgraderer, bygger Barracks, bueskyttere og mur, og selger gamle fullt oppgraderte units for å få plass til en ny tier når hele hæren er fullt oppgradert.
+- Hver wave har en styrkefaktor (`tools/tune_waves.js`, `tools/wave_factors.json`): fiendenes helse × faktor, skade × kvadratroten av faktoren. Mål for hvor ofte waven holdes (vinner og porten står): wave 1–4 alltid, 5–8 ca. 95 %, 10 (boss) ca. 80 %, 11–19 ca. 93 %, 20 (boss) ca. 70 %, 21–29 ca. 90 %, 30 (boss) ca. 65 %. Bossene i wave 10 og to topper (15, 19, 25, 26) ble justert litt ned for hånd, sluttbossen litt opp.
+- Faktorer, wave 1–30: 0,9 · 1,6 · 1,54 · 1,331 · 1,1 · 1,54 · 2,24 · 0,88 · 0,81 · 0,648 · 0,81 · 0,891 · 0,9 · 0,891 · 0,81 · 0,624 · 0,88 · 0,81 · 0,833 · 0,9 · 1,25 · 0,9 · 1,238 · 1,125 · 0,729 · 0,693 · 0,8 · 0,594 · 0,594 · 0,569.
+- Sjekk (30 nye spill): 24 av 30 kom til wave 30. Tapene var spredt på de tøffeste wavene (20, 27, 28). Sluttbossen vinnes ca. 1 av 8 ganger.
+- World 3 fikk en mildere kurve enn først tenkt (helse ×3,4 + 0,12 per wave, skade ×2,0 + 0,05) og svakere urdrager, fordi fire urdrager rev ned porten på sekunder.
 
 ## Tier 1
 - Shieldguard: 1 Jernkant (mer helse og rustning). 2 Tårnskjold (units rett bak tar 25 % mindre skade fra skudd og spytt). 3 Runeskjold (skjoldslag hvert 6. sek, slår bakover og lammer).

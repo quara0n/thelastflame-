@@ -107,5 +107,7 @@ s = sub(s, "<title>Last Flame Kamptest</title>", "<title>Last Flame Kamptest II<
 s = sub(s, '<div class="eyebrow">Prototype · milepæl A–C · North</div>', '<div class="eyebrow">Prototype · milepæl A–D · oppgraderinger</div>')
 s = sub(s, '<p class="note">«+ Plasser» kjøper units i byggefasen. Fjerner du en, får du tilbake 75 % av gullet, rundet ned.</p>',
   '<p class="note">«+ Plasser» kjøper units i byggefasen. Velg en unit på kartet og trykk «Oppgrader» for å gjøre akkurat den soldaten sterkere (tre nivåer). Fjerner du en, får du tilbake 75 % av alt du brukte på den, rundet ned.</p>')
+import world3
+s = world3.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))

@@ -10,7 +10,7 @@ function load(extra) {
 
 function bot(L, ec, army, waveIdx) {
   const T = L.TYPES, sup = () => army.reduce((n, a) => n + L.supplyOf(T[a.type]), 0);
-  const unitsOf = tier => ({ 1: ['shieldguard', 'stormreaver', 'ironshot', 'longfang'], 2: ['ironwall', 'frostbrand', 'thunderbore', 'hearthkeeper'], 3: ['captain', 'huskarl', 'pyreguard', 'siegebreaker'] })[tier];
+  const unitsOf = tier => ({ 1: ['shieldguard', 'stormreaver', 'ironshot', 'longfang'], 2: ['ironwall', 'frostbrand', 'thunderbore', 'hearthkeeper'], 3: ['captain', 'huskarl', 'pyreguard', 'siegebreaker'], 4: ['ironhulk', 'mammoth', 'skyspear', 'hearthengine'] })[tier];
   const melee = a => !T[a.type || a].ranged;
   const free = (ranged) => {
     const rows = ranged ? [3, 4, 2, 5] : [0, 1, 2];
@@ -41,6 +41,7 @@ function bot(L, ec, army, waveIdx) {
     if (!did && ec.nodes.timber.workers < 2 && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('timber');
     if (!did && w >= 4 && ec.barracks === 0 && ec.can(L.BARRACKS[1].cost)) did = ec.buyBarracks();
     if (!did && w >= 9 && ec.barracks === 1 && ec.can(L.BARRACKS[2].cost)) did = ec.buyBarracks();
+    if (!did && w >= 19 && ec.barracks === 2 && ec.can(L.BARRACKS[3].cost)) did = ec.buyBarracks();
     if (!did && ec.gateHp < ec.gateMax() * 0.7) did = ec.repair();
     if (!did && w >= 3 && ec.archers === 0) did = ec.buyArchers();
     // Army: keep roughly half melee, half ranged; buy the best tier that is open.
@@ -59,20 +60,27 @@ function bot(L, ec, army, waveIdx) {
     }
     // Forge when there is iron to spare.
     if (!did && ec.res.iron >= 25) for (const k of ['melee', 'ranged', 'armor']) if (ec.buyTrack(k)) { did = true; break; }
-    // Full army of maxed units: swap a maxed lower-tier unit for a higher tier.
-    if (!did && sup() >= ec.supplyCap() && ec.barracks >= 1) {
-      const old = army.find(a => (T[a.type].tier || 1) <= ec.barracks && (a.level || 0) >= L.MAX_LEVEL);
-      if (old) {
-        const up = unitsOf(ec.barracks + 1).filter(t => !!T[t].ranged === !!T[old.type].ranged)[0];
-        const refund = {}; const p = Object.assign({}, ec.unitPrice(T[old.type])), sp = L.upgradeSpent(old.type, old.level);
-        for (const r in sp) p[r] = (p[r] || 0) + sp[r]; for (const r in p) refund[r] = Math.floor(p[r] * L.REFUND);
-        const price = ec.unitPrice(T[up]), need = {}; for (const r in price) need[r] = price[r] - (refund[r] || 0);
-        const supAfter = sup() - L.supplyOf(T[old.type]) + L.supplyOf(T[up]);
-        if (supAfter <= ec.supplyCap() && ec.can(need)) {
-          army.splice(army.indexOf(old), 1); ec.add(refund); did = buy(up);
+    // Full army: sell maxed lower-tier units until a unit of the newest tier fits, if it can be afforded.
+    if (!did && ec.barracks >= 1 && army.length && army.every(a => (a.level || 0) >= L.MAX_LEVEL)) {
+      const top = ec.barracks + 1, need = L.supplyOf(T[unitsOf(top)[0]]);
+      if (sup() + need > ec.supplyCap()) {
+        const nMel = army.filter(melee).length, wantRanged = nMel > army.length - nMel;
+        const up = unitsOf(top).filter(t => !!T[t].ranged === wantRanged)[(army.length + w) % 2];
+        const pool = army.filter(a => (T[a.type].tier || 1) < top && (a.level || 0) >= L.MAX_LEVEL).sort((a, b) => (T[a.type].tier || 1) - (T[b.type].tier || 1));
+        const sell = [], refund = {};
+        let freed = 0;
+        for (const a of pool) { if (sup() - freed + need <= ec.supplyCap()) break; sell.push(a); freed += L.supplyOf(T[a.type]); }
+        if (sup() - freed + need <= ec.supplyCap()) {
+          for (const a of sell) { const p = Object.assign({}, ec.unitPrice(T[a.type])), sp = L.upgradeSpent(a.type, a.level); for (const r in sp) p[r] = (p[r] || 0) + sp[r]; for (const r in p) refund[r] = (refund[r] || 0) + Math.floor(p[r] * L.REFUND); }
+          const price = ec.unitPrice(T[up]), have = {}; for (const r in price) have[r] = (ec.res[r] || 0) + (refund[r] || 0);
+          if (Object.keys(price).every(r => have[r] >= price[r])) { sell.forEach(a => army.splice(army.indexOf(a), 1)); ec.add(refund); did = buy(up); }
         }
       }
     }
+    // Spare resources: more archers on the wall, then a stronger wall.
+    if (!did && w >= 6 && ec.archers < L.ARCHERS.length - 1 && ec.can(L.ARCHERS[ec.archers + 1].cost)) did = ec.buyArchers();
+    if (!did && w >= 10 && !ec.deep) did = ec.deepen();
+    if (!did && w >= 10 && ec.wall < L.WALLS.length - 1) did = ec.buyWall();
     if (!did) break;
   }
 }

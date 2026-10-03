@@ -4,8 +4,10 @@ const { load } = require('./game_sim.js');
 const fs = require('fs');
 const L = load();
 const R = +(process.argv[2] || 16);
-const TARGET = w => w <= 4 ? 1.0 : w <= 8 ? 0.94 : w === 9 ? 0.88 : w === 10 ? 0.75 : w <= 15 ? 0.88 : w <= 19 ? 0.8 : 0.6;
-const GRID = [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.25, 1.4, 1.6];
+const TARGET = w => w <= 4 ? 1.0 : w <= 8 ? 0.95 : w === 10 ? 0.8 : w <= 19 ? 0.93 : w === 20 ? 0.7 : w <= 29 ? 0.9 : 0.65;
+// Waves before FROM keep the factor already built into the prototype; only later waves are searched.
+const FROM = +(process.argv[3] || 1);
+const GRID = [0.2, 0.25, 0.3, 0.35, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.25, 1.4, 1.6];
 
 // Pull the bot out of game_sim by re-loading it with access to its internals.
 
@@ -28,8 +30,8 @@ for (let wi = 0; wi < L.WAVES.length; wi++) {
     for (const st of states) { const s = runWave({ ec: cloneEcon(st.ec), army: st.army }, wi, k); if (s.result.win && s.gateHp > 0) ok++; }
     return ok / states.length;
   };
-  let best = GRID[0];
-  for (const k of GRID) { if (held(k) >= TARGET(wi + 1)) best = k; else break; }
+  let best = 1;
+  if (wi + 1 >= FROM) { best = GRID[0]; for (const k of GRID) { if (held(k) >= TARGET(wi + 1)) best = k; else break; } }
   K.push(best);
   // Play the wave for real with the chosen factor and move every run forward.
   states.forEach(st => {
@@ -43,5 +45,8 @@ for (let wi = 0; wi < L.WAVES.length; wi++) {
   const a = states[0].army;
   console.log(`wave ${wi + 1}: factor ${best}  target ${TARGET(wi + 1)}  army ${a.length} units, avg level ${(a.reduce((s, x) => s + x.level, 0) / a.length).toFixed(1)}`);
 }
-fs.writeFileSync(__dirname + '/wave_factors.json', JSON.stringify(K));
+const prev = JSON.parse(fs.readFileSync(__dirname + '/wave_factors.json', 'utf8'));
+const out = K.map((k, i) => +((prev[i] || 1) * k).toFixed(3));
+fs.writeFileSync(__dirname + '/wave_factors.json', JSON.stringify(out));
+console.log('combined:', JSON.stringify(out));
 console.log(JSON.stringify(K));
