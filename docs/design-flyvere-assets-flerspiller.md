@@ -77,21 +77,28 @@
 - **Arena:** wave 8.
 - **Sending:** man sender skapninger fra verdenen laget er i nå (World 1 sender Askemyr-skapninger osv.). Pris og styrke stiger per verden.
 
-### Forslag under de låste reglene (ikke låst, kan justeres)
-- **Hvem sender til hvem:** fast par. Spiller 1 på lag A sender til spiller 1 på lag B, og omvendt. Gir en tydelig "motstander" å følge med på.
-- **Når sendte units kommer:** de legges til motstanderens neste wave og kommer gjennom portalen sammen med den.
-- **Pris (World 1-forslag, gull):** Husk 4, Spider 4, Serpent 6, Spitter 7, Brute 10, Beetle 12. World 2 ca. ×2, World 3 ca. ×3,5. Grunnlag: Tier 1-unit koster 10 gull.
-- **Lekk-gull:** når en sendt unit bryter gjennom porten, får avsenderen halve sendeprisen tilbake.
+- **Lagspill: ingen deling av gull.** Spillere kan ikke gi hverandre gull (det blir bare krangel).
+- **Hjelp ved lekk:** når en spiller har drept sin egen wave og en lagkamerat har lekket, flyttes de gjenlevende soldatene hans automatisk opp til Warden og kjemper der. Etter waven går de tilbake til sin egen port.
+- **Gull for lekk som en lagkamerat dreper** (eksempel: skapning verdt 20 gull lekker fra P1, P2 dreper den):
+  - 25 % går tapt (lekkstraff): 5.
+  - Lekkeren (P1) får 25 %: 5. Hjelperen (P2) får 50 %: 10.
+  - Hjelperen velger: beholde alt (P1 5 / P2 10), gi halvparten tilbake (P1 10 / P2 5) eller gi alt tilbake (P1 15 / P2 0).
+  - Ikke bestemt: hvem får gullet når Warden selv dreper skapningen (forslag: lekkeren får 75 %).
+- **Hvem sender til hvem:** fast par. Spiller 1 på lag A sender til spiller 1 på lag B, og omvendt. (Forslag, ikke kommentert.)
+- **Når sendte units kommer:** de legges til motstanderens neste wave og kommer gjennom portalen sammen med den. (Forslag.)
+- **Sendepris (World 1, gull), 25 % billigere enn første forslag:** Husk 3, Spider 3, Serpent 5, Spitter 5, Brute 8, Beetle 9. World 2 ca. ×2, World 3 ca. ×3,5.
+- **Lekk-gull for sendte units (godkjent):** når en sendt skapning bryter gjennom porten, får avsenderen halve sendeprisen tilbake.
 - **Sende-flagg:** den som har sendt mest (i gull) når kampen er over, får flagget.
-- **Lekk til felles Warden:** en spiller som lekker mye, sender fiender opp til laget sitt. Det er presset som gjør lagspill viktig: nabospillere kan sende units over for å hjelpe (ikke bestemt hvordan).
-- **Arena wave 8:** hvert lag stemmer frem én spiller. De to møtes i arenaen i midten med en kopi av hæren sin (ingen units dør på ekte). Vinnerlaget deler premien likt: forslag 40 gull + 20 stein + 20 tømmer + 10 kull per spiller, og vinneren får Champion-flagget.
+- **Arena wave 8: hærduell (valgt).** Hvert lag stemmer frem én spiller. En kopi av begge hærene settes inn i en rund arena midt på kartet. Ca. 60 sekunder, alle ser på. Siste hær som står, vinner. Ingen units dør på ekte. Vinnerlaget deler premien (forslag: 40 gull + 20 stein + 20 tømmer + 10 kull per spiller), og vinneren får Champion-flagget.
+  - Svakhet: den rikeste spilleren vinner ofte. Laget løser det selv ved å stemme frem den beste hæren.
+  - Ikke bestemt: tidsgrense-regel hvis begge står etter 60 sekunder (forslag: mest gjenværende HP vinner), og hvordan arenaen ser ut.
 
 ## Speiding (ikke MVP)
 - Alle kan kjøpe et kort blikk (ca. 5 sekunder) på motstanderlagets units.
 
 ## Åpne spørsmål
 - Besvart 3. okt: kongen er lagets felles Warden; 2 lag à 4; arena wave 8; send skapninger fra nåværende verden. Se "Flerspiller: grunnregler".
-- Hvordan kan nabospillere hjelpe hverandre (sende egne units over, dele gull)?
-- Bekrefte sendepriser, lekk-gull og arenapremie (forslag over).
+- Besvart 3. okt kveld: ingen gulldeling; soldater flyttes automatisk til Warden; lekkgull-deling; sendepriser −25 %; arena = hærduell.
+- Arenapremie, tidsgrense i arenaen, og hvem får gull når Warden dreper en lekk.
 - Kan Warden dø, eller bare flammen? (I dag: fiende ved flammen = tap, Warden har HP men kampen går videre.)
 - Modeller: AI 3D-verktøy eller ferdigkjøpte pakker?
