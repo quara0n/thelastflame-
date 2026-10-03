@@ -9,13 +9,15 @@
 - Modellene må være lette (få flater), dele skjelett og materialer per familie, og ha enklere versjon langt unna, så mange kan vises samtidig.
 - Deretter: full asset-liste (units, fiender, bygninger, effekter, UI), sortert etter skjelettfamilie og prioritet.
 
-## Warden: utseende (3. okt 2026)
-- Referansebilde: ridder i svartnet jern med gullkant, solemblem, sverd og skjold med ild i sprekkene.
-- Retning: majestetisk, ikke "fallen". Mer gull og lys, mindre lava og ruin. Han er flammens vokter og helten.
-- Han kan være mer detaljert enn vanlige units (det finnes bare én, og han er større), men må fortsatt passe stil nr. 2.
-- Visuelt språk for flammens side: svartnet jern, gullkant, solemblem, varm gyllen glød. Kan brukes på Warden, porten, nivå 3-utstyr og kuppelen.
-- Skill fra fiendene: flammens side er gyllen og varm. Fiendenes sprekker (Ashen Brute m.fl.) er matte, røde og askete.
-- Før 3D-verktøy trengs et rent "character sheet": rett forfra, nøytral bakgrunn, armene litt ut fra kroppen, kappen ikke over beina.
+## Warden: utseende (låst 3. okt 2026)
+- Valgt konsept: `art/warden-concept.png`. Guddommelig ridder i hvit og elfenbensfarget rustning med gullkant, glorie, solemblem på bryst, skjørt og banner, hvit kappe med fillete kant. Det tidlige mørke utkastet ligger i `art/warden-concept-early-dark.png`.
+- Kjernen: han er guddommelig, men bærer flammens sverd og skjold. Flammen bor i våpnene: sprekker av glød i sverdet, en flamme midt i skjoldet.
+- Glorien er hans kjennetegn. En lysende gyllen ring over hodet synes også fra spillkameraet, der resten bare er noen få piksler.
+- Hvit og gull mot mørk askebakke gir sterk silhuett. Han skiller seg tydelig ut fra hæren og fiendene.
+- Glød i våpnene: helst gyllen til hvitglødende, ikke lavarød, så flammens side holder seg varm og gyllen. Fiendenes sprekker (Ashen Brute m.fl.) er matte, røde og askete.
+- Obs: Fallen Seraph og Fallen Acolyte i Vrangheim har også hvit kappe og glorie. For at de ikke skal ligne Warden: deres glorier er brutte eller magenta og flimrer, kappene er skitne og lilla-flekket. Warden har den eneste hele, gylne glorien.
+- Han kan være mer detaljert enn vanlige units (det finnes bare én, og han er større), men skal fortsatt passe stil nr. 2 (detaljert stilisert, ikke fotorealistisk).
+- Før 3D-verktøy trengs et rent "character sheet" av samme design: rett forfra, nøytral bakgrunn, armene litt ut fra kroppen, kappen ikke over beina.
 
 ## Visuell retning: stort og episk (ønske for ferdig versjon)
 - Porten og tårnene skal være mye større og mer majestetiske, i Ringenes herre-stil (tenk Helms dyp / Minas Tirith): høye tårn, en massiv port, tykk mur.

@@ -52,7 +52,7 @@ Forge og Workshop (felles oppgraderinger for alle units av en type) er beholdt o
 - Huskarl: 1 Daneøks (+45 % skade). 2 Skjold og brynje (mye mer helse og rustning). 3 Feiende slag (hvert slag treffer opptil tre).
 
 ## Åpent / neste steg
-- Boten ender med ca. 27 units i hæren. Det er fortsatt "mange units", ikke Squadron-følelsen med få, oppgraderte. Vurder lavere plass i hæren (f.eks. 12 / 18 / 24), og balanser wavene på nytt etterpå.
+- Hærstørrelse: boten ender med ca. 27 units på wave 20. Det er greit (bestemt 3. okt), så lenge det ikke blir rundt 40. Plass i hæren beholdes på 20 / 30 / 40.
 - Ca. 30 fiender per wave (målet) er ikke lagt inn ennå. Wavene har fortsatt 10–40 fiender.
 - Testbenken tester bare grunnversjoner (nivå 0) foreløpig.
 - Ikke avklart: skal Longfang koste litt mer enn 10?
