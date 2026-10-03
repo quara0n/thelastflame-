@@ -7,14 +7,39 @@
   - Oddetalls-waves bringer en snillere ny skapning, partalls-waves en tøffere.
   - Visuelt språk: mørk lilla hud, pulserende magenta årer, cyan øyne (alltid flere enn to), beintorner. Portalen og bakken skifter til magenta/lilla.
   - Hver kategori har egen lyd (ulv-hyl, villsvin-grynt, insektsurr, knirkende tre, boblende hav, sirenehyl, falne kor).
-- World 3 (wave 21–30): "enda galere", fortsatt ett felles tema. Ikke designet ennå.
+- World 3 (wave 21–30): dinosaurer (valgt 3. okt). Utkast under, ikke låst.
 - World 4 (wave 31–40): "guddommelig robotikk, gal". Ikke designet ennå.
 
 ## Tiers
-- Én ny tier per verden, styrt av Barracks-prisen, ikke harde wave-lås.
+- Én ny tier per verden er det normale tempoet, men det er Barracks-prisen som styrer, ikke harde wave-lås.
+- Tydelig regel (3. okt): Tier 4 hører til World 3 og Tier 5 til World 4, men en spiller som har spart godt eller gjort det sterkt kan kjøpe Barracks V (Tier 5) allerede i World 3. Barracks V krever Barracks IV.
+- I spillet: Barracks-kortet viser "Vanlig i World 4" eller lignende, men kan kjøpes så snart man har råd. Ingen sperre på wave.
 - Tier 1: Shieldguard, Stormreaver, Ironshot, Longfang.
 - Tier 2 (Barracks II): Ironwall, Frostbrand, Thunderbore, Hearthkeeper.
 - Tier 3 (Barracks III, 60 tømmer / 40 stein / 20 jern): Pyreguard (flammer, sterk mot sverm og planter, koster kull), Siegebreaker (harpun gjennom rustning), Warbanner Captain (aura +20 % skade, står støtt mot knockback), Huskarl (elite nærkamp, treffer to).
+
+## World 3 – utkast: dinosaurer (wave 21–30)
+- Arbeidsnavn: Urheim. Galskapen: tiden har gått i stykker. Urtidsdyr som ikke skulle finnes lenger, med fossilplater som rustning, ravgule øyne og bein som stikker ut. Damp, vulkansk jungel og rav.
+- Samme mønster som Vrangheim: oddetall en mildere ny skapning, partall en tøffere.
+- 21 Razorclaw (raptorflokk): raske flokkjegere som går rundt fronten og hopper på skytterne.
+- 22 Hornback (triceratops): stormer inn og slår fronten bakover.
+- 23 Snapper-sverm (små dinoer): hundrevis av små bitt, svake hver for seg.
+- 24 Clubtail (ankylosaurus): tykt panser, halekølla lammer den den treffer.
+- 25 flyver-wave: drager, som låst. I denne verdenen urdrager: fjærkledde, pterosaur-aktige drager. Få, store og skremmende.
+- 26 Tyrant (T-rex): enorm. Brølet skremmer, så units rundt slår svakere en stund.
+- 27 Frillspitter (dilophosaurus): spytter fra avstand og blender, så skyttere bommer.
+- 28 Earthshaker (sauropod): kjempestor og treg. Stamper sjokkbølger og bærer Razorclaws på ryggen som hopper av ved porten.
+- 29 Fossil-gjengangere: beinskjeletter av dinoer som setter seg sammen igjen én gang etter at de dør.
+- 30 boss: Tyrant King, ridd av Urheim Warden.
+- Skjelettfamilier: to bein med hale (raptor, T-rex, dilophosaurus) kan være en variant av to-bein-familien eller en egen "theropod"-familie. Fire bein (triceratops, ankylosaurus, sauropod). Flyver (urdrager). Sverm som partikler (snappere).
+
+## Tier 4 – utkast: store maskiner og skapninger
+- Svaret på dinosaurer og drager: store, tunge ting som kan stå imot noe enormt.
+- Ironhulk (dampgolem): tank, stort og tregt, tåler enormt.
+- War Mammoth (krigsmammut med ryttere): tramper gjennom flokker, skyttere på ryggen.
+- Skyspear (kjempe-ballista): skyter tunge bolter, ekstra skade mot flyvere og store dyr.
+- Hearth Engine (rullende smie): støtte, reparerer maskiner og gir varme som gjør allierte rundt sterkere.
+- Tier 5 (Legendary) designes sammen med World 4.
 
 ## Plass i hæren (mot "unit-inflasjon")
 - Hver unit tar plass: Tier 1 = 1, Tier 2 = 2, Tier 3 = 3.
