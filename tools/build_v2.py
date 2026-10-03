@@ -107,6 +107,12 @@ s = sub(s, "<title>Last Flame Kamptest</title>", "<title>Last Flame Kamptest II<
 s = sub(s, '<div class="eyebrow">Prototype · milepæl A–C · North</div>', '<div class="eyebrow">Prototype · milepæl A–D · oppgraderinger</div>')
 s = sub(s, '<p class="note">«+ Plasser» kjøper units i byggefasen. Fjerner du en, får du tilbake 75 % av gullet, rundet ned.</p>',
   '<p class="note">«+ Plasser» kjøper units i byggefasen. Velg en unit på kartet og trykk «Oppgrader» for å gjøre akkurat den soldaten sterkere (tre nivåer). Fjerner du en, får du tilbake 75 % av alt du brukte på den, rundet ned.</p>')
+# Warden jager også fiender som skyter på ham (3. okt 2026). Før sto skyttere rett utenfor
+# flamme-sirkelen og drepte ham mens han gikk hjem igjen.
+s = sub(s, """      const near = enemies.filter(e => Math.hypot(e.x - 0, e.z - MAP.flameZ) < MAP.flameReach + 9);
+      if (near.length) { if (!this.wardenFought) { this.wardenFought = true; this.events.push({ kind: 'warden' }); } if (this._engage(u, near, attackers, dt, 9)) return; }""",
+"""      const near = enemies.filter(e => Math.hypot(e.x - 0, e.z - MAP.flameZ) < MAP.flameReach + 9 || (e.target === u && dist(e, u) < 16));
+      if (near.length) { if (!this.wardenFought) { this.wardenFought = true; this.events.push({ kind: 'warden' }); } if (this._engage(u, near, attackers, dt, 16)) return; }""")
 import world3
 s = world3.apply(s)
 import mobile

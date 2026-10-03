@@ -39,6 +39,8 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 
 ## Known rough edges
 
+- Fixed 3 Oct evening (Kamptest II version 5): the Warden used to ignore shooters standing just outside his circle around the flame, so six Spitters could kill him without a fight. He now also chases anyone targeting him within 16 m. Bot balance unchanged (24/30 reach wave 30).
+
 - Shooters can hit flyers in the air, but shot-down flyers don't fall and fight on the ground yet (designed, not built).
 - Camera rotation needs Q/E on a keyboard; on a phone the view is fixed toward the portal.
 - The test bench tab only tests level 0 units.

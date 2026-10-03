@@ -1068,8 +1068,8 @@ class Sim {
     }
     if (sq) { if (this._engage(u, enemies, attackers, dt, u.T.ranged ? u.T.range + 4 : 80)) return; if (u.T.ranged) { this._support(u, enemies, attackers, dt); return; } }
     if (u.order === 'warden') {
-      const near = enemies.filter(e => Math.hypot(e.x - 0, e.z - MAP.flameZ) < MAP.flameReach + 9);
-      if (near.length) { if (!this.wardenFought) { this.wardenFought = true; this.events.push({ kind: 'warden' }); } if (this._engage(u, near, attackers, dt, 9)) return; }
+      const near = enemies.filter(e => Math.hypot(e.x - 0, e.z - MAP.flameZ) < MAP.flameReach + 9 || (e.target === u && dist(e, u) < 16));
+      if (near.length) { if (!this.wardenFought) { this.wardenFought = true; this.events.push({ kind: 'warden' }); } if (this._engage(u, near, attackers, dt, 16)) return; }
       this._returnHome(u, dt); u.facing = 0; return;
     }
     if (u.T.heal) {
