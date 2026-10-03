@@ -5,7 +5,7 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 ## State right now
 
 - **Playable:** "Last Flame Kamptest II" (https://claude.ai/artifact/4h6eEwfWuJEPxzigKGvk3V), version 4. 30 waves over three worlds, Tier 1–4, per-unit upgrades, scarce economy, simulation-balanced waves, phone layout. The user plays it on a phone.
-- **Repo:** 6 commits on `main`, not pushed. Pushing failed because the user's GitHub account isn't linked to Claude (`add_repo` → permission_denied; `gh` has no valid token). The user was told to link GitHub under claude.ai Settings → Connectors and to create an empty `quara0n/thelastflame` if it doesn't exist. The full repo with history was sent to the user as `thelastflame.zip`.
+- **Repo:** all work committed on `main`, not pushed. Pushing failed because the user's GitHub account isn't linked to Claude (`add_repo` → permission_denied; `gh` has no valid token). The user was told to link GitHub under claude.ai Settings → Connectors and to create an empty `quara0n/thelastflame` if it doesn't exist. The full repo with history was sent to the user as `thelastflame.zip`.
 - **Project notes** in claude.ai are up to date and match `docs/`.
 
 ## Done in the last session (2–3 Oct)
@@ -31,7 +31,7 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 
 ## Rebuilding the repo in a new thread (if the zip isn't attached)
 
-1. `Projects` → `project_read` every `claude/kode/…` file and save it under `tools/` with the same name (`claude/kode/world3.py` → `tools/world3.py`). Save `claude/CLAUDE.md` and `claude/HANDOFF.md` at the repo root.
+1. `Projects` → `project_read` every `claude/kode/…` file and save it under `tools/` with the same name (`claude/kode/world3.py` → `tools/world3.py`), except `claude/kode/README.md`, which goes to the repo root. Save `claude/CLAUDE.md` and `claude/HANDOFF.md` at the repo root.
 2. Notes: `claude/verdener-og-tiers.md` → `docs/verdener-og-tiers.md`, `claude/tier1-oppgraderinger.md` → `docs/oppgraderinger-og-balanse.md`, `claude/flyvere-skjeletter-og-flerspiller.md` → `docs/design-flyvere-assets-flerspiller.md`.
 3. `Artifact` action `read` with `path: "index.html"` on the old Kamptest URL → `prototype/kamptest-1.html`, and on the Askemyr Style Test URL → `prototype/askemyr-style-test.html`.
 4. `python3 tools/build_v2.py` → `prototype/kamptest-2.html`. Compare it with the published Kamptest II (read it the same way); they should match.
