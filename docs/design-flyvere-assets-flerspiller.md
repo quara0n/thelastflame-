@@ -69,13 +69,29 @@
 - Hvis en sendt unit lekker gjennom, får avsenderen gull.
 - Den som sender flest units får et eget merke/flagg.
 
+## Flerspiller: grunnregler (låst 3. okt 2026)
+- **Lag:** 2 lag à 4 spillere, som klassisk Squadron. 8 spillere i én kamp.
+- **Hver spiller har sin egen port og sin egen hær.** Fire porter per lag, side om side.
+- **Én felles Warden per lag (kongen).** Alle fire porter fører opp til samme citadell med flammen. Fiender som bryter gjennom hos hvem som helst, går dit, og Warden kjemper mot dem. Når en fiende når flammen, taper hele laget.
+- **Warden eies av laget.** Alle fire kan betale for utstyr og trening i Warden's Sanctum. Erfaring fra drap gjelder for laget.
+- **Arena:** wave 8.
+- **Sending:** man sender skapninger fra verdenen laget er i nå (World 1 sender Askemyr-skapninger osv.). Pris og styrke stiger per verden.
+
+### Forslag under de låste reglene (ikke låst, kan justeres)
+- **Hvem sender til hvem:** fast par. Spiller 1 på lag A sender til spiller 1 på lag B, og omvendt. Gir en tydelig "motstander" å følge med på.
+- **Når sendte units kommer:** de legges til motstanderens neste wave og kommer gjennom portalen sammen med den.
+- **Pris (World 1-forslag, gull):** Husk 4, Spider 4, Serpent 6, Spitter 7, Brute 10, Beetle 12. World 2 ca. ×2, World 3 ca. ×3,5. Grunnlag: Tier 1-unit koster 10 gull.
+- **Lekk-gull:** når en sendt unit bryter gjennom porten, får avsenderen halve sendeprisen tilbake.
+- **Sende-flagg:** den som har sendt mest (i gull) når kampen er over, får flagget.
+- **Lekk til felles Warden:** en spiller som lekker mye, sender fiender opp til laget sitt. Det er presset som gjør lagspill viktig: nabospillere kan sende units over for å hjelpe (ikke bestemt hvordan).
+- **Arena wave 8:** hvert lag stemmer frem én spiller. De to møtes i arenaen i midten med en kopi av hæren sin (ingen units dør på ekte). Vinnerlaget deler premien likt: forslag 40 gull + 20 stein + 20 tømmer + 10 kull per spiller, og vinneren får Champion-flagget.
+
 ## Speiding (ikke MVP)
 - Alle kan kjøpe et kort blikk (ca. 5 sekunder) på motstanderlagets units.
 
 ## Åpne spørsmål
-- Har porten egen helse, eller er det flammen som er "kongen"? Hva skjer når porten faller?
-- Hvordan er lagene satt opp: hvor mange spillere per lag, og hvem møter hvem når det er f.eks. 8 lag?
-- Nøyaktig wave for arenaen (7 eller 8).
-- Hvilke sendbare units finnes, og hva koster de per verden?
-- Hvor mye gull gir en lekk, og hvor mye ressurser vinner arenaen?
+- Besvart 3. okt: kongen er lagets felles Warden; 2 lag à 4; arena wave 8; send skapninger fra nåværende verden. Se "Flerspiller: grunnregler".
+- Hvordan kan nabospillere hjelpe hverandre (sende egne units over, dele gull)?
+- Bekrefte sendepriser, lekk-gull og arenapremie (forslag over).
+- Kan Warden dø, eller bare flammen? (I dag: fiende ved flammen = tap, Warden har HP men kampen går videre.)
 - Modeller: AI 3D-verktøy eller ferdigkjøpte pakker?

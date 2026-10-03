@@ -1,11 +1,11 @@
-# HANDOFF – The Last Flame (3 Oct 2026)
+# HANDOFF – The Last Flame (3 Oct 2026, evening)
 
 Read `CLAUDE.md` first. This file says where the work stopped and what comes next.
 
 ## State right now
 
 - **Playable:** "Last Flame Kamptest II" (https://claude.ai/artifact/4h6eEwfWuJEPxzigKGvk3V), version 4. 30 waves over three worlds, Tier 1–4, per-unit upgrades, scarce economy, simulation-balanced waves, phone layout. The user plays it on a phone.
-- **Repo:** all work committed on `main`, not pushed. Pushing failed because the user's GitHub account isn't linked to Claude (`add_repo` → permission_denied; `gh` has no valid token). The user was told to link GitHub under claude.ai Settings → Connectors and to create an empty `quara0n/thelastflame` if it doesn't exist. The full repo with history was sent to the user as `thelastflame.zip`.
+- **Repo:** all work committed on `main`, not pushed (still blocked on 3 Oct evening: `add_repo` → permission_denied). Pushing failed because the user's GitHub account isn't linked to Claude (`add_repo` → permission_denied; `gh` has no valid token). The user was told to link GitHub under claude.ai Settings → Connectors and to create an empty `quara0n/thelastflame` if it doesn't exist. The full repo with history was sent to the user as `thelastflame.zip`.
 - **Project notes** in claude.ai are up to date and match `docs/`.
 
 ## Done in the last session (2–3 Oct)
@@ -23,7 +23,7 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 
 1. **Push the repo** once GitHub is linked: `add_repo` quara0n/thelastflame with push access, then `git remote add origin … && git push -u origin main`. In a new thread the local repo is gone: rebuild it from the project (`claude/kode/…` plus the artifacts), or ask the user to attach `thelastflame.zip`.
 2. **Ask the user how waves 21–30 feel on the phone.** The balance comes from a bot, not a human.
-3. **Multiplayer basics before World 4:** team setup (how many players per team, who meets whom with 8 teams), what happens when the gate falls (is the gate or the flame the "king"), sending units (which, and the price per world), the arena wave (7 or 8). These are the biggest open design questions.
+3. **Multiplayer basics — locked 3 Oct:** 2 teams of 4; every player has their own gate; one shared Warden per team is the king (leaks from any gate go to the team's citadel; enemy reaches the flame = team loses); arena at wave 8; you send creatures from the world you're in. Draft numbers (send prices, leak gold, arena prize, fixed 1-vs-1 send pairing) are in `docs/design-flyvere-assets-flerspiller.md` under "Flerspiller: grunnregler" and still need the user's OK. Still open: how teammates help each other, and whether the Warden can die. Note: the user reacted strongly when asked "what is the king" — the Warden is obviously the king; don't ask that again.
 4. **World 4 (divine robotics, waves 31–40) and Tier 5 (Legendary)**, built the same way as World 3: draft in the notes, user approval, `tools/world4.py`, tune with `tune4.js`-style measurement and `tune_waves.js`.
 5. Missing flyer creatures: Ash Crow (wave 5) and drones (wave 35).
 6. About 30 enemies per wave (today 10–40, uneven).
