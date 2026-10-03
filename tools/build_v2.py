@@ -109,5 +109,7 @@ s = sub(s, '<p class="note">«+ Plasser» kjøper units i byggefasen. Fjerner du
   '<p class="note">«+ Plasser» kjøper units i byggefasen. Velg en unit på kartet og trykk «Oppgrader» for å gjøre akkurat den soldaten sterkere (tre nivåer). Fjerner du en, får du tilbake 75 % av alt du brukte på den, rundet ned.</p>')
 import world3
 s = world3.apply(s)
+import mobile
+s = mobile.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))

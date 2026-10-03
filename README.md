@@ -23,6 +23,7 @@ Node.js and Python 3. The tools run the same battle engine as the prototype, wit
 - `build_v2.py` – builds `prototype/kamptest-2.html` from `kamptest-1.html`: upgrades, economy, visible gear, the upgrade button and the wave factors.
 - `world3.py` – World 3 (Urheim) and Tier 4: creatures, new mechanics (flyers, roar, stun, blind, carriers, revive), units, upgrades, models, world look and sounds. Applied by `build_v2.py`.
 - `tune4.js` – measures Tier 4 against fully upgraded Tier 3.
+- `mobile.py` – phone layout: compact HUD, order bar docked to the bottom, camera pulled back on narrow screens. Applied by `build_v2.py`.
 - `game_sim.js` – plays whole games with a sensible bot player (gathers, buys, upgrades, builds Barracks) and reports how often each wave is held. `node tools/game_sim.js 20`
 - `tune_waves.js` – finds a strength factor per wave so the bot holds each wave at its target rate, and multiplies it into `wave_factors.json`. It measures on top of the factors already built into `kamptest-2.html`. `node tools/tune_waves.js 16 21` tunes only waves 21 and up; rebuild with `build_v2.py` before tuning again.
 - `run_all.js`, `tune.js`, `bench.js`, `bench_core.js`, `logic_up.js` – measure how strong one unit type is at each level, used to set the tier rule (a fresh Tier 2 ≈ 90 % of a maxed Tier 1, ≈ 120 % after its first upgrade).
