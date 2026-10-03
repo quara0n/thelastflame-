@@ -1,0 +1,59 @@
+# The Last Flame – unit-oppgraderinger, alle tiers (2.–3. okt 2026)
+
+Bygget inn i `prototype/kamptest-2.html` ("Last Flame Kamptest II"). `kamptest-1.html` er den gamle versjonen, urørt.
+Regel: hver unit har grunnversjon + 3 oppgraderinger, kjøpt på én bestemt soldat (velg den på kartet, trykk «Oppgrader»). Samme modell, nytt utstyr per nivå: nivå 1 skulderplater, nivå 2 rød kappe, nivå 3 glødende kam. Gull-ruter over hodet viser nivået. Plass i hæren endres ikke. Selger du, får du 75 % av alt du har brukt, også oppgraderingene.
+Forge og Workshop (felles oppgraderinger for alle units av en type) er beholdt og virker i tillegg.
+
+## Økonomi: knapphet, ikke inflasjon
+- Arbeider 5 gull (+2 per arbeider etter de ni første). Tier 1-unit 10 gull.
+- Start: 75 gull (før 125). Gullgruva leverer saktere (hvert 8. sek i stedet for 5.), ca. 7,5 gull/min per arbeider.
+- Alle andre gullpriser (Forge, Workshop, verktøy, bueskyttere, Warden-utstyr, utvidelser) er ganget med 0,6. Wave-bonus 6 + 2 per wave.
+- Plass i hæren: Barracks I 20, II 30, III 40 (IV 50, V 60).
+- Tier 1: 10 g. Oppgraderinger 5 g / 8 g + 1 jern / 12 g + 2 jern + 1 kull. Fullt oppgradert ca. 35 g.
+- Tier 2: 24–26 g + 1–2 jern. Oppgraderinger 12 / 18 / 25 g + jern og kull.
+- Tier 3: 55–62 g + jern (og kull for Pyreguard). Oppgraderinger 20 / 30 / 40 g + jern og kull.
+
+## Balansemål og målinger
+- En fersk Tier 2 ≈ 90 % av en fullt oppgradert Tier 1. Etter første oppgradering ≈ 120 %. Samme mønster mellom Tier 2 og Tier 3.
+- Målt med kampmotoren fra prototypen (`tools/run_all.js`, `tools/tune.js`): tre units av typen lagt til en fast kjernehær, mot wave 4, 6 og 8, og målt hvor sterke fiender hæren slår halvparten av gangene.
+- Resultat (fersk / etter 1. oppgradering, mot fullt oppgradert unit ett tier under):
+  - Ironwall 94 % / 119 % (mot Shieldguard)
+  - Frostbrand 90 % / 120 % (mot Stormreaver)
+  - Thunderbore ca. 90 % / ca. 120 % (mot Ironshot)
+  - Hearthkeeper 90 % / 119 % (mot Stormreaver)
+  - Warbanner Captain 94 % / 127 % (mot Ironwall)
+  - Huskarl ca. 100 % / ca. 125 % (mot Frostbrand)
+  - Pyreguard 95 % / 114 % (mot Thunderbore)
+  - Siegebreaker 96 % / 124 % (mot Thunderbore)
+- For å få dette ble grunnversjonene av Tier 2 og 3 svakere (f.eks. Ironwall 340 HP i stedet for 640, Huskarl 400 i stedet for 900). Styrken kommer nå fra oppgraderingene.
+
+## Waves balansert på nytt (3. okt 2026)
+- Hele spill simulert (`tools/game_sim.js`): en fornuftig bot-spiller samler, kjøper, oppgraderer og bygger Barracks wave for wave, med den nye økonomien.
+- Hver wave fikk en styrkefaktor (`tools/tune_waves.js`, `tools/wave_factors.json`): fiendenes helse × faktor, skade × kvadratroten av faktoren, slik at boten holder waven (vinner og porten står) ca. så ofte: wave 1–4 alltid, 5–8 ca. 94 %, 9 ca. 88 %, 10 (boss) ca. 75 %, 11–15 ca. 88 %, 16–19 ca. 80 %, 20 (boss) ca. 60 %.
+- Faktorer: 0,9 · 1,6 · 1,4 · 1,1 · 1,1 · 1,4 · 1,6 · 0,8 · 0,9 · 0,7 · 0,9 · 1 · 1 · 0,9 · 0,9 · 0,7 · 1 · 0,9 · 0,9 · 1. Wave 8 ble ca. 20 % lettere, bossen i wave 10 og Treanten i wave 16 ca. 30 % lettere.
+- Sjekk etterpå (20 nye spill): alle kom til wave 20. Wave 1–19 vinnes nesten alltid, og sluttbossen vinnes ca. 65 % av gangene.
+
+## Tier 1
+- Shieldguard: 1 Jernkant (mer helse og rustning). 2 Tårnskjold (units rett bak tar 25 % mindre skade fra skudd og spytt). 3 Runeskjold (skjoldslag hvert 6. sek, slår bakover og lammer).
+- Stormreaver: 1 Slipt øks (+20 % skade). 2 Skjegg-øks (raskere slag, rustning). 3 Stormraseri (hvert 3. slag treffer alle rundt ham).
+- Ironshot: 1 Riflet løp (+2 rekkevidde, +15 % skade). 2 Damptank (raskere skudd, mer helse). 3 Kull-ladning (hvert 4. skudd sprekker rundt målet).
+- Longfang: 1 Kikkertsikte (+2 rekkevidde, +15 % skade). 2 Langt løp (gjennom mer rustning, sikter raskere). 3 Merket skudd (velger den sterkeste fienden, dobbel skade på første skudd mot hvert nytt mål).
+
+## Tier 2
+- Ironwall: 1 Naglede plater (mye mer helse og rustning). 2 Piggskjold (fiender som slår ham skader seg selv, roper lenger). 3 Jernbastion (under halv helse: tar halv skade i 5 sek, én gang per kamp).
+- Frostbrand: 1 Frostsmidde økser (+45 % skade). 2 Blodrus (raskere slag, helse, rustning). 3 Frostbitt (hvert treff bremser fienden).
+- Thunderbore: 1 Større løp (mer skade, større område). 2 Forsterket stativ (+2 rekkevidde, helse, rustning). 3 Sjokkbølge (treffene dytter fiender bakover).
+- Hearthkeeper: 1 Klarere lykt (leger mer). 2 Glødesirkel (leger oftere og lenger unna). 3 Varm glo (leger to allierte om gangen).
+
+## Tier 3
+- Pyreguard: 1 Bred dyse (større område, helse). 2 Kulltank (varmere, lenger flamme). 3 Glødende bakke (det som treffes brenner videre).
+- Siegebreaker: 1 Mothaker (+30 % skade). 2 Vinsj (lader raskere). 3 Spidd (harpunen treffer opptil to fiender bak målet).
+- Warbanner Captain: 1 Jernbanner (helse og rustning). 2 Bredt banner (auraen når lenger, mer skade). 3 Samling (allierte i auraen slår 30 % hardere og gror sakte tilbake).
+- Huskarl: 1 Daneøks (+45 % skade). 2 Skjold og brynje (mye mer helse og rustning). 3 Feiende slag (hvert slag treffer opptil tre).
+
+## Åpent / neste steg
+- Boten ender med ca. 27 units i hæren. Det er fortsatt "mange units", ikke Squadron-følelsen med få, oppgraderte. Vurder lavere plass i hæren (f.eks. 12 / 18 / 24), og balanser wavene på nytt etterpå.
+- Ca. 30 fiender per wave (målet) er ikke lagt inn ennå. Wavene har fortsatt 10–40 fiender.
+- Testbenken tester bare grunnversjoner (nivå 0) foreløpig.
+- Ikke avklart: skal Longfang koste litt mer enn 10?
+- Shieldguards oppgraderinger gir mindre målbar styrke enn de andre Tier 1 (ca. +40 % mot +100 %), fordi testene måler drepeevne.
