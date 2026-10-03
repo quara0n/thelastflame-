@@ -804,7 +804,7 @@ const WAVES = [
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.9, 1.6, 1.54, 1.331, 1.1, 1.54, 2.24, 0.88, 0.81, 0.648, 0.81, 0.891, 0.9, 0.891, 0.81, 0.624, 0.88, 0.81, 0.833, 0.9, 1.25, 0.9, 1.238, 1.125, 0.729, 0.693, 0.8, 0.594, 0.594, 0.569];
+const WAVE_FACTOR = [0.9, 1.789, 1.722, 1.396, 1.302, 1.722, 2.504, 1.041, 0.958, 0.767, 0.906, 0.996, 0.944, 0.934, 0.906, 0.654, 0.88, 0.75, 0.833, 0.9, 1.311, 1.006, 1.299, 1.18, 0.815, 0.82, 0.839, 0.664, 0.623, 0.597];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};
@@ -1666,6 +1666,7 @@ const Sound = (function () {
     noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 1.5, ctx.sampleRate);
     const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     started = true;
+    initFiles();
     schedule();
   }
   function impulse(sec) {
@@ -1707,6 +1708,56 @@ const Sound = (function () {
     noise(dest, t, 0.08, { f: 900, q: 0.6, v: v * 0.35 });
   }
 
+  // Innspilt musikk: byggefasen og kampen har hver sin liste med spor som går på rundgang.
+  // Hver ny fase starter neste spor; varer fasen lenger enn sporet, tar det neste over.
+  // Mangler filene for en fase, spilles den genererte musikken der.
+  const TRACKS = {
+    build: ['musikk/building-phase.mp3', 'musikk/a-new-world-assembles.mp3'],
+    battle: ['musikk/strategic-march.mp3', 'musikk/battle-2.mp3', 'musikk/strategic-march-2.mp3'],
+  };
+  const files = {};
+  let fileStop = null;
+  function initFiles() {
+    Object.keys(TRACKS).forEach(m => {
+      const F = files[m] = { gain: ctx.createGain(), els: [], idx: -1, ok: false, cur: null };
+      F.gain.gain.value = 0; F.gain.connect(musicBus);
+      F.els = TRACKS[m].map((src, i) => {
+        const a = new Audio(); a.preload = m === 'build' ? 'auto' : 'metadata'; a.src = src;
+        a.addEventListener('ended', () => { if (mode === m && F.cur === a) playTrack(m, (i + 1) % F.els.length); });
+        a.addEventListener('canplay', () => {
+          if (F.ok) return; F.ok = true;
+          (m === 'build' ? buildGain : battleGain).gain.setTargetAtTime(0, ctx.currentTime, 0.4);
+          if (mode === m) startFiles(m);
+        }, { once: true });
+        try { ctx.createMediaElementSource(a).connect(F.gain); } catch (e) { /* uten Web Audio-ruting spilles den rett ut */ }
+        return a;
+      });
+      // Kampsporene lastes litt senere, så byggemusikken får starte først.
+      if (m === 'battle') setTimeout(() => F.els.forEach(a => { a.preload = 'auto'; a.load(); }), 1500);
+    });
+  }
+  function playTrack(m, i) {
+    const F = files[m]; F.idx = i; F.cur = F.els[i];
+    F.els.forEach(a => { if (a !== F.cur) a.pause(); });
+    try { F.cur.currentTime = 0; } catch (e) {}
+    const p = F.cur.play(); if (p && p.catch) p.catch(() => {});
+  }
+  function startFiles(m) {
+    const F = files[m];
+    if (!F || !F.ok) return;
+    playTrack(m, (F.idx + 1) % F.els.length);
+    F.gain.gain.cancelScheduledValues(ctx.currentTime);
+    F.gain.gain.setTargetAtTime(0.9, ctx.currentTime, 0.5);
+  }
+  function stopFiles(m) {
+    const F = files[m];
+    if (!F) return;
+    F.gain.gain.cancelScheduledValues(ctx.currentTime);
+    F.gain.gain.setTargetAtTime(0, ctx.currentTime, 0.35);
+    setTimeout(() => { if (mode !== m) F.els.forEach(a => a.pause()); }, 1800);
+  }
+  const filesOn = m => !!(files[m] && files[m].ok);
+
   // ---- Musikk: to spor i d-moll ----
   // Akkorder som MIDI-grunntoner: Dm, Bb, F, C (bygg) og Dm, Bb, C, A (kamp).
   const BUILD_CH = [[50, 53, 57], [46, 50, 53], [53, 57, 60], [48, 52, 55]];
@@ -1724,6 +1775,7 @@ const Sound = (function () {
   function playBar(t) {
     if (mode === 'battle') {
       const beat = 60 / 132, ch = BATTLE_CH[bar % 4];
+      if (filesOn('battle')) { nextBar = t + beat * 4; bar++; return; }
       // Krigstrommer.
       [0, 2, 3, 4, 6].forEach(i => drum(battleGain, t + i * beat / 2, i === 0 || i === 4 ? 46 : 70, i === 0 ? 0.9 : 0.5, 0.5));
       if (bar % 2 === 1) [7].forEach(i => drum(battleGain, t + i * beat / 2 + beat / 4, 90, 0.35, 0.3));
@@ -1736,6 +1788,7 @@ const Sound = (function () {
       nextBar = t + beat * 4;
     } else {
       const beat = 60 / 70, ch = BUILD_CH[bar % 4];
+      if (filesOn('build')) { nextBar = t + beat * 4; bar++; return; }
       // Drone og myke akkorder.
       tone(buildGain, t, 38, beat * 4.2, { type: 'sawtooth', cut: 260, v: 0.12, a: 1.2, r: 1.4 });
       ch.forEach(n => tone(buildGain, t, n, beat * 4.1, { type: 'triangle', cut: 1800, v: 0.05, a: 1.0, r: 1.6, detune: Math.random() * 10 - 5 }));
@@ -1758,8 +1811,9 @@ const Sound = (function () {
     if (!ctx) return;
     const t = ctx.currentTime;
     buildGain.gain.cancelScheduledValues(t); battleGain.gain.cancelScheduledValues(t);
-    buildGain.gain.setTargetAtTime(m === 'build' ? 1 : 0, t, 0.6);
-    battleGain.gain.setTargetAtTime(m === 'battle' ? 1 : 0, t, 0.4);
+    buildGain.gain.setTargetAtTime(m === 'build' && !filesOn('build') ? 1 : 0, t, 0.6);
+    battleGain.gain.setTargetAtTime(m === 'battle' && !filesOn('battle') ? 1 : 0, t, 0.4);
+    stopFiles(m === 'build' ? 'battle' : 'build'); startFiles(m);
     nextBar = t + 0.15; bar = 0;
   }
 
@@ -1873,7 +1927,7 @@ const Sound = (function () {
   }
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const BUILD_FIRST = 45, BUILD_TIME = 30;
+  const BUILD_FIRST = 45, BUILD_TIME = 55;
   const PLAYER_TYPES = ['shieldguard', 'stormreaver', 'ironshot', 'longfang', 'ironwall', 'frostbrand', 'thunderbore', 'hearthkeeper', 'pyreguard', 'siegebreaker', 'captain', 'huskarl', 'ironhulk', 'mammoth', 'skyspear', 'hearthengine'];
   const RES_HEX = { gold: '#e2b54a', timber: '#b07a4a', stone: '#9aa3ad', iron: '#7f93a8', coal: '#5a5550' };
   const state = {

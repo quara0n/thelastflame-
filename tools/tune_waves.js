@@ -40,7 +40,7 @@ for (let wi = 0; wi < L.WAVES.length; wi++) {
     let bounty = 0; sim.units.forEach(u => { if (u.side === 'e' && !u.alive) bounty += L.BOUNTY[u.type] || 0; });
     ec.add({ gold: bounty }); if (sim.result.win) ec.add({ gold: L.waveBonus(wi + 1) });
     if (ec.gateHp <= 0) ec.gateHp = ec.gateMax() * 0.5;   // in the real game the player repairs; keep runs alive
-    st.t = 30;
+    st.t = 55;
   });
   const a = states[0].army;
   console.log(`wave ${wi + 1}: factor ${best}  target ${TARGET(wi + 1)}  army ${a.length} units, avg level ${(a.reduce((s, x) => s + x.level, 0) / a.length).toFixed(1)}`);

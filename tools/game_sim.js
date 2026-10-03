@@ -102,7 +102,7 @@ function playGame(L, opts) {
     const value = army.reduce((s, a) => s + (L.TYPES[a.type].cost || 0) + (L.upgradeSpent(a.type, a.level).gold || 0), 0);
     log.push({ w: W.n, win: sim.result.win, flame: sim.result.reason === 'Fienden nådde flammen', gate: Math.round(sim.gateHp), army: army.length, value, lv: +(army.reduce((s, a) => s + (a.level || 0), 0) / Math.max(1, army.length)).toFixed(1), tiers: [1, 2, 3].map(k => army.filter(a => (L.TYPES[a.type].tier || 1) === k).length).join('/'), gold: Math.round(ec.res.gold) });
     if (sim.result.reason === 'Fienden nådde flammen') break;
-    t = 30;
+    t = 55;
   }
   return log;
 }

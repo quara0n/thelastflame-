@@ -39,6 +39,8 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 
 ## Known rough edges
 
+- 3 Oct late evening (Kamptest II version 6): recorded music (build: Building Phase / A New World Assembles; battle: Strategic March / Untitled / Strategic March 1, each phase starts the next track), 55 s between waves. The user said they were struggling, so the waves were only retuned at half strength (factor = old × √(full retune)), wave 18 eased to 0.75. Bot: 26/30 reach wave 30.
+
 - Fixed 3 Oct evening (Kamptest II version 5): the Warden used to ignore shooters standing just outside his circle around the flame, so six Spitters could kill him without a fight. He now also chases anyone targeting him within 16 m. Bot balance unchanged (24/30 reach wave 30).
 
 - Shooters can hit flyers in the air, but shot-down flyers don't fall and fight on the ground yet (designed, not built).

@@ -117,5 +117,7 @@ import world3
 s = world3.apply(s)
 import mobile
 s = mobile.apply(s)
+import music
+s = music.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))
