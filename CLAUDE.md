@@ -55,7 +55,7 @@ The Last Flame is a Squadron-inspired unit tower defence. The player holds a gat
 
 - **Tier rule:** a fresh unit of tier N+1 ≈ 90 % of a fully upgraded unit of tier N, and ≈ 120 % after its first upgrade. Measured with `tools/run_all.js` / `tools/tune.js` (Tier 1–3) and `tools/tune4.js` (Tier 4). The measurements have about ±10 % noise.
 - **Waves:** `tools/game_sim.js` plays whole games with a bot player (gathers, buys, upgrades, Barracks, archers, walls, sells fully upgraded old units to make room for a new tier). `tools/tune_waves.js R FROM` finds a strength factor per wave (enemy HP × k, damage × √k) so the bot holds each wave at a target rate, and multiplies it into `wave_factors.json`. Always rebuild before tuning again, because it measures on top of the factors already in kamptest-2.
-- **Check:** `node tools/game_sim.js 30` – the current state is about 14 of 30 (World 1 made a bit tougher 4 Oct, second round) (made harder after wave 10 on 4 Oct; the user found World 1 right and 11–30 too easy) games reaching wave 30 (55 s breaks, deflated economy).
+- **Check:** `node tools/game_sim.js 30` – the current state is about 14 of 30 games reaching wave 30 (after wave 10 made harder on 4 Oct, then World 1 a bit tougher in version 18) (55 s breaks, deflated economy).
 - The bot and the tuner use 55 s between waves (`t = 55` in game_sim.js and tune_waves.js); change both if the break changes.
 - If the bot's strategy changes, earlier waves shift too. Retune from wave 1 afterwards.
 
