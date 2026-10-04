@@ -141,5 +141,7 @@ import warden_nerf
 s = warden_nerf.apply(s)
 import warden_abilities
 s = warden_abilities.apply(s)
+import forge_gate
+s = forge_gate.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))

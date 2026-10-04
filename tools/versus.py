@@ -124,8 +124,9 @@ def apply(s):
                "    for (const e of enemies) { const m = this._make(id++, e.type, e.x, e.z, null); if (e.sent) m.sent = e.sent; this.units.push(m); }")
     s = sub(s, "#om-remove { color: #f0a59d; }", "#om-remove { color: #f0a59d; }" + CSS)
     # Fane og panel.
-    s = sub(s, '<button type="button" role="tab" id="tab-army" data-tab="army">Hær</button>',
-               '<button type="button" role="tab" id="tab-army" data-tab="army">Hær</button>\n      <button type="button" role="tab" id="tab-send" data-tab="send">Send</button>')
+    # Send-fanen står helt til høyre (etter Testbenk), 4 Oct.
+    s = sub(s, '<button type="button" role="tab" id="tab-test" data-tab="test">Testbenk</button>',
+               '<button type="button" role="tab" id="tab-test" data-tab="test">Testbenk</button>\n      <button type="button" role="tab" id="tab-send" data-tab="send">Send</button>')
     s = sub(s, '<div class="tabpane" id="pane-test" hidden></div>', '<div class="tabpane" id="pane-test" hidden></div>\n    <div class="tabpane" id="pane-send" hidden></div>')
     s = sub(s, "['army', 'village', 'build', 'test'].forEach(t => $('#pane-' + t).hidden = state.tab !== t);\n    if (state.tab === 'test') renderBench();",
                "['army', 'village', 'build', 'test', 'send'].forEach(t => $('#pane-' + t).hidden = state.tab !== t);\n    if (state.tab === 'test') renderBench();\n    if (state.tab === 'send') renderSend();")

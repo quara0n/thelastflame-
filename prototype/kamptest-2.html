@@ -500,10 +500,10 @@ button.tier-h:hover b { text-decoration: underline; }
 
     <nav class="tabs" role="tablist">
       <button type="button" role="tab" id="tab-army" data-tab="army">Hær</button>
-      <button type="button" role="tab" id="tab-send" data-tab="send">Send</button>
       <button type="button" role="tab" id="tab-village" data-tab="village">Landsby</button>
       <button type="button" role="tab" id="tab-build" data-tab="build">Bygninger</button>
       <button type="button" role="tab" id="tab-test" data-tab="test">Testbenk</button>
+      <button type="button" role="tab" id="tab-send" data-tab="send">Send</button>
     </nav>
 
     <div class="tabpane" id="pane-army">
@@ -891,7 +891,7 @@ const WAVES = [
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.3, 0.99, 0.847, 0.44, 0.757, 1.056, 1.109, 0.999, 0.619, 0.666, 1.037, 0.42, 1.694, 0.382, 0.641, 0.381, 0.883, 0.378, 0.494, 0.23, 0.95, 0.352, 1.362, 0.454, 0.95, 0.27, 0.563, 0.352, 0.56, 0.441];
+const WAVE_FACTOR = [0.3, 0.99, 0.847, 0.44, 0.833, 1.162, 1.22, 0.999, 0.619, 0.833, 1.141, 0.525, 2.117, 0.42, 0.801, 0.419, 0.971, 0.529, 0.617, 0.322, 0.95, 0.387, 1.703, 0.636, 1.33, 0.338, 0.704, 0.317, 0.616, 0.551];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};
@@ -1576,15 +1576,18 @@ const TRACKS = {
   melee: { name: 'Nærkampvåpen', building: 'Forge', levels: [
     { name: 'Herdet jern',     val: 0.12, cost: { gold: 15, iron: 8 } },
     { name: 'Smidd stål',      val: 0.25, cost: { gold: 27, iron: 18 } },
-    { name: 'Blacksteel-egg',  val: 0.40, cost: { gold: 42, iron: 28, coal: 10 } } ] },
+    { name: 'Blacksteel-egg',  val: 0.40, cost: { gold: 42, iron: 28, coal: 10 } },
+    { name: 'Runesmidd egg',   val: 0.58, cost: { gold: 64, iron: 42, coal: 22 } } ] },
   ranged: { name: 'Avstandsvåpen', building: 'Forge', levels: [
     { name: 'Riflede løp',     val: 0.12, cost: { gold: 15, iron: 8 } },
     { name: 'Tunge prosjektil', val: 0.25, cost: { gold: 27, iron: 18 } },
-    { name: 'Kull-ladning',    val: 0.40, cost: { gold: 42, iron: 28, coal: 10 } } ] },
+    { name: 'Kull-ladning',    val: 0.40, cost: { gold: 42, iron: 28, coal: 10 } },
+    { name: 'Runeladning',     val: 0.58, cost: { gold: 64, iron: 42, coal: 22 } } ] },
   armor: { name: 'Rustning', building: 'Forge', levels: [
     { name: 'Naglet lær',      val: 1, cost: { gold: 13, iron: 10 } },
     { name: 'Jernplater',      val: 2, cost: { gold: 25, iron: 20 } },
-    { name: 'Blacksteel-plater', val: 3, cost: { gold: 39, iron: 30, coal: 10 } } ] },
+    { name: 'Blacksteel-plater', val: 3, cost: { gold: 39, iron: 30, coal: 10 } },
+    { name: 'Runeplater',      val: 4, cost: { gold: 60, iron: 45, coal: 20 } } ] },
   tech: { name: 'Teknologi', building: 'Workshop', levels: [
     { name: 'Sikter',          val: { range: 1, speed: 0.08 }, cost: { timber: 20, coal: 8 } },
     { name: 'Dampdrevne ladere', val: { range: 2, speed: 0.16 }, cost: { timber: 35, coal: 15 } },
@@ -1596,10 +1599,10 @@ const supplyOf = T => (T && T.tier) || 1;
 const TIER_CAP = 2;   // units av en tier man har uten tierens Barracks
 const BARRACKS = [
   { name: 'Barracks I',   tier: 1, supply: 20, unlocks: ['shieldguard', 'stormreaver', 'ironshot', 'longfang'] },
-  { name: 'Barracks II',  tier: 2, supply: 30, unlocks: ['ironwall', 'frostbrand', 'thunderbore', 'hearthkeeper'], cost: { timber: 84, stone: 48, iron: 19 } },
-  { name: 'Barracks III', tier: 3, supply: 40, unlocks: ['pyreguard', 'siegebreaker', 'captain', 'huskarl'], cost: { timber: 150, stone: 100, iron: 50 } },
-  { name: 'Barracks IV',  tier: 4, supply: 50, unlocks: ['ironhulk', 'mammoth', 'skyspear', 'hearthengine'], cost: { timber: 630, stone: 420, iron: 245, coal: 105 } },
-  { name: 'Barracks V',   tier: 5, supply: 60, unlocks: [], cost: { timber: 754, stone: 522, iron: 290, coal: 174 }, future: true },
+  { name: 'Barracks II',  tier: 2, supply: 32, unlocks: ['ironwall', 'frostbrand', 'thunderbore', 'hearthkeeper'], cost: { timber: 84, stone: 48, iron: 19 } },
+  { name: 'Barracks III', tier: 3, supply: 46, unlocks: ['pyreguard', 'siegebreaker', 'captain', 'huskarl'], cost: { timber: 150, stone: 100, iron: 50 } },
+  { name: 'Barracks IV',  tier: 4, supply: 62, unlocks: ['ironhulk', 'mammoth', 'skyspear', 'hearthengine'], cost: { timber: 630, stone: 420, iron: 245, coal: 105 } },
+  { name: 'Barracks V',   tier: 5, supply: 80, unlocks: [], cost: { timber: 754, stone: 522, iron: 290, coal: 174 }, future: true },
 ];
 
 const WALLS = [
@@ -1725,7 +1728,9 @@ class Econ {
   buyTools() { const t = TOOLS[this.tools]; if (!t || !this.pay(t.cost)) return false; this.tools++; return true; }
 
   // ---- Bygninger ----
-  buyTrack(k) { const lv = TRACKS[k].levels[this.up[k]]; if (!lv || !this.pay(lv.cost)) return false; this.up[k]++; return true; }
+  // Forge-nivå n (1-basert) krever Barracks-nivå n (Barracks I = 0 her). Workshop er ikke låst.
+  trackLocked(k) { return TRACKS[k].building === 'Forge' && this.up[k] > this.barracks; }
+  buyTrack(k) { const lv = TRACKS[k].levels[this.up[k]]; if (!lv || this.trackLocked(k) || !this.pay(lv.cost)) return false; this.up[k]++; return true; }
   buyBarracks() { const b = BARRACKS[this.barracks + 1]; if (!b || b.future || !this.pay(b.cost)) return false; this.barracks++; return true; }
   // Plass i hæren: Tier 1 tar 1 plass, Tier 2 tar 2, Tier 3 tar 3. Barracks gir mer plass.
   supplyCap() { return BARRACKS[this.barracks].supply; }
@@ -4236,7 +4241,9 @@ Object.assign(UP_PIC, {
     const T = TRACKS[k], lv = state.econ.up[k], nx = T.levels[lv];
     return upTile({ pic: TRACK_PIC[k], name: T.name, lv, max: T.levels.length,
       tip: `${TRACK_TIP[k]} ${lv ? `Nå: ${T.levels[lv - 1].name}.` : ''} ${nx ? `Neste: ${nx.name}.` : ''}`,
-      now: trackEffect(k, lv), buy: nx && buyBtn(trackEffect(k, lv + 1), nx.cost, 'track', `data-k="${k}"`) });
+      now: trackEffect(k, lv), buy: nx && (state.econ.trackLocked(k)
+        ? buyBtn(`🔒 ${BARRACKS[lv].name}`, nx.cost, 'track', `data-k="${k}" data-lock="forge" data-need="${BARRACKS[lv].name}"`)
+        : buyBtn(trackEffect(k, lv + 1), nx.cost, 'track', `data-k="${k}"`)) });
   }
   const GEAR_PIC = { sword: 'sword', shield: 'shield', armor: 'helm' };
   const GEAR_NOW = { sword: lv => `+${lv * 7} skade`, shield: lv => `+${lv * 220} HP`, armor: lv => `+${lv} rustn.` };
@@ -4276,7 +4283,7 @@ Object.assign(UP_PIC, {
           tip: 'Nivå II fjerner taket på Tier 2, III på Tier 3, IV på Tier 4. Uten nivået kan du ha 2 av tieren. Hvert nivå gir også mer plass i hæren.',
           now: `Tier ${ec.barracks + 1}`, buy: nb && buyBtn(nb.future ? `🔒 Tier ${nb.tier}` : `Tier ${nb.tier}`, nb.cost, 'barracks', nb.future ? 'data-lock="future"' : '') })])}</div>`;
     },
-    forge: () => `<div class="card"><h3>Forge ${tipIcon('Våpen og rustning for hele hæren. Krever jern; de høyeste nivåene også kull.')}</h3>${tiles([trackRow('melee'), trackRow('ranged'), trackRow('armor')])}</div>`,
+    forge: () => `<div class="card"><h3>Forge ${tipIcon('Våpen og rustning for hele hæren. Nivå 1 er åpent; hvert nytt Barracks-nivå åpner neste Forge-nivå (II → 2, III → 3, IV → 4). Krever jern; de høyeste nivåene også kull.')}</h3>${tiles([trackRow('melee'), trackRow('ranged'), trackRow('armor')])}</div>`,
     workshop: () => `<div class="card"><h3>Workshop ${tipIcon('Teknologi for skytterne. Krever kull.')}</h3>${tiles([trackRow('tech')])}</div>`,
     gatehouse() {
       const ec = state.econ, nw = WALLS[ec.wall + 1], na = ARCHERS[ec.archers + 1], rc = ec.repairCost(), gr = ec.gateHp / ec.gateMax();
@@ -4813,6 +4820,7 @@ Object.assign(UP_PIC, {
     const b = e.target.closest('[data-act]');
     if (!b || b.disabled) return;
     const ec = state.econ, k = b.dataset.k;
+    if (b.dataset.lock === 'forge') { toast(`Neste Forge-nivå krever ${b.dataset.need}. Hvert Barracks-nivå åpner ett nytt Forge-nivå.`); return; }
     if (b.dataset.lock === 'deep') { toast('Grav dypere i Steinbruddet først (Landsby).'); return; }
     if (b.dataset.lock === 'future') { toast('Tier 5 er ikke designet ennå. Barracks V åpnes når den er klar, og kan da kjøpes så snart dere har råd, også i World 3.'); return; }
     if (b.classList.contains('cant')) {

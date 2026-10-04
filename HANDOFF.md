@@ -71,3 +71,11 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 - The bot never uses Workshop tech or Warden gear, so those aren't part of the balance.
 - Tier 4 measurements have ±10 % noise (Ironhulk and Mammoth sit a bit above target after upgrade 1).
 - `tools/logic_up.js` patches kamptest-1 on the fly (it calls python3) and is only used by the Tier 1–3 measurement scripts.
+
+## 4 Oct 2026 – version 18
+
+- Faner: Hær, Landsby, Bygninger, Testbenk, Send (Send helt til høyre).
+- Barracks styrer Forge: nivå 1 åpent, nivå 2 krever Barracks II, 3 krever III, nytt nivå 4 (Runesmidd egg / Runeladning +58 %, Runeplater +4 rustning) krever Barracks IV. Workshop er ikke låst. Låst knapp viser «🔒 Barracks II» og forklarer ved trykk.
+- Barracks gir mer plass: 20 / 32 / 46 / 62 / 80.
+- World 1 litt tøffere: tune_waves-mål 0,9 (1–4), 0,85 (5–9), 0,7 (10). Resultat: bølge 5–7 ca. +10 %, bølge 10 ca. +25 %; 1–4 uendret (allerede +10 % gjorde at boten tapte). Hele lista retunet; game_sim 30: 14 av 30 når wave 30.
+- Venter fortsatt (brukeren sier fra): oppgraderingspris ≥ unitpris og stigende per nivå.

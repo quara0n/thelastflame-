@@ -104,3 +104,17 @@ Spilleren kunne maksere nesten alt og nå Tier 4 før wave 10. Nå er det knapph
 
 ### Venter (ikke gjort, brukeren sier fra)
 - En oppgradering skal koste minst like mye som uniten kostet, og hvert nivå minst like mye som det forrige.
+
+## Barracks åpner Forge (4. okt, versjon 18)
+
+Hvert Barracks-nivå åpner neste Forge-nivå (nærkamp, avstand, rustning). Nivå 1 er åpent fra start, nivå 2 krever Barracks II, nivå 3 Barracks III, og et nytt nivå 4 krever Barracks IV:
+
+| Spor | Nivå 4 | Effekt | Pris |
+|---|---|---|---|
+| Nærkampvåpen | Runesmidd egg | +58 % skade | 64 gull, 42 jern, 22 kull |
+| Avstandsvåpen | Runeladning | +58 % skade | 64 gull, 42 jern, 22 kull |
+| Rustning | Runeplater | +4 rustning | 60 gull, 45 jern, 20 kull |
+
+Workshop (teknologi) er ikke låst. Barracks gir også mer plass i hæren: 20 / 32 / 46 / 62 / 80.
+
+World 1 er gjort litt tøffere: bølge 5–7 ca. 10 % sterkere, bølge 10 ca. 25 %. Bølge 1–4 er uendret fordi selv 10 % ekstra fikk boten til å tape dem.
