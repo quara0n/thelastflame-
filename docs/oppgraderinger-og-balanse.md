@@ -86,5 +86,13 @@ Spilleren kunne maksere nesten alt og nå Tier 4 før wave 10. Nå er det knapph
 - Rustning: trekkes fra hvert slag, minst 1 skade går gjennom. «Gjennomborer» ignorerer så mye rustning. Rustning er mest verdt mot mange små slag.
 - Ordrelinjen viser valgt unit: bilde, hva neste oppgradering gir (HP 280 → 350 (+70) osv.), og verdi: gull per skade/s og gull per 100 HP med rustning (vanlig fiendeslag på 20 som mål).
 
+### Warden nerfet (4. okt, kveld)
+- Brukeren kom til wave 25 nesten bare ved å oppgradere Warden. Fullt oppgradert holdt han wave 3–9 helt alene.
+- Nå: sverd +7 skade og +8 % angrepstakt per nivå (var +12 / +15 %), skjold +220 HP (var +350), rustning +1 (var +2), +5 % HP og skade per Warden-nivå (var +8 %). Fullt oppgradert: ca. 2700 HP, 81 skade, 8 rustning. Han holder nå bare til ca. wave 6 alene.
+
+### Ordrelinjen (4. okt, kveld)
+- Ordreknappene, «Gå samlet» og venting ligger bak én knapp («Ordre: Avanser ▸»).
+- Tallene står i en tabell: Nå | Etter oppgradering, med endringen i grønt (rødt når det blir dårligere). Gull-radene: lavere er bedre.
+
 ### Venter (ikke gjort, brukeren sier fra)
 - En oppgradering skal koste minst like mye som uniten kostet, og hvert nivå minst like mye som det forrige.

@@ -142,16 +142,28 @@ td:first-child { font-family: var(--body); }
 .om-foot { display: flex; gap: 6px; }
 .om-foot button { flex: 0 0 auto; padding-inline: 14px !important; background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 6px; font-size: 12px; }
 #om-remove { color: #f0a59d; }
-.om-info { flex: 1 1 100%; display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 4px 10px; align-items: start; border-top: 1px solid var(--line); padding-top: 8px; }
-.om-info img { width: 56px; height: 56px; border-radius: 8px; border: 1px solid var(--line); background: radial-gradient(circle at 50% 35%, #2c3646, #12161e); grid-row: span 2; }
-.om-info .oi-rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px 12px; font-size: 12px; }
-.om-info .oi-rows span { display: flex; justify-content: space-between; gap: 6px; color: var(--muted); white-space: nowrap; }
-.om-info .oi-rows b { color: var(--fg); font-family: var(--mono); font-weight: 500; }
-.om-info .oi-rows i { font-style: normal; color: var(--good); font-family: var(--mono); }
-.om-info .oi-val { font-size: 11.5px; color: var(--muted); }
-.om-info .oi-val b { color: #f1cf7a; font-family: var(--mono); font-weight: 500; }
-.om-info .oi-note { grid-column: 1 / -1; font-size: 11.5px; color: var(--muted); }
-@media (max-width: 600px) { .om-info { grid-template-columns: 44px minmax(0, 1fr); } .om-info img { width: 44px; height: 44px; } .om-info .oi-rows { grid-template-columns: minmax(0, 1fr); gap: 1px; } }
+.om-info { flex: 1 1 100%; display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 10px; align-items: start; border-top: 1px solid var(--line); padding-top: 8px; }
+.oi-card { display: flex; flex-direction: column; align-items: center; gap: 3px; text-align: center; }
+.oi-card img { width: 64px; height: 64px; border-radius: 9px; border: 1px solid var(--line); background: radial-gradient(circle at 50% 35%, #2c3646, #12161e); }
+.oi-card b { font-family: var(--display); font-size: 13px; letter-spacing: .02em; }
+.oi-card span { font-size: 11px; color: var(--muted); }
+.oi-tab { width: 100%; border-collapse: collapse; font-size: 12px; }
+.oi-tab th { font-weight: 500; color: var(--muted); text-align: right; padding: 0 0 3px 8px; border-bottom: 1px solid var(--line); font-size: 11px; }
+.oi-tab th:first-child { text-align: left; padding-left: 0; }
+.oi-tab td { text-align: right; padding: 2px 0 2px 8px; font-family: var(--mono); border: 0; white-space: nowrap; }
+.oi-tab td:first-child { text-align: left; padding-left: 0; font-family: var(--body); color: var(--muted); }
+.oi-tab td i { font-style: normal; color: var(--good); font-size: 11px; margin-left: 3px; }
+.oi-tab td i.worse { color: #f0a59d; }
+.oi-tab td i.neutral { color: var(--muted); }
+.oi-tab tr.val td i.worse { color: #f0a59d; }
+.oi-tab tr.sep td { border-top: 1px solid var(--line); padding-top: 4px; }
+.oi-tab tr.val td:not(:first-child) { color: #f1cf7a; }
+.oi-note { grid-column: 1 / -1; font-size: 11.5px; color: var(--muted); margin: 0; }
+/* Ordre ligger bak én knapp, så linjen er ryddig. */
+.ordermenu:not(.ord-open) #om-orders, .ordermenu:not(.ord-open) .om-tog, .ordermenu:not(.ord-open) .om-dl { display: none !important; }
+#om-ordtog { color: var(--fg); }
+.ordermenu.ord-open #om-ordtog { border-color: var(--flame); color: var(--flame); }
+@media (max-width: 600px) { .om-info { grid-template-columns: 76px minmax(0, 1fr); } .oi-card img { width: 52px; height: 52px; } }
 
 .hud-sub.rivalhud .pill { border-color: #a35ae0; }
 #minimap { position: absolute; right: 12px; bottom: 12px; width: 150px; height: 96px; border: 1px solid var(--line); border-radius: 8px; background: rgba(11, 14, 20, .82); z-index: 4; touch-action: none; cursor: pointer; }
@@ -553,7 +565,7 @@ button.tier-h:hover b { text-decoration: underline; }
       <div class="om-orders" id="om-orders"></div>
       <div class="om-up"><button type="button" id="om-upbtn">Oppgrader</button><span id="om-updesc"></span></div>
       <div class="om-foot">
-        <label class="om-tog"><input type="checkbox" id="om-together" checked> Gå samlet</label>
+        <button type="button" id="om-ordtog">Ordre ▸</button><label class="om-tog"><input type="checkbox" id="om-together" checked> Gå samlet</label>
         <span class="om-dl"><span>Vent før de går</span><span class="om-dbtns" id="om-delay"></span></span>
         <button type="button" id="om-remove">Fjern</button><button type="button" id="om-cancel">Avbryt</button>
       </div>
@@ -1561,20 +1573,20 @@ const WARDEN_GEAR = {
     { name: 'Flammeherdet sverd', cost: { gold: 24, iron: 16 } },
     { name: 'Glødende klinge',    cost: { gold: 42, iron: 30 } },
     { name: 'Den første flammes egg', cost: { gold: 66, iron: 44, coal: 20 } } ],
-    effect: lv => `+${lv * 12} skade og +${lv * 15} % angrepstakt` },
+    effect: lv => `+${lv * 7} skade og +${lv * 8} % angrepstakt` },
   shield: { name: 'Skjold',   levels: [
     { name: 'Bastions skjold',    cost: { gold: 24, stone: 30 } },
     { name: 'Jernbundet skjold',  cost: { gold: 42, iron: 24 } },
     { name: 'Flammeskjold',       cost: { gold: 66, iron: 36, coal: 20 } } ],
-    effect: lv => `+${lv * 350} HP` },
+    effect: lv => `+${lv * 220} HP` },
   armor:  { name: 'Rustning', levels: [
     { name: 'Vokterplater',       cost: { gold: 24, iron: 16 } },
     { name: 'Deepstone-plater',   cost: { gold: 42, iron: 28, stone: 20 } },
     { name: 'Blacksteel-harnisk', cost: { gold: 66, iron: 40, coal: 24 } } ],
-    effect: lv => `+${lv * 2} rustning` },
+    effect: lv => `+${lv} rustning` },
 };
 const WARDEN_XP = [6, 14, 25, 40, 60, 85, 115, 150, 190];   // total erfaring for nivå 2, 3, 4 …
-const WARDEN_LEVEL_BONUS = 0.08;                            // +8 % HP og skade per nivå
+const WARDEN_LEVEL_BONUS = 0.05;                            // +5 % HP og skade per nivå (var 8 %)
 const WARDEN_TRAIN = { cost: { gold: 14 }, xp: 5 };
 
 const BOUNTY = { husk: 1, brute: 3, spider: 1, spitter: 2, serpent: 2, beetle: 3, broodmother: 4, stalker: 2, colossus: 8, fallenWarden: 25,
@@ -1701,10 +1713,10 @@ class Econ {
       }
       if (k === 'warden') {
         const w = this.warden, lvb = 1 + WARDEN_LEVEL_BONUS * (this.wardenLevel() - 1);
-        T.hp = Math.round((baseTypes[k].hp + w.shield * 350) * lvb);
-        T.dmg = Math.round((baseTypes[k].dmg + w.sword * 12) * lvb);
-        T.interval = +(baseTypes[k].interval / (1 + 0.15 * w.sword)).toFixed(3);
-        T.armor = baseTypes[k].armor + w.armor * 2;
+        T.hp = Math.round((baseTypes[k].hp + w.shield * 220) * lvb);
+        T.dmg = Math.round((baseTypes[k].dmg + w.sword * 7) * lvb);
+        T.interval = +(baseTypes[k].interval / (1 + 0.08 * w.sword)).toFixed(3);
+        T.armor = baseTypes[k].armor + w.armor;
       }
       out[k] = T;
     }
@@ -3845,6 +3857,7 @@ const Sound = (function () {
     });
     $('#om-remove').onclick = removeSelected;
     $('#om-upbtn').onclick = upgradeSelected;
+    $('#om-ordtog').onclick = () => { menu.classList.toggle('ord-open'); renderSelInfo(); };
     $('#om-cancel').onclick = () => clearSelection();
     $('#om-together').onchange = ev => { state.together = ev.target.checked; };
     const dl = $('#om-delay');
@@ -4152,7 +4165,7 @@ const Sound = (function () {
       now: trackEffect(k, lv), buy: nx && buyBtn(trackEffect(k, lv + 1), nx.cost, 'track', `data-k="${k}"`) });
   }
   const GEAR_PIC = { sword: 'sword', shield: 'shield', armor: 'helm' };
-  const GEAR_NOW = { sword: lv => `+${lv * 12} skade`, shield: lv => `+${lv * 350} HP`, armor: lv => `+${lv * 2} rustn.` };
+  const GEAR_NOW = { sword: lv => `+${lv * 7} skade`, shield: lv => `+${lv * 220} HP`, armor: lv => `+${lv} rustn.` };
   function wardenGearRow(k) {
     const G = WARDEN_GEAR[k], lv = state.econ.warden[k], nx = G.levels[lv];
     return upTile({ pic: GEAR_PIC[k], name: `Wardens ${G.name.toLowerCase()}`, lv, max: G.levels.length,
@@ -4169,7 +4182,7 @@ const Sound = (function () {
     sanctum() {
       const ec = state.econ, W = ec.types(TYPES).warden, lv = ec.wardenLevel(), nx = ec.wardenNext();
       const prev = WARDEN_XP[lv - 2] || 0, pct = nx ? (ec.warden.xp - prev) / (nx - prev) * 100 : 100;
-      return `<div class="card"><h3>Warden's Sanctum ${tipIcon('Warden forsvarer flammen når fienden kommer gjennom distriktet. Han får erfaring av fiender han dreper. Hvert nivå gir +8 % HP og skade.')} <small>Nivå ${lv}</small></h3>
+      return `<div class="card"><h3>Warden's Sanctum ${tipIcon('Warden forsvarer flammen når fienden kommer gjennom distriktet. Han får erfaring av fiender han dreper. Hvert nivå gir +5 % HP og skade.')} <small>Nivå ${lv}</small></h3>
         <div class="xpbar" data-tip="${nx ? `Erfaring ${ec.warden.xp} av ${nx} til nivå ${lv + 1}` : 'Høyeste nivå'}"><i style="width:${pct}%"></i><span>★ ${lv}</span></div>
         <div class="wstats"><span data-tip="HP">❤ ${W.hp}</span><span data-tip="Skade per slag">⚔ ${W.dmg}</span><span data-tip="Slag per sekund">⚡ ${(1 / W.interval).toFixed(1).replace('.', ',')}/s</span><span data-tip="Rustning">⛨ ${W.armor}</span></div>
         ${tiles([wardenGearRow('sword'), wardenGearRow('shield'), wardenGearRow('armor'),
@@ -4432,21 +4445,30 @@ const Sound = (function () {
   function renderSelInfo() {
     const el = $('#om-info'); if (!el) return;
     const list = [...state.selection].map(i => state.army[i]).filter(Boolean);
+    // Ordreknappen viser hvilken ordre de valgte har.
+    const ords = new Set(list.map(a => a.order)), tog = $('#om-ordtog');
+    if (tog) tog.textContent = `Ordre: ${ords.size === 1 ? ORDERS[[...ords][0]].name : 'blandet'} ${menu.classList.contains('ord-open') ? '▾' : '▸'}`;
     const one = list.length && list.every(a => a.type === list[0].type && (a.level || 0) === (list[0].level || 0));
     if (!one) { el.innerHTML = `<p class="oi-note">${list.length ? 'Velg én type på samme nivå for å se tallene.' : ''}</p>`; return; }
     const k = list[0].type, lvl = list[0].level || 0, base = state.econ.types(TYPES)[k];
     const now = levelType(base, k, lvl), next = UPGRADES[k] && lvl < MAX_LEVEL ? levelType(base, k, lvl + 1) : null;
     const dps = T => T.dmg / T.interval * (T.cleave ? 1 + (T.sweep || 1) * 0.5 : 1);
-    const row = (label, a, b, f) => { const fa = f(a), fb = b == null ? null : f(b), d = fb == null ? 0 : +(fb - fa).toFixed(1);
-      return `<span>${label}<b>${String(fa).replace('.', ',')}${fb != null && d ? ` → ${String(fb).replace('.', ',')}` : ''}${d ? ` <i>(${d > 0 ? '+' : ''}${String(d).replace('.', ',')})</i>` : ''}</b></span>`; };
-    const r1 = x => Math.round(x * 10) / 10, nb = x => String(r1(x)).replace('.', ',');
-    const rows = [row('HP', now, next, T => T.hp), row('Skade/s', now, next, T => r1(dps(T))), row('Rustning', now, next, T => T.armor)];
-    if (now.ranged) rows.push(row('Rekkevidde', now, next, T => T.range));
-    else rows.push(row('HP m/rustning', now, next, T => ehp(T)));
-    const g = goldOf(k, lvl), gn = next ? goldOf(k, lvl + 1) : null;
-    const val = (gold, T) => `<b>${nb(gold / Math.max(0.1, dps(T)))}</b> gull per skade/s · <b>${nb(gold / ehp(T) * 100)}</b> gull per 100 HP m/rustning`;
-    el.innerHTML = `<img alt="" src="${portraits[k] || ''}"><div class="oi-rows">${rows.join('')}</div>
-      <div class="oi-val">Verdi nå (${g} gull brukt): ${val(g, now)}${next ? `<br>Etter oppgradering (${gn} gull): ${val(gn, next)}` : ''} ${tipIcon(`Lavere er bedre. Jern og kull teller som 2 gull. Rustning trekkes fra hvert slag (minst 1 skade går gjennom); HP med rustning regner med et vanlig fiendeslag på ${ARMOR_REF}.`)}</div>`;
+    const nb = x => String(Math.round(x * 10) / 10).replace('.', ',');
+    // Én rad per egenskap: nå, og etter neste oppgradering med endringen. lowGood = lavere er bedre (verdi-radene).
+    const row = (label, f, cls, lowGood = false) => {
+      const a = f(now, lvl), b = next ? f(next, lvl + 1) : null, d = b == null ? 0 : Math.round((b - a) * 10) / 10;
+      const better = lowGood ? d < 0 : d > 0;
+      return `<tr class="${cls || ''}"><td>${label}</td><td>${nb(a)}</td>${next ? `<td>${nb(b)}${d ? `<i class="${lowGood == null ? 'neutral' : better ? '' : 'worse'}">${d > 0 ? '+' : ''}${nb(d)}</i>` : ''}</td>` : ''}</tr>`;
+    };
+    const rows = [row('HP', T => T.hp), row('Skade/s', T => dps(T)), row('Rustning', T => T.armor), row('HP m/rustning', T => ehp(T))];
+    if (now.ranged) rows.push(row('Rekkevidde', T => T.range));
+    rows.push(row('Gull brukt', (T, l) => goldOf(k, l), 'sep', null));
+    rows.push(row('Gull per skade/s', (T, l) => goldOf(k, l) / Math.max(0.1, dps(T)), 'val', true));
+    rows.push(row('Gull per 100 HP', (T, l) => goldOf(k, l) / ehp(T) * 100, 'val', true));
+    const pips = Array.from({ length: MAX_LEVEL }, (_, i) => i < lvl ? '◆' : '◇').join('');
+    el.innerHTML = `<div class="oi-card"><img alt="" src="${portraits[k] || ''}"><b>${TYPES[k].name}</b><span>Nivå ${lvl}/${MAX_LEVEL} ${pips}</span></div>
+      <table class="oi-tab"><thead><tr><th></th><th>Nå</th>${next ? '<th>Etter oppgr.</th>' : ''}</tr></thead><tbody>${rows.join('')}</tbody></table>
+      <p class="oi-note">Gull-radene: lavere er bedre. ${tipIcon(`Jern og kull teller som 2 gull. Rustning trekkes fra hvert slag, men minst 1 skade går gjennom. «HP m/rustning» regner med et vanlig fiendeslag på ${ARMOR_REF}: rustning 5 gir 15 skade per slag, så uniten tåler 20/15 = 1,33 ganger så mye.`)}</p>`;
   }
 
   // ---------- 1 mot 1: Send-fanen ----------

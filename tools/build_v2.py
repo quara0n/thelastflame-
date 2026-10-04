@@ -135,5 +135,7 @@ import rival_view
 s = rival_view.apply(s)
 import select_info
 s = select_info.apply(s)
+import warden_nerf
+s = warden_nerf.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))
