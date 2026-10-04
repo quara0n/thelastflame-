@@ -803,7 +803,7 @@ const WAVES = [
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.3, 1.1, 0.7, 0.275, 0.55, 0.66, 0.8, 0.66, 0.55, 0.66, 0.8, 0.375, 1.375, 0.275, 0.54, 0.093, 0.561, 0.27, 0.35, 0.187, 0.96, 0.313, 1.375, 0.35, 0.66, 0.15, 0.313, 0.16, 0.32, 0.35];
+const WAVE_FACTOR = [0.3, 1.1, 0.7, 0.275, 0.55, 0.66, 0.88, 0.726, 0.55, 0.594, 0.72, 0.375, 1.513, 0.303, 0.594, 0.149, 0.701, 0.378, 0.56, 0.262, 0.864, 0.391, 1.513, 0.56, 1.056, 0.24, 0.501, 0.256, 0.448, 0.35];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};
@@ -1469,10 +1469,10 @@ const supplyOf = T => (T && T.tier) || 1;
 const TIER_CAP = 2;   // units av en tier man har uten tierens Barracks
 const BARRACKS = [
   { name: 'Barracks I',   tier: 1, supply: 20, unlocks: ['shieldguard', 'stormreaver', 'ironshot', 'longfang'] },
-  { name: 'Barracks II',  tier: 2, supply: 30, unlocks: ['ironwall', 'frostbrand', 'thunderbore', 'hearthkeeper'], cost: { timber: 154, stone: 88, iron: 35 } },
-  { name: 'Barracks III', tier: 3, supply: 40, unlocks: ['pyreguard', 'siegebreaker', 'captain', 'huskarl'], cost: { timber: 402, stone: 268, iron: 134 } },
-  { name: 'Barracks IV',  tier: 4, supply: 50, unlocks: ['ironhulk', 'mammoth', 'skyspear', 'hearthengine'], cost: { timber: 585, stone: 390, iron: 228, coal: 98 } },
-  { name: 'Barracks V',   tier: 5, supply: 60, unlocks: [], cost: { timber: 1352, stone: 936, iron: 520, coal: 312 }, future: true },
+  { name: 'Barracks II',  tier: 2, supply: 30, unlocks: ['ironwall', 'frostbrand', 'thunderbore', 'hearthkeeper'], cost: { timber: 84, stone: 48, iron: 19 } },
+  { name: 'Barracks III', tier: 3, supply: 40, unlocks: ['pyreguard', 'siegebreaker', 'captain', 'huskarl'], cost: { timber: 222, stone: 148, iron: 74 } },
+  { name: 'Barracks IV',  tier: 4, supply: 50, unlocks: ['ironhulk', 'mammoth', 'skyspear', 'hearthengine'], cost: { timber: 324, stone: 216, iron: 126, coal: 54 } },
+  { name: 'Barracks V',   tier: 5, supply: 60, unlocks: [], cost: { timber: 754, stone: 522, iron: 290, coal: 174 }, future: true },
 ];
 
 const WALLS = [

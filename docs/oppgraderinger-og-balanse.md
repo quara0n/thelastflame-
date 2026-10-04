@@ -70,3 +70,8 @@ Spilleren kunne maksere nesten alt og nå Tier 4 før wave 10. Nå er det knapph
 - Warden-utstyr og trening koster dobbelt. Verktøy koster 1,5 ganger.
 - Wavene er stemt om til den nye økonomien. Den simulerte spilleren når wave 30 i 27 av 30 spill.
 - Tallene ligger i `tools/economy.json`.
+
+### Billigere Barracks (4. okt 2026, ettermiddag)
+- Barracks kostet for mye til at man fikk utvidet før mot slutten. Prisene er omtrent halvert: II = 84 tømmer, 48 stein, 19 jern. III = 222 tømmer, 148 stein, 74 jern. IV = 324 tømmer, 216 stein, 126 jern, 54 kull.
+- Den simulerte spilleren når nå Tier 2 på wave 6, Tier 3 på wave 12 og Tier 4 på wave 22. En spiller som satser alt på økonomi: wave 3, 7 og 12.
+- Wave 5–30 er stemt om etterpå. Den simulerte spilleren når wave 30 i 27 av 30 spill.
