@@ -115,6 +115,8 @@ s = sub(s, """      const near = enemies.filter(e => Math.hypot(e.x - 0, e.z - M
       if (near.length) { if (!this.wardenFought) { this.wardenFought = true; this.events.push({ kind: 'warden' }); } if (this._engage(u, near, attackers, dt, 16)) return; }""")
 import world3
 s = world3.apply(s)
+import tier_power
+s = tier_power.apply(s)
 import mobile
 s = mobile.apply(s)
 import music
@@ -131,5 +133,7 @@ import arena
 s = arena.apply(s)
 import rival_view
 s = rival_view.apply(s)
+import select_info
+s = select_info.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))

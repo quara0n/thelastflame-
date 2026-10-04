@@ -142,10 +142,40 @@ td:first-child { font-family: var(--body); }
 .om-foot { display: flex; gap: 6px; }
 .om-foot button { flex: 0 0 auto; padding-inline: 14px !important; background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 6px; font-size: 12px; }
 #om-remove { color: #f0a59d; }
+.om-info { flex: 1 1 100%; display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 4px 10px; align-items: start; border-top: 1px solid var(--line); padding-top: 8px; }
+.om-info img { width: 56px; height: 56px; border-radius: 8px; border: 1px solid var(--line); background: radial-gradient(circle at 50% 35%, #2c3646, #12161e); grid-row: span 2; }
+.om-info .oi-rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px 12px; font-size: 12px; }
+.om-info .oi-rows span { display: flex; justify-content: space-between; gap: 6px; color: var(--muted); white-space: nowrap; }
+.om-info .oi-rows b { color: var(--fg); font-family: var(--mono); font-weight: 500; }
+.om-info .oi-rows i { font-style: normal; color: var(--good); font-family: var(--mono); }
+.om-info .oi-val { font-size: 11.5px; color: var(--muted); }
+.om-info .oi-val b { color: #f1cf7a; font-family: var(--mono); font-weight: 500; }
+.om-info .oi-note { grid-column: 1 / -1; font-size: 11.5px; color: var(--muted); }
+@media (max-width: 600px) { .om-info { grid-template-columns: 44px minmax(0, 1fr); } .om-info img { width: 44px; height: 44px; } .om-info .oi-rows { grid-template-columns: minmax(0, 1fr); gap: 1px; } }
+
 .hud-sub.rivalhud .pill { border-color: #a35ae0; }
 #minimap { position: absolute; right: 12px; bottom: 12px; width: 150px; height: 96px; border: 1px solid var(--line); border-radius: 8px; background: rgba(11, 14, 20, .82); z-index: 4; touch-action: none; cursor: pointer; }
 .ordermenu:not([hidden]) ~ #minimap { display: none; }
 @media (max-width: 600px) { #minimap { right: 6px; bottom: 6px; width: 120px; height: 78px; } #cam-rival { display: inline-block; } }
+
+.arenacard { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(380px, calc(100% - 20px)); max-height: calc(100% - 20px); overflow-y: auto; z-index: 15;
+  background: linear-gradient(180deg, rgba(42, 26, 8, .97), rgba(18, 14, 10, .97)); border: 1px solid #e9a23b; border-radius: 14px; padding: 16px; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, .6); display: flex; flex-direction: column; gap: 8px; }
+.arenacard.lost { border-color: #8a3a34; }
+.arenacard .ac-eyebrow { font: 600 11px var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--flame); }
+.arenacard h2 { font-family: var(--display); font-size: 24px; letter-spacing: .04em; text-transform: none; color: var(--fg); margin: 0; }
+.ac-vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
+.ac-side { display: flex; flex-direction: column; gap: 2px; background: rgba(143, 179, 214, .08); border: 1px solid #3a4a5c; border-radius: 10px; padding: 8px 6px; font-size: 12px; color: var(--muted); }
+.ac-side b { color: #9fc4de; font-family: var(--display); font-size: 15px; }
+.ac-side em { font-style: normal; color: var(--fg); font-weight: 600; }
+.ac-side.foe { background: rgba(163, 90, 224, .08); border-color: #5a3a7a; }
+.ac-side.foe b { color: #c99af0; }
+.ac-vote { color: var(--flame); }
+.ac-mid { font-family: var(--display); font-size: 22px; color: var(--flame); }
+.ac-note { font-size: 12px; color: var(--muted); margin: 0; }
+.ac-prize { font: 600 12.5px var(--body); color: #ffd76a; }
+.ac-flags { font-size: 12px; color: var(--fg); }
+.ac-go { align-self: center; background: var(--flame); color: var(--flame-ink); border: 0; border-radius: 8px; padding: 10px 22px; font-weight: 700; font-size: 15px; }
+.ac-go span { font-family: var(--mono); margin-left: 6px; }
 
 .foe.sent { border-color: #6b3a8a; box-shadow: inset 0 0 0 1px #6b3a8a; }
 .senttag { position: absolute; top: 12px; left: 12px; font: 700 10px var(--mono); background: #a35ae0; color: #12061c; padding: 1px 6px; border-radius: 4px; }
@@ -519,6 +549,7 @@ button.tier-h:hover b { text-decoration: underline; }
     <div class="selbox" id="selbox" hidden></div>
     <div class="ordermenu" id="ordermenu" hidden role="toolbar" aria-label="Ordre for valgte units">
       <div class="om-head"><b id="om-title">0 valgt</b><span id="om-sub"></span><span class="om-tip">Dra en av dem for å flytte alle</span></div>
+      <div class="om-info" id="om-info"></div>
       <div class="om-orders" id="om-orders"></div>
       <div class="om-up"><button type="button" id="om-upbtn">Oppgrader</button><span id="om-updesc"></span></div>
       <div class="om-foot">
@@ -735,6 +766,10 @@ Object.assign(UPGRADES, {
   ],
 });
 
+// Høyere tiers er verdt mer per plass og per gull (4. okt 2026). HP og skade ganges med √m.
+const TIER_POWER = {'ironwall': 1.8, 'thunderbore': 1.6, 'captain': 1.6, 'siegebreaker': 1.15, 'ironhulk': 2.45, 'mammoth': 1.25, 'skyspear': 1.5, 'hearthengine': 1.5};
+for (const k in TIER_POWER) { const f = Math.sqrt(TIER_POWER[k]); TYPES[k].hp = Math.round(TYPES[k].hp * f); TYPES[k].dmg = Math.round(TYPES[k].dmg * f); if (TYPES[k].heal) TYPES[k].heal = Math.round(TYPES[k].heal * f); }
+Object.entries({'raptor': {'hp': 220, 'dmg': 19}}).forEach(([k, v]) => Object.assign(TYPES[k], v));
 const ARCHER = { name: 'Bueskytter på muren', dmg: 11, interval: 1.2, range: 11, radius: 0.3 };
 
 const MAP = {
@@ -829,7 +864,7 @@ const WAVES = [
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.3, 1.1, 0.7, 0.275, 0.55, 0.66, 0.88, 0.726, 0.55, 0.594, 0.72, 0.375, 1.513, 0.303, 0.594, 0.149, 0.701, 0.378, 0.56, 0.262, 0.864, 0.391, 1.513, 0.56, 1.056, 0.24, 0.501, 0.256, 0.448, 0.35];
+const WAVE_FACTOR = [0.3, 0.99, 0.847, 0.44, 0.757, 1.056, 1.109, 0.999, 0.619, 0.666, 1.037, 0.42, 1.694, 0.382, 0.641, 0.381, 0.883, 0.378, 0.494, 0.23, 0.95, 0.352, 1.362, 0.454, 0.95, 0.27, 0.563, 0.352, 0.56, 0.441];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};
@@ -1467,7 +1502,7 @@ const NODES = {
 const NODE_EXPAND = { cost: { gold: 13, timber: 15, stone: 10 }, extra: 3 };
 const DEEPEN = { gold: 9, stone: 25, timber: 15 };
 
-const WORKER_BASE = 5, WORKER_FREE = 8, WORKER_STEP = 3;
+const WORKER_BASE = 5, WORKER_FREE = 6, WORKER_STEP = 4;
 
 const TOOLS = [
   { name: 'Bedre verktøy', cost: { gold: 27, timber: 22 } },
@@ -1502,8 +1537,8 @@ const TIER_CAP = 2;   // units av en tier man har uten tierens Barracks
 const BARRACKS = [
   { name: 'Barracks I',   tier: 1, supply: 20, unlocks: ['shieldguard', 'stormreaver', 'ironshot', 'longfang'] },
   { name: 'Barracks II',  tier: 2, supply: 30, unlocks: ['ironwall', 'frostbrand', 'thunderbore', 'hearthkeeper'], cost: { timber: 84, stone: 48, iron: 19 } },
-  { name: 'Barracks III', tier: 3, supply: 40, unlocks: ['pyreguard', 'siegebreaker', 'captain', 'huskarl'], cost: { timber: 222, stone: 148, iron: 74 } },
-  { name: 'Barracks IV',  tier: 4, supply: 50, unlocks: ['ironhulk', 'mammoth', 'skyspear', 'hearthengine'], cost: { timber: 324, stone: 216, iron: 126, coal: 54 } },
+  { name: 'Barracks III', tier: 3, supply: 40, unlocks: ['pyreguard', 'siegebreaker', 'captain', 'huskarl'], cost: { timber: 150, stone: 100, iron: 50 } },
+  { name: 'Barracks IV',  tier: 4, supply: 50, unlocks: ['ironhulk', 'mammoth', 'skyspear', 'hearthengine'], cost: { timber: 630, stone: 420, iron: 245, coal: 105 } },
   { name: 'Barracks V',   tier: 5, supply: 60, unlocks: [], cost: { timber: 754, stone: 522, iron: 290, coal: 174 }, future: true },
 ];
 
@@ -1575,21 +1610,26 @@ class Econ {
     return s;
   }
   perWorkerMinute(k) { return this.rate(k) * 60 / NODES[k].every; }
-  workerPrice() { return WORKER_BASE + Math.max(0, this.owned - (WORKER_FREE - 1)) * WORKER_STEP; }
+  // Pris for neste arbeider på stedet k: grunnpris for de 6 første, deretter dyrere for hver.
+  workerPrice(k) { const w = k ? this.nodes[k].workers : 0; return WORKER_BASE + Math.max(0, w + 1 - WORKER_FREE) * WORKER_STEP; }
 
   // Inntekt: hver arbeider samler fortløpende fra kjøpsøyeblikket; nodene leverer hvert 5. sekund.
+  // Hver arbeider går en tur: fra gruva til lageret (leverer når han kommer frem) og tilbake. En tur tar «every» sekunder.
   tick(dt) {
-    for (const k of Object.keys(NODES)) {
-      const n = this.nodes[k];
-      n.pending += n.workers * this.rate(k) / NODES[k].every * dt;
-      n.t += dt;
-      if (n.t >= NODES[k].every) {
-        n.t -= NODES[k].every;
-        const amt = Math.floor(n.pending);
-        if (amt > 0) {
-          n.pending -= amt;
-          this.add({ [NODES[k].res]: amt });
-          this.deliveries.push({ node: k, res: NODES[k].res, amount: amt });
+    for (let rem = dt; rem > 1e-9; ) {
+      const s = Math.min(rem, 0.5); rem -= s;
+      for (const k of Object.keys(NODES)) {
+        const n = this.nodes[k], every = NODES[k].every, half = every / 2;
+        n.wt = n.wt || [];
+        while (n.wt.length < n.workers) n.wt.push(0);
+        if (n.wt.length > n.workers) n.wt.length = n.workers;
+        for (let i = 0; i < n.wt.length; i++) {
+          const before = n.wt[i]; n.wt[i] = (before + s) % every;
+          if (before < half && before + s >= half || before + s >= every + half) {
+            n.pending += this.rate(k);
+            const amt = Math.floor(n.pending);
+            if (amt > 0) { n.pending -= amt; this.add({ [NODES[k].res]: amt }); if (this.deliveries.length < 300) this.deliveries.push({ node: k, res: NODES[k].res, amount: amt, worker: i }); }
+          }
         }
       }
     }
@@ -1604,7 +1644,7 @@ class Econ {
     const n = this.nodes[k];
     if (!n.unlocked || n.workers >= this.cap(k)) return false;
     if (this.idle > 0) { this.idle--; n.workers++; return true; }
-    if (!this.pay({ gold: this.workerPrice() })) return false;
+    if (!this.pay({ gold: this.workerPrice(k) })) return false;
     this.owned++; n.workers++;
     return true;
   }
@@ -2545,8 +2585,9 @@ const Sound = (function () {
       const len = Math.hypot(p.x - st.x, p.z - st.z);
       v.workers.forEach((w, i) => {
         if (!w.visible) return;
-        // Går frem og tilbake; bærer last på vei til lageret.
-        const ph = ((t * 1.6 / len) + w.userData.phase) % 2;
+        // Turen følger økonomien: første halvdel bærer han last til lageret, andre halvdel går han tom tilbake.
+        const wt = ec.nodes[k].wt && ec.nodes[k].wt[i] != null ? ec.nodes[k].wt[i] : 0, fr = wt / NODES[k].every;
+        const ph = fr < 0.5 ? fr * 2 : 1 + (fr - 0.5) * 2;
         const f = ph < 1 ? ph : 2 - ph;
         const side = ((i % 3) - 1) * 0.5;
         const x = p.x + (st.x - p.x) * f, z = p.z + (st.z - p.z) * f;
@@ -3353,6 +3394,15 @@ const Sound = (function () {
       return true;
     });
   }
+  // Et lite tall over lageret hver gang en arbeider leverer.
+  function deliveryPop(d) {
+    if (state.phase === 'over') return;
+    const st = STORES[NODE_POS[d.node].store], el = document.createElement('span');
+    el.className = 'coin'; el.style.fontSize = '13px'; el.innerHTML = `+${d.amount}${icon(d.res, 13)}`;
+    coinLayer.appendChild(el);
+    coins.push({ el, x: st.x + (Math.random() - 0.5) * 1.2, z: st.z, t: 0.15 });
+    if (coins.length > 60) { coins[0].el.remove(); coins.shift(); }
+  }
   function clearCoins() { coins.forEach(c => c.el.remove()); coins = []; }
 
   // ---------- Skudd og effekter ----------
@@ -3726,7 +3776,7 @@ const Sound = (function () {
     const ds = new Set([...state.selection].map(i => state.army[i].delay || 0));
     document.querySelectorAll('#om-delay button').forEach(b => b.classList.toggle('on', ds.size === 1 && ds.has(+b.dataset.d)));
     $('#om-together').checked = state.together;
-    syncUpgradeBtn();
+    syncUpgradeBtn(); renderSelInfo();
     menu.hidden = false;
     renderPanel();
   }
@@ -3869,7 +3919,7 @@ const Sound = (function () {
     state.army = []; state.econ = new Econ(); state.wave = 0; state.buildLeft = BUILD_FIRST; state.buildTotal = BUILD_FIRST;
     state.phase = 'build'; state.paused = false; state.lastReport = null; state.outcome = null; state.summonTold = false;
     clearRivalVisuals(); rivalVisSim = null;
-    state.rival = new Rival(); state.flags = 0; state.rivalFlags = 0; state.arena = null; state.sendQueue = []; state.incoming = []; state.rivalRes = null; state.sentLast = [];
+    state.rival = new Rival(); state.flags = 0; state.rivalFlags = 0; state.arena = null; hideArenaCard(); arenaRing.visible = false; state.sendQueue = []; state.incoming = []; state.rivalRes = null; state.sentLast = [];
     clearSelection(true); state.tool = null;
     gridGroup.visible = true; planGroup.visible = true;
     $('#result').hidden = true;
@@ -3878,6 +3928,7 @@ const Sound = (function () {
     rebuild(); syncVillage(); renderPanel();
   }
   function primaryAction() {
+    if (state.phase === 'arena-intro') { beginDuel(state.arenaN); return; }
     if (state.phase === 'arena') return;
     if (state.phase === 'build') startWave();
     else if (state.phase === 'battle') { state.paused = !state.paused; renderPanel(); }
@@ -3932,7 +3983,7 @@ const Sound = (function () {
       el.querySelector('em').textContent = pm ? `+${Math.round(pm)}/min` : '—';
     });
     const total = Object.values(ec.nodes).reduce((s, n) => s + n.workers, 0);
-    $('#resfoot').innerHTML = `<span>Arbeidere ${total}${ec.idle ? ` · ${ec.idle} ledige` : ''}</span><span>Neste arbeider ${icon('gold', 13)} ${ec.workerPrice()}</span>`;
+    $('#resfoot').innerHTML = `<span>Arbeidere ${total}${ec.idle ? ` · ${ec.idle} ledige` : ''}</span><span>Arbeider ${icon('gold', 13)} ${WORKER_BASE} (dyrere etter ${WORKER_FREE} på samme sted)</span>`;
     // Knapper du ikke har råd til, forklarer hva som mangler når du klikker dem.
     document.querySelectorAll('[data-cost]').forEach(b => {
       if (b.dataset.lock) { b.classList.add('cant'); return; }
@@ -3948,7 +3999,7 @@ const Sound = (function () {
     document.querySelectorAll('[data-act="worker+"]').forEach(b => {
       const k = b.dataset.k, n = ec.nodes[k];
       b.disabled = !n.unlocked || n.workers >= ec.cap(k);
-      b.classList.toggle('cant', ec.idle === 0 && ec.res.gold < ec.workerPrice());
+      b.classList.toggle('cant', ec.idle === 0 && ec.res.gold < ec.workerPrice(k));
     });
   }
 
@@ -4006,10 +4057,10 @@ const Sound = (function () {
     renderVillage(); renderBuildings(); renderPop();
     // Knapper og faser
     const start = $('#btn-start');
-    start.textContent = build ? `Start wave ${W.n} nå` : state.phase === 'arena' ? 'Arena pågår …' : state.phase === 'battle' ? (state.paused ? 'Fortsett' : 'Pause') : 'Spill igjen';
+    start.textContent = build ? `Start wave ${W.n} nå` : state.phase === 'arena-intro' ? 'Til kamp!' : state.phase === 'arena' ? 'Arena pågår …' : state.phase === 'battle' ? (state.paused ? 'Fortsett' : 'Pause') : 'Spill igjen';
     start.classList.toggle('primary', state.phase !== 'battle');
     document.querySelectorAll('#speed button').forEach(b => b.classList.toggle('on', +b.dataset.s === state.speed));
-    $('#phase').textContent = build ? 'Byggefase' : state.phase === 'arena' ? 'Arena' : state.phase === 'battle' ? (state.paused ? 'Pause' : 'Kamp') : state.outcome === 'won' ? 'Seier' : 'Flammen falt';
+    $('#phase').textContent = build ? 'Byggefase' : state.phase === 'arena' || state.phase === 'arena-intro' ? 'Arena' : state.phase === 'battle' ? (state.paused ? 'Pause' : 'Kamp') : state.outcome === 'won' ? 'Seier' : 'Flammen falt';
     $('#hint').hidden = !build;
     $('#cam-rival').hidden = !state.versus;
     $('#hint').textContent = state.tool
@@ -4034,8 +4085,8 @@ const Sound = (function () {
   function longhouseHtml() {
     const ec = state.econ, tl = TOOLS[ec.tools];
     const total = Object.values(ec.nodes).reduce((s, n) => s + n.workers, 0);
-    return `<div class="card"><h3>Longhouse ${tipIcon(`Her kjøper du arbeidere. Trykk + ved en node, så kjøpes en ny arbeider og settes i arbeid der. Arbeidere koster ${ec.workerPrice()} gull nå, og prisen stiger etter 10. Verktøy gir +15 % fra alle arbeidere per nivå.`)}
-        <small>👷 ${total}${ec.idle ? ` · ${ec.idle} ledige` : ''} · neste ${icon('gold', 12)}${ec.workerPrice()}</small></h3>
+    return `<div class="card"><h3>Longhouse ${tipIcon(`Her kjøper du arbeidere. Trykk + ved en node, så kjøpes en ny arbeider og settes i arbeid der. Arbeidere koster ${WORKER_BASE} gull, og blir dyrere etter ${WORKER_FREE} på samme sted nå, og prisen stiger etter 10. Verktøy gir +15 % fra alle arbeidere per nivå.`)}
+        <small>👷 ${total}${ec.idle ? ` · ${ec.idle} ledige` : ''} · ${icon('gold', 12)}${WORKER_BASE} per arbeider</small></h3>
       ${tiles([toolsTile()])}</div>`;
   }
   function nodeHtml(k) {
@@ -4199,16 +4250,55 @@ const Sound = (function () {
 
 
 
-  // ---------- Arena ----------
+
+  // ---------- Arena: seremonien før og etter duellen ----------
+  const arenaRing = new THREE.Group(); arenaRing.visible = false; scene.add(arenaRing);
+  (() => {
+    const cz = -2, R = 13.5;
+    const gl = new THREE.Mesh(new THREE.RingGeometry(R - 0.5, R + 0.5, 64), new THREE.MeshBasicMaterial({ color: 0xe9a23b, transparent: true, opacity: 0.55, side: THREE.DoubleSide }));
+    gl.rotation.x = -Math.PI / 2; gl.position.set(0, 0.05, cz); arenaRing.add(gl);
+    for (let i = 0; i < 18; i++) {
+      const a = i / 18 * Math.PI * 2, x = Math.cos(a) * (R + 1), z = cz + Math.sin(a) * (R + 1);
+      arenaRing.add(mesh(new THREE.CylinderGeometry(0.12, 0.16, 2.2, 6), mats.iron, x, 1.1, z));
+      arenaRing.add(mesh(new THREE.ConeGeometry(0.28, 0.7, 8), mats.lantern, x, 2.5, z));
+    }
+  })();
+  const arenaCard = document.createElement('div'); arenaCard.className = 'arenacard'; arenaCard.hidden = true; $('.stage').appendChild(arenaCard);
+  function hideArenaCard() { arenaCard.hidden = true; }
+  // Arenaen kalles inn: kort med lagets champion (stemmes frem; mot computeren er det deg), motstanderen, premien og nedtelling.
   function startArena(n) {
-    state.phase = 'arena'; state.acc = 0;
+    const prize = arenaPrize(n), r = state.rival;
+    state.phase = 'arena-intro'; state.arenaN = n; state.arenaCount = 10;
+    arenaRing.visible = true; camGoto(0, -2, PHONE ? 60 : 46, 0.85);
+    Sound.setMode('battle'); sfx('horn');
+    arenaCard.className = 'arenacard'; arenaCard.hidden = false;
+    arenaCard.innerHTML = `<div class="ac-eyebrow">Arena · etter wave ${n}</div><h2>Duell om flagget</h2>
+      <div class="ac-vs"><div class="ac-side"><b>Ditt lag</b><span>Champion: <em>Du</em></span><span class="ac-vote">Stemmer: Du 1/1</span><span>${state.army.length} soldater</span></div>
+        <div class="ac-mid">VS</div>
+        <div class="ac-side foe"><b>Rivalen</b><span>Champion: <em>Computer</em></span><span class="ac-vote">Stemmer: 1/1</span><span>${r.army.length} soldater</span></div></div>
+      <p class="ac-note">En kopi av hæren din møter en kopi av hans i ringen. Ingen dør på ekte. Siste hær som står, vinner; etter ${ARENA_TIME} sekunder vinner den med mest helse igjen.</p>
+      <div class="ac-prize">Premie: +${prize.gold} gull, +${prize.timber} tømmer, +${prize.stone} stein, +${prize.coal} kull og Champion-flagg</div>
+      <div class="ac-flags">Champion-flagg: du ${state.flags}, rivalen ${state.rivalFlags}</div>
+      <button type="button" class="ac-go" id="ac-go">Til kamp! <span id="ac-count">10</span></button>`;
+    $('#ac-go').onclick = () => { if (state.phase === 'arena-intro') beginDuel(n); };
+    renderPanel();
+  }
+  function arenaIntroTick(dt) {
+    const before = Math.ceil(state.arenaCount); state.arenaCount -= dt;
+    const now = Math.ceil(Math.max(0, state.arenaCount));
+    if (now !== before) { const c = document.getElementById('ac-count'); if (c) c.textContent = now; if (now > 0) sfx('gate'); }
+    if (state.arenaCount <= 0) beginDuel(state.arenaN);
+  }
+  // ---------- Arena ----------
+  function beginDuel(n) {
+    hideArenaCard();
+    state.phase = 'arena'; state.acc = 0; arenaRing.visible = true;
     sim = arenaSim(state.army, state.econ.types(TYPES), state.rival);
     state.arena = { n, out: arenaOutcome(sim) };
     clearVisuals(); clearShots(); sim.units.forEach(u => visuals.set(u.id, buildUnit(u)));
     gridGroup.visible = false; planGroup.visible = false; hover.visible = false;
     Sound.setMode('battle'); sfx('horn');
     camGoto(0, -2, PHONE ? 60 : 46, 0.85);
-    toast(`ARENA etter wave ${n}! Hæren din møter rivalens hær. ${ARENA_TIME} sekunder, ingen dør på ekte.`);
     renderPanel();
   }
   function finishArena() {
@@ -4220,9 +4310,15 @@ const Sound = (function () {
       <p class="bonus">${o.win ? `+${prize.gold} gull, +${prize.timber} tømmer, +${prize.stone} stein, +${prize.coal} kull · Champion-flagg` : `Rivalen fikk ${prize.gold} gull og mer.`}</p>
       <p class="why">Igjen av hæren: din ${Math.round(o.mine * 100)} %, rivalens ${Math.round(o.theirs * 100)} %. Champion-flagg: du ${state.flags}, rivalen ${state.rivalFlags}.</p>
       <p class="note">Ingen units døde på ekte. Byggefasen er i gang.</p>`;
-    toast(o.win ? `Du vant arenaen! +${prize.gold} gull og Champion-flagg.` : 'Rivalen vant arenaen.');
+    arenaCard.className = 'arenacard ' + (o.win ? 'won' : 'lost'); arenaCard.hidden = false;
+    arenaCard.innerHTML = `<div class="ac-eyebrow">Arena · etter wave ${a.n}</div><h2>${o.win ? 'Du vant duellen!' : 'Rivalen vant duellen'}</h2>
+      <p class="ac-note">Igjen av hæren: din ${Math.round(o.mine * 100)} %, rivalens ${Math.round(o.theirs * 100)} %.</p>
+      <div class="ac-prize">${o.win ? `+${prize.gold} gull, +${prize.timber} tømmer, +${prize.stone} stein, +${prize.coal} kull · Champion-flagg` : `Rivalen tar premien og flagget.`}</div>
+      <div class="ac-flags">Champion-flagg: du ${state.flags}, rivalen ${state.rivalFlags}</div>
+      <button type="button" class="ac-go" id="ac-go">Tilbake til byggingen</button>`;
+    $('#ac-go').onclick = hideArenaCard; setTimeout(hideArenaCard, 7000);
     if (state.incoming.length) setTimeout(() => { if (state.phase === 'build') toast(`Rivalen sender deg ${state.incoming.length} skapninger i wave ${curWave().n}. Se «Neste wave».`); }, 3000);
-    state.phase = 'build'; state.arena = null;
+    state.phase = 'build'; state.arena = null; arenaRing.visible = false;
     gridGroup.visible = true; planGroup.visible = true;
     Sound.setMode('build');
     camGoto(0, FIELD_TZ, FIELD_DIST, 0.8);
@@ -4327,6 +4423,31 @@ const Sound = (function () {
   mm.addEventListener('pointerdown', e => { e.stopPropagation(); mm.setPointerCapture(e.pointerId); mmGo(e); mm._drag = true; });
   mm.addEventListener('pointermove', e => { if (mm._drag) mmGo(e); });
   mm.addEventListener('pointerup', () => { mm._drag = false; });
+
+
+  // ---------- Valgt unit: bilde, hva neste oppgradering gir, og verdi for pengene ----------
+  const ARMOR_REF = 20;   // et vanlig fiendeslag; rustning trekkes fra hvert slag, minst 1 skade går gjennom
+  const ehp = T => Math.round(T.hp * ARMOR_REF / Math.max(1, ARMOR_REF - T.armor));
+  const goldOf = (k, lvl) => { const p = state.econ.unitPrice(TYPES[k]), up = upgradeSpent(k, lvl || 0); const g = r => (p[r] || 0) + (up[r] || 0); return g('gold') + 2 * g('iron') + 2 * g('coal'); };
+  function renderSelInfo() {
+    const el = $('#om-info'); if (!el) return;
+    const list = [...state.selection].map(i => state.army[i]).filter(Boolean);
+    const one = list.length && list.every(a => a.type === list[0].type && (a.level || 0) === (list[0].level || 0));
+    if (!one) { el.innerHTML = `<p class="oi-note">${list.length ? 'Velg én type på samme nivå for å se tallene.' : ''}</p>`; return; }
+    const k = list[0].type, lvl = list[0].level || 0, base = state.econ.types(TYPES)[k];
+    const now = levelType(base, k, lvl), next = UPGRADES[k] && lvl < MAX_LEVEL ? levelType(base, k, lvl + 1) : null;
+    const dps = T => T.dmg / T.interval * (T.cleave ? 1 + (T.sweep || 1) * 0.5 : 1);
+    const row = (label, a, b, f) => { const fa = f(a), fb = b == null ? null : f(b), d = fb == null ? 0 : +(fb - fa).toFixed(1);
+      return `<span>${label}<b>${String(fa).replace('.', ',')}${fb != null && d ? ` → ${String(fb).replace('.', ',')}` : ''}${d ? ` <i>(${d > 0 ? '+' : ''}${String(d).replace('.', ',')})</i>` : ''}</b></span>`; };
+    const r1 = x => Math.round(x * 10) / 10, nb = x => String(r1(x)).replace('.', ',');
+    const rows = [row('HP', now, next, T => T.hp), row('Skade/s', now, next, T => r1(dps(T))), row('Rustning', now, next, T => T.armor)];
+    if (now.ranged) rows.push(row('Rekkevidde', now, next, T => T.range));
+    else rows.push(row('HP m/rustning', now, next, T => ehp(T)));
+    const g = goldOf(k, lvl), gn = next ? goldOf(k, lvl + 1) : null;
+    const val = (gold, T) => `<b>${nb(gold / Math.max(0.1, dps(T)))}</b> gull per skade/s · <b>${nb(gold / ehp(T) * 100)}</b> gull per 100 HP m/rustning`;
+    el.innerHTML = `<img alt="" src="${portraits[k] || ''}"><div class="oi-rows">${rows.join('')}</div>
+      <div class="oi-val">Verdi nå (${g} gull brukt): ${val(g, now)}${next ? `<br>Etter oppgradering (${gn} gull): ${val(gn, next)}` : ''} ${tipIcon(`Lavere er bedre. Jern og kull teller som 2 gull. Rustning trekkes fra hvert slag (minst 1 skade går gjennom); HP med rustning regner med et vanlig fiendeslag på ${ARMOR_REF}.`)}</div>`;
+  }
 
   // ---------- 1 mot 1: Send-fanen ----------
   function sentChips(list, et) {
@@ -4560,7 +4681,7 @@ const Sound = (function () {
     if (b.dataset.lock === 'deep') { toast('Grav dypere i Steinbruddet først (Landsby).'); return; }
     if (b.dataset.lock === 'future') { toast('Tier 5 er ikke designet ennå. Barracks V åpnes når den er klar, og kan da kjøpes så snart dere har råd, også i World 3.'); return; }
     if (b.classList.contains('cant')) {
-      explainMissing(b.dataset.cost ? JSON.parse(b.dataset.cost) : { gold: ec.workerPrice() });
+      explainMissing(b.dataset.cost ? JSON.parse(b.dataset.cost) : { gold: ec.workerPrice(k) });
       return;
     }
     const acts = {
@@ -4677,6 +4798,8 @@ const Sound = (function () {
       state.econ.tick(dt);
       state.buildLeft -= dt;
       if (state.buildLeft <= 0) startWave();
+    } else if (state.phase === 'arena-intro') {
+      arenaIntroTick(dt);
     } else if (state.phase === 'arena') {
       state.acc += dt * state.speed;
       let n = 0;
@@ -4692,7 +4815,7 @@ const Sound = (function () {
     }
     const ec = state.econ;
     if (ec.deliveries.length) {
-      ec.deliveries.forEach(d => { popRes(d.res, d.amount); nodeVis[d.node].pulse = 0.35; });
+      ec.deliveries.forEach(d => { popRes(d.res, d.amount); nodeVis[d.node].pulse = 0.35; deliveryPop(d); });
       ec.deliveries.length = 0;
     }
     animateVillage(now / 1000, dt);

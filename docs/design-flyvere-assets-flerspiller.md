@@ -106,6 +106,7 @@
 - Rivalens resultater (lekk-gull, det han sender deg, om flammen hans falt) kommer når hans wave er ferdig, ikke når din er det.
 - Senere: betal ressurser for et kort blikk (5–10 sek) på motstanderens base i ekte flerspiller. Nå er det fritt innsyn.
 - Arena (bygget 4. okt): etter wave 8, 18 og 28 møter en kopi av hæren din en kopi av rivalens hær på slagmarken, i maks 60 sekunder. Ingen dør på ekte. Siste hær som står, vinner; går tiden ut, vinner den med mest helse igjen (andel). Vinneren får 40/80/120 gull, 20/40/60 tømmer og stein, 10/20/30 kull og et Champion-flagg. Byggefasen starter etter arenaen med full tid.
+- Arenaen er en hendelse (4. okt): kort med lagets champion (stemt frem; mot computeren er det deg) mot rivalens, antall soldater, premie og flagg, 10 sekunders nedtelling med trommer (eller «Til kamp!»), fakkelring på bakken, og et stort resultatkort etterpå.
 - For at arenaen skal være rettferdig virker Warbanner Captains aura, Ironwalls taunt og Shieldguards skjoldmur nå for begge sider. Målt med to computere: omtrent jevnt (9–8), kampene tar ca. 20 sekunder.
 - Ikke laget ennå: at rivalen sender smartere (nå tilfeldig), ekte flerspiller.
 

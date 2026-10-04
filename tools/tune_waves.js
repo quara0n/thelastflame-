@@ -4,7 +4,8 @@ const { load } = require('./game_sim.js');
 const fs = require('fs');
 const L = load();
 const R = +(process.argv[2] || 16);
-const TARGET = w => w <= 4 ? 1.0 : w <= 8 ? 0.95 : w === 10 ? 0.8 : w <= 19 ? 0.93 : w === 20 ? 0.7 : w <= 29 ? 0.9 : 0.65;
+// 4. okt: spilleren syntes World 1 var passe og 11–30 for lett. World 1 som før; World 2 og 3 strammes inn.
+const TARGET = w => w <= 4 ? 1.0 : w <= 9 ? 0.95 : w === 10 ? 0.8 : w <= 19 ? 0.8 : w === 20 ? 0.6 : w <= 29 ? 0.72 : 0.5;
 // Waves before FROM keep the factor already built into the prototype; only later waves are searched.
 const FROM = +(process.argv[3] || 1);
 const GRID = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.25, 1.4, 1.6];

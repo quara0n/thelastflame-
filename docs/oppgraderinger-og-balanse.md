@@ -75,3 +75,16 @@ Spilleren kunne maksere nesten alt og nå Tier 4 før wave 10. Nå er det knapph
 - Barracks kostet for mye til at man fikk utvidet før mot slutten. Prisene er omtrent halvert: II = 84 tømmer, 48 stein, 19 jern. III = 222 tømmer, 148 stein, 74 jern. IV = 324 tømmer, 216 stein, 126 jern, 54 kull.
 - Den simulerte spilleren når nå Tier 2 på wave 6, Tier 3 på wave 12 og Tier 4 på wave 22. En spiller som satser alt på økonomi: wave 3, 7 og 12.
 - Wave 5–30 er stemt om etterpå. Den simulerte spilleren når wave 30 i 27 av 30 spill.
+
+## Tilbakemelding 4. okt, ettermiddag
+- Arbeidere: 5 gull for de 6 første på hvert sted; deretter +4 gull for hver (før: prisen steg for alle etter 8 totalt).
+- Gull og ressurser kommer per tur: hver arbeider går fra gruva til lageret (leverer når han kommer frem, med et lite tall over lageret) og tilbake. En tur tar like lang tid som før (gull 12 s, tømmer/stein 10 s, jern 12 s, kull 16 s), så inntekten er den samme per arbeider.
+- Barracks III billigere: ca. 150 tømmer, 100 stein, 50 jern. Barracks IV dyrere: ca. 630 tømmer, 420 stein, 245 jern, 105 kull (ellers kunne man rushe den før wave 10 med billige arbeidere).
+- Høyere tiers er verdt mer per plass og per gull (`tools/tier_power.py`): Ironhulk ×2,45 kraft (fersk 1190 HP, 36 skade/s), Ironwall ×1,8, Thunderbore og Captain ×1,6, Skyspear og Hearth Engine ×1,5, Mammoth ×1,25, Siegebreaker ×1,15. HP og skade ganges med kvadratroten.
+- Razorclaw (raptor): 220 HP, 19 skade (før 160/16).
+- Vanskelighet: World 1 som før; World 2 og 3 strammet inn (simulert spiller holder 80 % av wavene i World 2 og 72 % i World 3). Wave 15 og 19 litt dempet. Den simulerte spilleren når wave 30 i ca. halvparten av spillene.
+- Rustning: trekkes fra hvert slag, minst 1 skade går gjennom. «Gjennomborer» ignorerer så mye rustning. Rustning er mest verdt mot mange små slag.
+- Ordrelinjen viser valgt unit: bilde, hva neste oppgradering gir (HP 280 → 350 (+70) osv.), og verdi: gull per skade/s og gull per 100 HP med rustning (vanlig fiendeslag på 20 som mål).
+
+### Venter (ikke gjort, brukeren sier fra)
+- En oppgradering skal koste minst like mye som uniten kostet, og hvert nivå minst like mye som det forrige.

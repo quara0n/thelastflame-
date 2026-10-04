@@ -8,13 +8,13 @@
  },
  "worker": {
   "base": 5,
-  "free": 8,
-  "step": 3
+  "free": 6,
+  "step": 4
  },
  "barracksMul": [
   2.4,
-  3.7,
-  3.6,
+  2.5,
+  7,
   5.8
  ],
  "wardenMul": 2,

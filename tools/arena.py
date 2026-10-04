@@ -4,7 +4,29 @@ units die. Last army standing wins; at time-out the side with the larger share o
 resources and a Champion flag."""
 from patch import sub
 
+CSS = """
+.arenacard { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(380px, calc(100% - 20px)); max-height: calc(100% - 20px); overflow-y: auto; z-index: 15;
+  background: linear-gradient(180deg, rgba(42, 26, 8, .97), rgba(18, 14, 10, .97)); border: 1px solid #e9a23b; border-radius: 14px; padding: 16px; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, .6); display: flex; flex-direction: column; gap: 8px; }
+.arenacard.lost { border-color: #8a3a34; }
+.arenacard .ac-eyebrow { font: 600 11px var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--flame); }
+.arenacard h2 { font-family: var(--display); font-size: 24px; letter-spacing: .04em; text-transform: none; color: var(--fg); margin: 0; }
+.ac-vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
+.ac-side { display: flex; flex-direction: column; gap: 2px; background: rgba(143, 179, 214, .08); border: 1px solid #3a4a5c; border-radius: 10px; padding: 8px 6px; font-size: 12px; color: var(--muted); }
+.ac-side b { color: #9fc4de; font-family: var(--display); font-size: 15px; }
+.ac-side em { font-style: normal; color: var(--fg); font-weight: 600; }
+.ac-side.foe { background: rgba(163, 90, 224, .08); border-color: #5a3a7a; }
+.ac-side.foe b { color: #c99af0; }
+.ac-vote { color: var(--flame); }
+.ac-mid { font-family: var(--display); font-size: 22px; color: var(--flame); }
+.ac-note { font-size: 12px; color: var(--muted); margin: 0; }
+.ac-prize { font: 600 12.5px var(--body); color: #ffd76a; }
+.ac-flags { font-size: 12px; color: var(--fg); }
+.ac-go { align-self: center; background: var(--flame); color: var(--flame-ink); border: 0; border-radius: 8px; padding: 10px 22px; font-weight: 700; font-size: 15px; }
+.ac-go span { font-family: var(--mono); margin-left: 6px; }
+"""
+
 def apply(s):
+    s = sub(s, "#om-remove { color: #f0a59d; }", "#om-remove { color: #f0a59d; }" + CSS)
     s = sub(s, "const RIVAL_BREAK = 55;", """const RIVAL_BREAK = 55;
 // Arena: etter disse wavene møtes hærene. Premien vokser for hver arena.
 const ARENA_WAVES = [8, 18, 28], ARENA_TIME = 60;
@@ -46,10 +68,11 @@ function arenaOutcome(sim) {
                "    $('#h-gate').textContent = state.phase === 'arena' ? `Arena ${Math.max(0, Math.ceil(ARENA_TIME - sim.t))} s` : gr > 0 ? `Port ${Math.ceil(sim.gateHp)}` : 'Porten er brutt';")
     s = sub(s, "setTimeout(() => toast(`Rivalen sender deg ${state.incoming.length} skapninger i wave ${curWave().n}. Se «Neste wave».`), 2800);",
                "setTimeout(() => { if (state.phase !== 'arena') toast(`Rivalen sender deg ${state.incoming.length} skapninger i wave ${curWave().n}. Se «Neste wave».`); }, 2800);")
-    s = sub(s, "  function primaryAction() {\n", "  function primaryAction() {\n    if (state.phase === 'arena') return;\n")
-    s = sub(s, "start.textContent = build ? `Start wave ${W.n} nå` : state.phase === 'battle' ?", "start.textContent = build ? `Start wave ${W.n} nå` : state.phase === 'arena' ? 'Arena pågår …' : state.phase === 'battle' ?")
-    s = sub(s, "$('#phase').textContent = build ? 'Byggefase' : state.phase === 'battle' ?", "$('#phase').textContent = build ? 'Byggefase' : state.phase === 'arena' ? 'Arena' : state.phase === 'battle' ?")
+    s = sub(s, "  function primaryAction() {\n", "  function primaryAction() {\n    if (state.phase === 'arena-intro') { beginDuel(state.arenaN); return; }\n    if (state.phase === 'arena') return;\n")
+    s = sub(s, "start.textContent = build ? `Start wave ${W.n} nå` : state.phase === 'battle' ?", "start.textContent = build ? `Start wave ${W.n} nå` : state.phase === 'arena-intro' ? 'Til kamp!' : state.phase === 'arena' ? 'Arena pågår …' : state.phase === 'battle' ?")
+    s = sub(s, "$('#phase').textContent = build ? 'Byggefase' : state.phase === 'battle' ?", "$('#phase').textContent = build ? 'Byggefase' : state.phase === 'arena' || state.phase === 'arena-intro' ? 'Arena' : state.phase === 'battle' ?")
     s = sub(s, "    } else if (state.phase === 'battle' && !state.paused) {",
+               "    } else if (state.phase === 'arena-intro') {\n      arenaIntroTick(dt);\n"
                "    } else if (state.phase === 'arena') {\n"
                "      state.acc += dt * state.speed;\n"
                "      let n = 0;\n"
@@ -58,16 +81,55 @@ function arenaOutcome(sim) {
                "      if (state.arena.out.done) finishArena();\n"
                "    } else if (state.phase === 'battle' && !state.paused) {")
     UI = r"""
-  // ---------- Arena ----------
+
+  // ---------- Arena: seremonien før og etter duellen ----------
+  const arenaRing = new THREE.Group(); arenaRing.visible = false; scene.add(arenaRing);
+  (() => {
+    const cz = -2, R = 13.5;
+    const gl = new THREE.Mesh(new THREE.RingGeometry(R - 0.5, R + 0.5, 64), new THREE.MeshBasicMaterial({ color: 0xe9a23b, transparent: true, opacity: 0.55, side: THREE.DoubleSide }));
+    gl.rotation.x = -Math.PI / 2; gl.position.set(0, 0.05, cz); arenaRing.add(gl);
+    for (let i = 0; i < 18; i++) {
+      const a = i / 18 * Math.PI * 2, x = Math.cos(a) * (R + 1), z = cz + Math.sin(a) * (R + 1);
+      arenaRing.add(mesh(new THREE.CylinderGeometry(0.12, 0.16, 2.2, 6), mats.iron, x, 1.1, z));
+      arenaRing.add(mesh(new THREE.ConeGeometry(0.28, 0.7, 8), mats.lantern, x, 2.5, z));
+    }
+  })();
+  const arenaCard = document.createElement('div'); arenaCard.className = 'arenacard'; arenaCard.hidden = true; $('.stage').appendChild(arenaCard);
+  function hideArenaCard() { arenaCard.hidden = true; }
+  // Arenaen kalles inn: kort med lagets champion (stemmes frem; mot computeren er det deg), motstanderen, premien og nedtelling.
   function startArena(n) {
-    state.phase = 'arena'; state.acc = 0;
+    const prize = arenaPrize(n), r = state.rival;
+    state.phase = 'arena-intro'; state.arenaN = n; state.arenaCount = 10;
+    arenaRing.visible = true; camGoto(0, -2, PHONE ? 60 : 46, 0.85);
+    Sound.setMode('battle'); sfx('horn');
+    arenaCard.className = 'arenacard'; arenaCard.hidden = false;
+    arenaCard.innerHTML = `<div class="ac-eyebrow">Arena · etter wave ${n}</div><h2>Duell om flagget</h2>
+      <div class="ac-vs"><div class="ac-side"><b>Ditt lag</b><span>Champion: <em>Du</em></span><span class="ac-vote">Stemmer: Du 1/1</span><span>${state.army.length} soldater</span></div>
+        <div class="ac-mid">VS</div>
+        <div class="ac-side foe"><b>Rivalen</b><span>Champion: <em>Computer</em></span><span class="ac-vote">Stemmer: 1/1</span><span>${r.army.length} soldater</span></div></div>
+      <p class="ac-note">En kopi av hæren din møter en kopi av hans i ringen. Ingen dør på ekte. Siste hær som står, vinner; etter ${ARENA_TIME} sekunder vinner den med mest helse igjen.</p>
+      <div class="ac-prize">Premie: +${prize.gold} gull, +${prize.timber} tømmer, +${prize.stone} stein, +${prize.coal} kull og Champion-flagg</div>
+      <div class="ac-flags">Champion-flagg: du ${state.flags}, rivalen ${state.rivalFlags}</div>
+      <button type="button" class="ac-go" id="ac-go">Til kamp! <span id="ac-count">10</span></button>`;
+    $('#ac-go').onclick = () => { if (state.phase === 'arena-intro') beginDuel(n); };
+    renderPanel();
+  }
+  function arenaIntroTick(dt) {
+    const before = Math.ceil(state.arenaCount); state.arenaCount -= dt;
+    const now = Math.ceil(Math.max(0, state.arenaCount));
+    if (now !== before) { const c = document.getElementById('ac-count'); if (c) c.textContent = now; if (now > 0) sfx('gate'); }
+    if (state.arenaCount <= 0) beginDuel(state.arenaN);
+  }
+  // ---------- Arena ----------
+  function beginDuel(n) {
+    hideArenaCard();
+    state.phase = 'arena'; state.acc = 0; arenaRing.visible = true;
     sim = arenaSim(state.army, state.econ.types(TYPES), state.rival);
     state.arena = { n, out: arenaOutcome(sim) };
     clearVisuals(); clearShots(); sim.units.forEach(u => visuals.set(u.id, buildUnit(u)));
     gridGroup.visible = false; planGroup.visible = false; hover.visible = false;
     Sound.setMode('battle'); sfx('horn');
     camGoto(0, -2, PHONE ? 60 : 46, 0.85);
-    toast(`ARENA etter wave ${n}! Hæren din møter rivalens hær. ${ARENA_TIME} sekunder, ingen dør på ekte.`);
     renderPanel();
   }
   function finishArena() {
@@ -79,9 +141,15 @@ function arenaOutcome(sim) {
       <p class="bonus">${o.win ? `+${prize.gold} gull, +${prize.timber} tømmer, +${prize.stone} stein, +${prize.coal} kull · Champion-flagg` : `Rivalen fikk ${prize.gold} gull og mer.`}</p>
       <p class="why">Igjen av hæren: din ${Math.round(o.mine * 100)} %, rivalens ${Math.round(o.theirs * 100)} %. Champion-flagg: du ${state.flags}, rivalen ${state.rivalFlags}.</p>
       <p class="note">Ingen units døde på ekte. Byggefasen er i gang.</p>`;
-    toast(o.win ? `Du vant arenaen! +${prize.gold} gull og Champion-flagg.` : 'Rivalen vant arenaen.');
+    arenaCard.className = 'arenacard ' + (o.win ? 'won' : 'lost'); arenaCard.hidden = false;
+    arenaCard.innerHTML = `<div class="ac-eyebrow">Arena · etter wave ${a.n}</div><h2>${o.win ? 'Du vant duellen!' : 'Rivalen vant duellen'}</h2>
+      <p class="ac-note">Igjen av hæren: din ${Math.round(o.mine * 100)} %, rivalens ${Math.round(o.theirs * 100)} %.</p>
+      <div class="ac-prize">${o.win ? `+${prize.gold} gull, +${prize.timber} tømmer, +${prize.stone} stein, +${prize.coal} kull · Champion-flagg` : `Rivalen tar premien og flagget.`}</div>
+      <div class="ac-flags">Champion-flagg: du ${state.flags}, rivalen ${state.rivalFlags}</div>
+      <button type="button" class="ac-go" id="ac-go">Tilbake til byggingen</button>`;
+    $('#ac-go').onclick = hideArenaCard; setTimeout(hideArenaCard, 7000);
     if (state.incoming.length) setTimeout(() => { if (state.phase === 'build') toast(`Rivalen sender deg ${state.incoming.length} skapninger i wave ${curWave().n}. Se «Neste wave».`); }, 3000);
-    state.phase = 'build'; state.arena = null;
+    state.phase = 'build'; state.arena = null; arenaRing.visible = false;
     gridGroup.visible = true; planGroup.visible = true;
     Sound.setMode('build');
     camGoto(0, FIELD_TZ, FIELD_DIST, 0.8);
@@ -93,5 +161,5 @@ function arenaOutcome(sim) {
     s = sub(s, "        <label class=\"vs-tog\"><input type=\"checkbox\" id=\"vs-toggle\"",
                "        <p class=\"note\">Champion-flagg: du ${state.flags}, rivalen ${state.rivalFlags}. ${(() => { const nx = ARENA_WAVES.find(w => w >= W.n); return nx ? `Neste arena: etter wave ${nx}.` : 'Ingen flere arenaer.'; })()}</p>\n"
                "        <label class=\"vs-tog\"><input type=\"checkbox\" id=\"vs-toggle\"")
-    s = sub(s, "    state.rival = new Rival(); state.sendQueue = [];", "    state.rival = new Rival(); state.flags = 0; state.rivalFlags = 0; state.arena = null; state.sendQueue = [];")
+    s = sub(s, "    state.rival = new Rival(); state.sendQueue = [];", "    state.rival = new Rival(); state.flags = 0; state.rivalFlags = 0; state.arena = null; hideArenaCard(); arenaRing.visible = false; state.sendQueue = [];")
     return s
