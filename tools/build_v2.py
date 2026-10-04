@@ -119,5 +119,7 @@ import mobile
 s = mobile.apply(s)
 import music
 s = music.apply(s)
+import economy
+s = economy.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))

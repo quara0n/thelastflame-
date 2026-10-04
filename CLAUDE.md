@@ -35,6 +35,7 @@ The Last Flame is a Squadron-inspired unit tower defence. The player holds a gat
   2. `build_v2.py` itself: scarce economy, visible gear per level, the Upgrade button in the order bar, refunds incl. upgrades, wave factors from `tools/wave_factors.json`.
   3. `tools/world3.py`: World 3 (Urheim) creatures and mechanics, Tier 4 units and upgrades, Barracks IV, models, world look, sounds.
   4. `tools/mobile.py`: phone layout.
+  6. `tools/economy.py` (numbers in `tools/economy.json`): deflation — slower gathering, pricier workers, Barracks priced per world, Warden gear ×2.
   5. `tools/music.py`: recorded music (build phase rotates 2 tracks, battle rotates 3) and 55 s between waves. The mp3s live in `prototype/musikk/` and must be published with the page via the Artifact `files` map (`musikk/<name>.mp3`).
 - Every patch uses `sub()`, which fails loudly if the target text isn't found exactly once. If a build fails, the anchor text moved; fix the patch, don't hand-edit kamptest-2.
 - After building, copy `prototype/kamptest-2.html` to a local file and publish it to the Kamptest II artifact URL. The music files are already published there and are kept on later publishes, so only pass `files` again if a track changes.
@@ -45,13 +46,13 @@ The Last Flame is a Squadron-inspired unit tower defence. The player holds a gat
 
 - **Tier rule:** a fresh unit of tier N+1 ≈ 90 % of a fully upgraded unit of tier N, and ≈ 120 % after its first upgrade. Measured with `tools/run_all.js` / `tools/tune.js` (Tier 1–3) and `tools/tune4.js` (Tier 4). The measurements have about ±10 % noise.
 - **Waves:** `tools/game_sim.js` plays whole games with a bot player (gathers, buys, upgrades, Barracks, archers, walls, sells fully upgraded old units to make room for a new tier). `tools/tune_waves.js R FROM` finds a strength factor per wave (enemy HP × k, damage × √k) so the bot holds each wave at a target rate, and multiplies it into `wave_factors.json`. Always rebuild before tuning again, because it measures on top of the factors already in kamptest-2.
-- **Check:** `node tools/game_sim.js 30` – the current state is 26 of 30 games reaching wave 30 (55 s breaks; the user found the game a bit hard, so keep it on the gentle side).
+- **Check:** `node tools/game_sim.js 30` – the current state is 27 of 30 games reaching wave 30 (55 s breaks, deflated economy; the user found the game a bit hard, so keep it on the gentle side).
 - The bot and the tuner use 55 s between waves (`t = 55` in game_sim.js and tune_waves.js); change both if the break changes.
 - If the bot's strategy changes, earlier waves shift too. Retune from wave 1 afterwards.
 
 ## Locked design decisions (details in docs/)
 
-- Economy: scarcity like Squadron. Worker 5 gold, Tier 1 unit 10 gold, start 75 gold.
+- Economy: scarcity like Squadron. Worker 5 gold, Tier 1 unit 10 gold, start 75 gold. Deflated 4 Oct: a normal player reaches Tier 2 at the end of World 1, Tier 3 in World 2, Tier 4 in World 3 (bot: waves 9/16/26; an all-in economy rush: 5/12/18). Check with /tmp-style rush and tier scripts before changing prices.
 - Every unit has a base version and 3 upgrades, bought on one specific soldier. Same model with new gear. Forge and Workshop upgrades (all units of a type) stay as well.
 - Army size around 27 units at wave 20 is fine; not 40. Army space 20 / 30 / 40 / 50.
 - Tiers: Tier 4 belongs to World 3 and Tier 5 to World 4, but Barracks prices decide, not wave locks. A strong player may buy Barracks V in World 3.

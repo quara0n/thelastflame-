@@ -60,3 +60,13 @@ Forge og Workshop (felles oppgraderinger for alle units av en type) er beholdt o
 - Testbenken tester bare grunnversjoner (nivå 0) foreløpig.
 - Ikke avklart: skal Longfang koste litt mer enn 10?
 - Shieldguards oppgraderinger gir mindre målbar styrke enn de andre Tier 1 (ca. +40 % mot +100 %), fordi testene måler drepeevne.
+
+## Deflasjon (4. okt 2026)
+Spilleren kunne maksere nesten alt og nå Tier 4 før wave 10. Nå er det knapphet igjen:
+- Innsamling er omtrent halvert: gull hvert 12. sekund (før 8), tømmer og stein hvert 10. (før 5), jern hvert 12. (før 6), kull hvert 16. (før 8). Fortsatt 1 per arbeider.
+- Arbeidere: 5 gull, men prisen stiger med 3 for hver arbeider etter den 8. (før: +2 etter den 10.).
+- Barracks er priset etter verdenene: II = 154 tømmer, 88 stein, 35 jern. III ≈ 400 tømmer, 270 stein, 135 jern. IV ≈ 585 tømmer, 390 stein, 230 jern, 100 kull.
+- Mål (målt med simulering): en vanlig spiller når Tier 2 på slutten av World 1 (ca. wave 9), Tier 3 midt i World 2 (ca. wave 16) og Tier 4 i World 3 (ca. wave 26). En spiller som satser alt på økonomi kan komme til wave 5, 12 og 18.
+- Warden-utstyr og trening koster dobbelt. Verktøy koster 1,5 ganger.
+- Wavene er stemt om til den nye økonomien. Den simulerte spilleren når wave 30 i 27 av 30 spill.
+- Tallene ligger i `tools/economy.json`.

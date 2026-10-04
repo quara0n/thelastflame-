@@ -1,0 +1,22 @@
+{
+ "every": {
+  "gold": 12,
+  "timber": 10,
+  "stone": 10,
+  "iron": 12,
+  "coal": 16
+ },
+ "worker": {
+  "base": 5,
+  "free": 8,
+  "step": 3
+ },
+ "barracksMul": [
+  4.4,
+  6.7,
+  6.5,
+  10.4
+ ],
+ "wardenMul": 2,
+ "toolsMul": 1.5
+}

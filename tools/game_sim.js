@@ -37,11 +37,15 @@ function bot(L, ec, army, waveIdx) {
     if (!did && w >= 3 && !ec.nodes.iron.unlocked && ec.can(L.NODES.iron.unlock)) did = ec.unlockNode('iron');
     if (!did && ec.nodes.iron.unlocked && ec.nodes.iron.workers < 3 && ec.res.gold >= ec.workerPrice() + 8) did = ec.addWorker('iron');
     if (!did && ec.barracks >= 1 && !ec.nodes.coal.unlocked && ec.can(L.NODES.coal.unlock)) did = ec.unlockNode('coal');
-    if (!did && ec.nodes.coal.unlocked && ec.nodes.coal.workers < 2 && ec.res.gold >= ec.workerPrice() + 8) did = ec.addWorker('coal');
-    if (!did && ec.nodes.timber.workers < 2 && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('timber');
-    if (!did && w >= 4 && ec.barracks === 0 && ec.can(L.BARRACKS[1].cost)) did = ec.buyBarracks();
-    if (!did && w >= 9 && ec.barracks === 1 && ec.can(L.BARRACKS[2].cost)) did = ec.buyBarracks();
-    if (!did && w >= 19 && ec.barracks === 2 && ec.can(L.BARRACKS[3].cost)) did = ec.buyBarracks();
+    if (!did && ec.nodes.coal.unlocked && ec.nodes.coal.workers < (w >= 15 ? 4 : 2) && ec.res.gold >= ec.workerPrice() + 8) did = ec.addWorker('coal');
+    if (!did && ec.nodes.timber.workers < (w >= 3 ? 4 : 2) && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('timber');
+    if (!did && w >= 3 && ec.nodes.stone.workers < (w >= 10 ? 5 : 3) && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('stone');
+    if (!did && w >= 10 && ec.nodes.timber.workers < 5 && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('timber');
+    if (!did && w >= 10 && ec.nodes.iron.workers < 5 && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('iron');
+    if (!did && w >= 6 && !ec.nodes.coal.unlocked && ec.can(L.NODES.coal.unlock)) did = ec.unlockNode('coal');
+    if (!did && w >= 5 && ec.barracks === 0 && ec.can(L.BARRACKS[1].cost)) did = ec.buyBarracks();
+    if (!did && w >= 11 && ec.barracks === 1 && ec.can(L.BARRACKS[2].cost)) did = ec.buyBarracks();
+    if (!did && w >= 20 && ec.barracks === 2 && ec.can(L.BARRACKS[3].cost)) did = ec.buyBarracks();
     if (!did && ec.gateHp < ec.gateMax() * 0.7) did = ec.repair();
     if (!did && w >= 3 && ec.archers === 0) did = ec.buyArchers();
     // Army: keep roughly half melee, half ranged; buy the best tier that is open.
@@ -58,8 +62,10 @@ function bot(L, ec, army, waveIdx) {
       const cand = army.filter(a => (a.level || 0) < L.MAX_LEVEL).sort((a, b) => (T[b.type].tier || 1) - (T[a.type].tier || 1) || (a.level || 0) - (b.level || 0));
       for (const a of cand) if (upgrade(a)) { did = true; break; }
     }
+    // When the next Barracks is due, save timber, stone and iron for it.
+    const saving = ((ec.barracks === 1 && w >= 12) || (ec.barracks === 2 && w >= 20)) && !ec.can(L.BARRACKS[ec.barracks + 1].cost);
     // Forge when there is iron to spare.
-    if (!did && ec.res.iron >= 25) for (const k of ['melee', 'ranged', 'armor']) if (ec.buyTrack(k)) { did = true; break; }
+    if (!did && !saving && ec.res.iron >= 25) for (const k of ['melee', 'ranged', 'armor']) if (ec.buyTrack(k)) { did = true; break; }
     // Full army: sell maxed lower-tier units until a unit of the newest tier fits, if it can be afforded.
     if (!did && ec.barracks >= 1 && army.length && army.every(a => (a.level || 0) >= L.MAX_LEVEL)) {
       const top = ec.barracks + 1, need = L.supplyOf(T[unitsOf(top)[0]]);
@@ -78,9 +84,9 @@ function bot(L, ec, army, waveIdx) {
       }
     }
     // Spare resources: more archers on the wall, then a stronger wall.
-    if (!did && w >= 6 && ec.archers < L.ARCHERS.length - 1 && ec.can(L.ARCHERS[ec.archers + 1].cost)) did = ec.buyArchers();
-    if (!did && w >= 10 && !ec.deep) did = ec.deepen();
-    if (!did && w >= 10 && ec.wall < L.WALLS.length - 1) did = ec.buyWall();
+    if (!did && !saving && w >= 6 && ec.archers < L.ARCHERS.length - 1 && ec.can(L.ARCHERS[ec.archers + 1].cost)) did = ec.buyArchers();
+    if (!did && !saving && w >= 10 && !ec.deep) did = ec.deepen();
+    if (!did && !saving && w >= 10 && ec.wall < L.WALLS.length - 1) did = ec.buyWall();
     if (!did) break;
   }
 }
