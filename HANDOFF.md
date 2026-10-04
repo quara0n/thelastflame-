@@ -39,6 +39,8 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 
 ## Known rough edges
 
+- 4 Oct (version 9): every wave rebuilt to 30 creatures with the new species as the majority (`tools/waves30.py`), all tiers open with a cap of 2 per tier without its Barracks (`tools/tier_cap.py`). Wave factors reset and retuned from scratch (two passes; tuner grid now goes down to 0.1), waves 16/17/20 eased 15 %. Bot: 26/30 reach wave 30; tiers at waves 8/17/27. The bot never uses the 2-unit early access, so that part is unbalanced by measurement.
+
 - 4 Oct (version 8): wave 4 eased 25 % after the user found it too hard (12 plain Tier 1 or 10 at level 1 now keep the gate whole); waves 5–30 retuned after (the bot's whole game shifts when one wave changes). Music fix: phones block audio that isn't started right after a tap, so every track is now started silently on the first tap, and a later tap retries a blocked track. Bot: 27/30 reach wave 30.
 
 - 4 Oct (Kamptest II version 7): deflation after the user reached Tier 4 and maxed nearly everything by wave 10. See `docs/oppgraderinger-og-balanse.md` → Deflasjon. The bot now builds more timber/stone/iron/coal workers and saves for the next Barracks (II from wave 5, III from 11, IV from 20). Open question from the user: the army may still need too many soldiers per wave (bot has ~26 at wave 10); ask whether waves should have fewer, stronger enemies.

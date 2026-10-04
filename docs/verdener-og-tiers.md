@@ -65,3 +65,9 @@
 - En forteller-stemme som leser opp introen: hva slags verden dette er, hvilke skapninger som kommer, hva de er gode på og hva de er svake mot.
 - Når en ny skapning kommer i en wave: et lite brennende varsel som faller ned ovenfra med alarm, bilde og sterk/svak (f.eks. når havmonstrene kommer).
 - Samme system skal brukes for World 3 og World 4.
+
+## Waves og tier-tilgang (4. okt 2026, låst)
+- Hver wave har 30 skapninger. Den nye arten er det klare flertallet (typisk 18–22), pluss noen få av tidligere arter.
+- Kjemper og bærere teller tyngre: Bone Colossus, Rotroot Treant, Urdrage, Tyrant og Earthshaker kommer 6 av gangen, Broodmother 10, resten er mindre skapninger. Boss-wavene (10, 20, 30) er bossen + 29 følgesvenner.
+- Alle tiers kan kjøpes fra start. Uten Barracks for en tier kan du ha maks 2 units av den tieren, til full pris. Barracks for tieren fjerner taket og gir mer plass i hæren. Slik kan man teste en Ironhulk tidlig, men ikke bygge hæren rundt den.
+- Hele oppsettet ligger i `tools/waves30.py` og `tools/tier_cap.py`. Den simulerte spilleren når wave 30 i 26 av 30 spill.

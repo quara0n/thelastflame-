@@ -769,42 +769,41 @@ const FORMATIONS = {
 // Fallen World 1, Askemyr (FORSLAG): hver wave introduserer en ny fiendetype.
 // Gruppene plasseres etter rolle: front, back (bak), flank (på sidene) eller boss (foran i midten).
 const WAVES = [
-  { style: 'Linje',   groups: [['husk', 10, 'front']] },
-  { style: 'Sverm',   groups: [['spider', 14, 'front'], ['husk', 4, 'back']] },
-  { style: 'Linje',   groups: [['husk', 10, 'front'], ['spitter', 6, 'back']] },
-  { style: 'Kile',    groups: [['brute', 3, 'front'], ['husk', 10, 'back'], ['spider', 6, 'flank']] },
-  { style: 'Flanker', groups: [['serpent', 10, 'flank'], ['husk', 8, 'front']] },
-  { style: 'Linje',   groups: [['beetle', 6, 'front'], ['husk', 8, 'back'], ['spitter', 6, 'back']] },
-  { style: 'Rede',    groups: [['broodmother', 3, 'front'], ['spider', 8, 'flank'], ['husk', 8, 'back']] },
-  { style: 'Flanker', groups: [['stalker', 10, 'flank'], ['brute', 4, 'front'], ['husk', 12, 'back']] },
-  { style: 'Kile',    groups: [['colossus', 3, 'front'], ['beetle', 5, 'front'], ['husk', 14, 'back']], heavy: true },
-  { style: 'Boss',    groups: [['fallenWarden', 1, 'boss'], ['serpent', 8, 'flank'], ['spitter', 6, 'back']], boss: true },
-  // Vrangheim: oddetall er en mild ny skapning, partall en tøff.
-  { style: 'Flokk',    groups: [['wolf', 14, 'front'], ['wolf', 10, 'flank'], ['spitter', 8, 'back']], world: 2 },
-  { style: 'Stampede', groups: [['boar', 4, 'front'], ['wolf', 10, 'flank'], ['husk', 10, 'back']], world: 2 },
-  { style: 'Sverm',    groups: [['locust', 40, 'front'], ['boar', 2, 'front'], ['wolf', 10, 'flank'], ['spitter', 6, 'back']], world: 2 },
-  { style: 'Ljåer',    groups: [['mantis', 4, 'front'], ['locust', 20, 'flank'], ['serpent', 8, 'back']], world: 2 },
-  { style: 'Tornkratt', groups: [['thornling', 16, 'front'], ['spitter', 10, 'back'], ['locust', 18, 'flank'], ['wolf', 8, 'flank']], world: 2 },
-  { style: 'Råtne røtter', groups: [['treant', 2, 'boss'], ['thornling', 10, 'front'], ['mantis', 3, 'back']], world: 2, heavy: true },
-  { style: 'Skall',    groups: [['crab', 16, 'front'], ['thornling', 8, 'back'], ['locust', 20, 'flank']], world: 2 },
-  { style: 'Sang',     groups: [['siren', 6, 'back'], ['crab', 8, 'front'], ['boar', 3, 'front']], world: 2 },
-  { style: 'Prosesjon', groups: [['acolyte', 4, 'back'], ['mantis', 4, 'front'], ['crab', 8, 'front']], world: 2 },
-  { style: 'Boss',     groups: [['warden2', 1, 'boss'], ['seraph', 2, 'front'], ['acolyte', 2, 'back'], ['crab', 4, 'front']], world: 2, boss: true },
-  // Urheim: oddetall er en mildere ny skapning, partall en tøffere. Wave 25 er flyver-waven (urdrager).
-  { style: 'Flokkjakt', groups: [['raptor', 12, 'flank'], ['wolf', 10, 'front'], ['spitter', 6, 'back']], world: 3 },
-  { style: 'Horn',      groups: [['hornback', 3, 'front'], ['raptor', 10, 'flank'], ['thornling', 8, 'front']], world: 3 },
-  { style: 'Sverm',     groups: [['snapper', 40, 'front'], ['hornback', 2, 'front'], ['raptor', 6, 'flank'], ['spitter', 6, 'back']], world: 3 },
-  { style: 'Panser',    groups: [['clubtail', 5, 'front'], ['snapper', 24, 'flank'], ['raptor', 8, 'back']], world: 3 },
-  { style: 'Urdrager',  groups: [['urdragon', 4, 'front'], ['raptor', 10, 'flank'], ['clubtail', 3, 'front'], ['snapper', 20, 'flank']], world: 3, flyers: true },
-  { style: 'Tyrant',    groups: [['tyrant', 2, 'front'], ['raptor', 12, 'flank'], ['clubtail', 3, 'front']], world: 3, heavy: true },
-  { style: 'Spytt',     groups: [['frillspitter', 8, 'back'], ['hornback', 3, 'front'], ['snapper', 24, 'flank'], ['raptor', 6, 'flank']], world: 3 },
-  { style: 'Jordskjelv', groups: [['earthshaker', 2, 'front'], ['frillspitter', 6, 'back'], ['raptor', 8, 'flank'], ['clubtail', 2, 'front']], world: 3, heavy: true },
-  { style: 'Gjengangere', groups: [['revenant', 10, 'front'], ['tyrant', 1, 'front'], ['frillspitter', 4, 'back'], ['urdragon', 2, 'front']], world: 3 },
-  { style: 'Boss',      groups: [['tyrantKing', 1, 'boss'], ['revenant', 4, 'front'], ['raptor', 8, 'flank'], ['frillspitter', 3, 'back']], world: 3, boss: true },
+  // 30 skapninger per wave; den nye arten er flertallet (kjemper teller tyngre). 4. okt 2026.
+  { style: 'Horde', groups: [['husk', 30, 'front']] },
+  { style: 'Sverm', groups: [['spider', 22, 'front'], ['husk', 8, 'back']] },
+  { style: 'Spytt', groups: [['spitter', 20, 'back'], ['husk', 10, 'front']] },
+  { style: 'Kile', groups: [['brute', 18, 'front'], ['husk', 8, 'back'], ['spitter', 4, 'back']] },
+  { style: 'Flanker', groups: [['serpent', 22, 'flank'], ['brute', 4, 'front'], ['husk', 4, 'front']] },
+  { style: 'Skall', groups: [['beetle', 18, 'front'], ['spitter', 6, 'back'], ['husk', 6, 'back']] },
+  { style: 'Rede', groups: [['broodmother', 10, 'front'], ['spider', 8, 'flank'], ['husk', 12, 'back']] },
+  { style: 'Skygger', groups: [['stalker', 20, 'flank'], ['brute', 4, 'front'], ['husk', 6, 'front']] },
+  { style: 'Kjemper', groups: [['colossus', 6, 'front'], ['beetle', 6, 'front'], ['husk', 18, 'back']], heavy: true },
+  { style: 'Boss', groups: [['fallenWarden', 1, 'boss'], ['serpent', 10, 'flank'], ['spitter', 8, 'back'], ['husk', 11, 'front']], boss: true },
+  { style: 'Flokk', groups: [['wolf', 22, 'front'], ['serpent', 4, 'flank'], ['spitter', 4, 'back']], world: 2 },
+  { style: 'Stampede', groups: [['boar', 16, 'front'], ['wolf', 14, 'flank']], world: 2 },
+  { style: 'Sverm', groups: [['locust', 22, 'front'], ['boar', 2, 'front'], ['wolf', 6, 'flank']], world: 2 },
+  { style: 'Ljåer', groups: [['mantis', 18, 'front'], ['locust', 12, 'flank']], world: 2 },
+  { style: 'Tornkratt', groups: [['thornling', 20, 'front'], ['locust', 6, 'flank'], ['mantis', 4, 'back']], world: 2 },
+  { style: 'Råtne røtter', groups: [['treant', 6, 'boss'], ['thornling', 18, 'front'], ['wolf', 6, 'flank']], world: 2, heavy: true },
+  { style: 'Skall', groups: [['crab', 20, 'front'], ['thornling', 6, 'back'], ['locust', 4, 'flank']], world: 2 },
+  { style: 'Sang', groups: [['siren', 18, 'back'], ['crab', 10, 'front'], ['boar', 2, 'front']], world: 2 },
+  { style: 'Prosesjon', groups: [['acolyte', 18, 'back'], ['crab', 8, 'front'], ['mantis', 4, 'front']], world: 2 },
+  { style: 'Boss', groups: [['warden2', 1, 'boss'], ['seraph', 6, 'front'], ['acolyte', 8, 'back'], ['crab', 15, 'front']], world: 2, boss: true },
+  { style: 'Flokkjakt', groups: [['raptor', 22, 'flank'], ['wolf', 4, 'front'], ['spitter', 4, 'back']], world: 3 },
+  { style: 'Horn', groups: [['hornback', 16, 'front'], ['raptor', 14, 'flank']], world: 3 },
+  { style: 'Sverm', groups: [['snapper', 22, 'front'], ['hornback', 2, 'front'], ['raptor', 6, 'flank']], world: 3 },
+  { style: 'Panser', groups: [['clubtail', 18, 'front'], ['snapper', 12, 'flank']], world: 3 },
+  { style: 'Urdrager', groups: [['urdragon', 6, 'front'], ['clubtail', 6, 'front'], ['snapper', 18, 'flank']], world: 3, flyers: true },
+  { style: 'Tyrant', groups: [['tyrant', 6, 'front'], ['raptor', 16, 'flank'], ['clubtail', 8, 'front']], world: 3, heavy: true },
+  { style: 'Spytt', groups: [['frillspitter', 20, 'back'], ['raptor', 6, 'flank'], ['clubtail', 4, 'front']], world: 3 },
+  { style: 'Jordskjelv', groups: [['earthshaker', 6, 'front'], ['frillspitter', 10, 'back'], ['raptor', 14, 'flank']], world: 3, heavy: true },
+  { style: 'Gjengangere', groups: [['revenant', 20, 'front'], ['frillspitter', 6, 'back'], ['raptor', 4, 'flank']], world: 3 },
+  { style: 'Boss', groups: [['tyrantKing', 1, 'boss'], ['revenant', 12, 'front'], ['raptor', 10, 'flank'], ['frillspitter', 7, 'back']], world: 3, boss: true },
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.72, 1.61, 1.205, 0.733, 0.911, 0.947, 1.502, 0.802, 0.671, 0.621, 0.58, 0.627, 0.581, 0.575, 0.507, 0.371, 0.422, 0.432, 0.473, 0.454, 0.866, 0.664, 0.771, 0.649, 0.456, 0.344, 0.423, 0.266, 0.269, 0.295];
+const WAVE_FACTOR = [0.3, 1.1, 0.7, 0.275, 0.55, 0.66, 0.8, 0.66, 0.55, 0.66, 0.8, 0.375, 1.375, 0.275, 0.54, 0.093, 0.561, 0.27, 0.35, 0.187, 0.96, 0.313, 1.375, 0.35, 0.66, 0.15, 0.313, 0.16, 0.32, 0.35];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};
@@ -1467,6 +1466,7 @@ const TRACKS = {
 
 // Hvert Barracks-nivå åpner én tier. Tier 3–5 er ikke designet ennå.
 const supplyOf = T => (T && T.tier) || 1;
+const TIER_CAP = 2;   // units av en tier man har uten tierens Barracks
 const BARRACKS = [
   { name: 'Barracks I',   tier: 1, supply: 20, unlocks: ['shieldguard', 'stormreaver', 'ironshot', 'longfang'] },
   { name: 'Barracks II',  tier: 2, supply: 30, unlocks: ['ironwall', 'frostbrand', 'thunderbore', 'hearthkeeper'], cost: { timber: 154, stone: 88, iron: 35 } },
@@ -1588,6 +1588,7 @@ class Econ {
   // Plass i hæren: Tier 1 tar 1 plass, Tier 2 tar 2, Tier 3 tar 3. Barracks gir mer plass.
   supplyCap() { return BARRACKS[this.barracks].supply; }
   unitPrice(T) { const p = { gold: T.cost }; if (T.iron) p.iron = T.iron; if (T.coal) p.coal = T.coal; return p; }
+  // unitUnlocked = Barracks for denne tieren er bygget (ingen grense). Uten den kan man ha TIER_CAP av tieren.
   unitUnlocked(type) { for (let i = 0; i <= this.barracks; i++) if (BARRACKS[i].unlocks.includes(type)) return true; return false; }
   buyWall() {
     const w = WALLS[this.wall + 1];
@@ -3460,7 +3461,7 @@ const Sound = (function () {
     if (tool === 'remove' || (ex && ex.type === tool)) {
       if (ex) { state.army.splice(i, 1); refund(ex); }
     } else {
-      if (!ec.unitUnlocked(tool)) { toast(`${TYPES[tool].name} er Tier ${TYPES[tool].tier || 2} og krever ${BARRACKS[(TYPES[tool].tier || 2) - 1].name}.`); return; }
+      if (capped(tool, ex)) { toast(capMsg(tool)); return; }
       const used = armySupply() - (ex ? supplyOf(TYPES[ex.type]) : 0) + supplyOf(TYPES[tool]);
       if (used > ec.supplyCap()) { const nb = BARRACKS[ec.barracks + 1]; toast(`Hæren er full (${armySupply()}/${ec.supplyCap()} plass). ${nb && !nb.future ? `Bygg ${nb.name} (${nb.supply} plass), eller bytt` : 'Bytt'} ut en svakere unit ved å plassere oppå den.`); return; }
       const price = ec.unitPrice(TYPES[tool]), back = ex ? refundOf(ex) : {};
@@ -3474,6 +3475,11 @@ const Sound = (function () {
     rebuild(); renderPanel();
   }
   const armySupply = () => state.army.reduce((n, a) => n + supplyOf(TYPES[a.type]), 0);
+  const tierOf = k => TYPES[k].tier || 1;
+  const tierCount = (t, skip) => state.army.filter(a => a !== skip && tierOf(a.type) === t).length;
+  // Nådd taket: tieren mangler sin Barracks og hæren har allerede TIER_CAP av den.
+  const capped = (k, skip) => !state.econ.unitUnlocked(k) && tierCount(tierOf(k), skip) >= TIER_CAP;
+  const capMsg = k => `Uten ${BARRACKS[tierOf(k) - 1].name} kan du ha maks ${TIER_CAP} Tier ${tierOf(k)}-units. Bygg ${BARRACKS[tierOf(k) - 1].name} for å fjerne taket.`;
   const SUP_SVG = '<svg class="ri" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M8 1.5 L14 4 V8 C14 11.5 11.2 13.8 8 14.8 C4.8 13.8 2 11.5 2 8 V4 Z" fill="#8fb3d6" stroke="#2c3a4a" stroke-width="1"/><path d="M8 4 V12" stroke="#2c3a4a" stroke-width="1"/></svg>';
   function refundOf(a) {
     const type = a.type || a, p = Object.assign({}, state.econ.unitPrice(TYPES[type])), up = upgradeSpent(type, a.level || 0), b = {};
@@ -3700,7 +3706,7 @@ const Sound = (function () {
     document.querySelectorAll('.u-add').forEach(b => {
       const k = b.dataset.type; if (!k) return;
       b.disabled = state.phase !== 'build';
-      b.classList.toggle('cant', !ec.unitUnlocked(k) || ((!ec.can(ec.unitPrice(TYPES[k])) || armySupply() + supplyOf(TYPES[k]) > ec.supplyCap()) && state.tool !== k));
+      b.classList.toggle('cant', capped(k) || ((!ec.can(ec.unitPrice(TYPES[k])) || armySupply() + supplyOf(TYPES[k]) > ec.supplyCap()) && state.tool !== k));
     });
     document.querySelectorAll('[data-act="worker+"]').forEach(b => {
       const k = b.dataset.k, n = ec.nodes[k];
@@ -3726,11 +3732,11 @@ const Sound = (function () {
     $('#palette').innerHTML = ROSTER.map(tier => {
       const unlocked = tier.units && tier.units.length && ec.unitUnlocked(tier.units[0]);
       const open = !state.collapsed.has(tier.tier);
-      const head = `<button type="button" class="tier-h" data-tier="${tier.tier}" aria-expanded="${open}"><span class="chev">${open ? '▾' : '▸'}</span><b>Tier ${tier.tier}</b><span>${tier.name}</span>${tier.units && !unlocked ? `<em>🔒 ${tier.need}</em>` : ''}${!tier.units ? '<em>Kommer</em>' : ''}</button>`;
+      const head = `<button type="button" class="tier-h" data-tier="${tier.tier}" aria-expanded="${open}"><span class="chev">${open ? '▾' : '▸'}</span><b>Tier ${tier.tier}</b><span>${tier.name}</span>${tier.units && !unlocked ? `<em data-tip="Uten ${tier.need} kan du ha maks ${TIER_CAP} av denne tieren. ${tier.need} fjerner taket og gir mer plass i hæren.">${tierCount(tier.tier)}/${TIER_CAP} · ${tier.need} fjerner taket</em>` : ''}${!tier.units ? '<em>Kommer</em>' : ''}</button>`;
       if (!tier.units) return `<section class="tier future">${head}${open ? `<div class="ugrid">${'<div class="ucard ghost"><span class="lock">🔒</span><span>Ikke designet ennå</span></div>'.repeat(2)}</div>` : ''}</section>`;
-      if (!open) return `<section class="tier${unlocked ? '' : ' locked'}">${head}</section>`;
-      return `<section class="tier${unlocked ? '' : ' locked'}">${head}<div class="ugrid">` + tier.units.map(k => {
-        const T = eff[k], n = counts[k] || 0, sel = selCounts[k] || 0, locked = !ec.unitUnlocked(k);
+      if (!open) return `<section class="tier">${head}</section>`;
+      return `<section class="tier">${head}<div class="ugrid">` + tier.units.map(k => {
+        const T = eff[k], n = counts[k] || 0, sel = selCounts[k] || 0, locked = capped(k);
         return `<div class="ucard${sel && sel === n ? ' sel' : sel ? ' part' : ''}${state.tool === k ? ' placing' : ''}${locked ? ' locked' : ''}" data-unit="${k}">
           <button type="button" class="u-pick" data-pick="${k}" id="pick-${k}" ${build && n ? '' : 'disabled'} aria-pressed="${sel === n && n > 0}" title="Velg alle ${T.name} på kartet">
             <img alt="" src="${portraits[k] || ''}"><span class="u-count">${sel ? `${sel}/` : ''}${n}</span>
@@ -3738,7 +3744,7 @@ const Sound = (function () {
           </button>
           <div class="u-foot"><span class="u-cost">${icon('gold', 14)}${T.cost}${T.iron ? ` ${icon('iron', 14)}${T.iron}` : ''}${T.coal ? ` ${icon('coal', 14)}${T.coal}` : ''} <span class="u-sup" data-tip="Tar ${supplyOf(T)} plass i hæren">${SUP_SVG}${supplyOf(T)}</span></span>
             <button type="button" class="u-info" data-info="${k}" aria-label="Vis tall for ${T.name}">i</button></div>
-          <button type="button" class="u-add" data-type="${k}" id="add-${k}">${locked ? `🔒 ${tier.need}` : state.tool === k ? 'Plasserer …' : '+ Plasser'}</button>
+          <button type="button" class="u-add" data-type="${k}" id="add-${k}">${locked ? `Maks ${TIER_CAP} · ${tier.need}` : state.tool === k ? 'Plasserer …' : '+ Plasser'}</button>
         </div>`;
       }).join('') + '</div></section>';
     }).join('');
@@ -3882,9 +3888,9 @@ const Sound = (function () {
     longhouse: longhouseHtml,
     barracks() {
       const ec = state.econ, nb = BARRACKS[ec.barracks + 1];
-      return `<div class="card"><h3>Barracks ${tipIcon('Hvert nivå åpner en ny tier av units og gir mer plass i hæren (30, 45, 60). Bygningen i landsbyen vokser.')} <small>${BARRACKS[ec.barracks].name}</small></h3>
+      return `<div class="card"><h3>Barracks ${tipIcon('Alle tiers kan kjøpes, men uten riktig Barracks bare 2 av hver høyere tier. Hvert nivå fjerner taket for sin tier og gir mer plass i hæren. Bygningen i landsbyen vokser.')} <small>${BARRACKS[ec.barracks].name}</small></h3>
         ${tiles([upTile({ pic: 'barracks', name: 'Barracks', lv: ec.barracks + 1, max: BARRACKS.length,
-          tip: 'Nivå I: Tier 1 (Shieldguard, Stormreaver, Ironshot, Longfang). Nivå II: Tier 2 (Ironwall, Frostbrand, Thunderbore, Hearthkeeper). Nivå III–V åpner Tier 3–5 når de er designet.',
+          tip: 'Nivå II fjerner taket på Tier 2, III på Tier 3, IV på Tier 4. Uten nivået kan du ha 2 av tieren. Hvert nivå gir også mer plass i hæren.',
           now: `Tier ${ec.barracks + 1}`, buy: nb && buyBtn(nb.future ? `🔒 Tier ${nb.tier}` : `Tier ${nb.tier}`, nb.cost, 'barracks', nb.future ? 'data-lock="future"' : '') })])}</div>`;
     },
     forge: () => `<div class="card"><h3>Forge ${tipIcon('Våpen og rustning for hele hæren. Krever jern; de høyeste nivåene også kull.')}</h3>${tiles([trackRow('melee'), trackRow('ranged'), trackRow('armor')])}</div>`,
@@ -4133,7 +4139,7 @@ const Sound = (function () {
     const add = e.target.closest('.u-add');
     if (add && !add.disabled) {
       const k = add.dataset.type;
-      if (!state.econ.unitUnlocked(k)) { toast(`${TYPES[k].name} er Tier 2 og krever Barracks II. Klikk Barracks i landsbyen.`); return; }
+      if (capped(k)) { toast(capMsg(k)); return; }
       if (add.classList.contains('cant')) { explainMissing(state.econ.unitPrice(TYPES[k])); return; }
       state.tool = state.tool === k ? null : k; clearSelection(true); syncSelection(); renderPanel(); return;
     }

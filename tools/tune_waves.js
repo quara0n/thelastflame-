@@ -7,7 +7,7 @@ const R = +(process.argv[2] || 16);
 const TARGET = w => w <= 4 ? 1.0 : w <= 8 ? 0.95 : w === 10 ? 0.8 : w <= 19 ? 0.93 : w === 20 ? 0.7 : w <= 29 ? 0.9 : 0.65;
 // Waves before FROM keep the factor already built into the prototype; only later waves are searched.
 const FROM = +(process.argv[3] || 1);
-const GRID = [0.2, 0.25, 0.3, 0.35, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.25, 1.4, 1.6];
+const GRID = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.25, 1.4, 1.6];
 
 // Pull the bot out of game_sim by re-loading it with access to its internals.
 

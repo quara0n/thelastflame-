@@ -121,5 +121,9 @@ import music
 s = music.apply(s)
 import economy
 s = economy.apply(s)
+import tier_cap
+s = tier_cap.apply(s)
+import waves30
+s = waves30.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))
