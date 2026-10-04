@@ -129,5 +129,7 @@ import versus
 s = versus.apply(s)
 import arena
 s = arena.apply(s)
+import rival_view
+s = rival_view.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))

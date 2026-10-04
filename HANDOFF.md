@@ -39,6 +39,8 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 
 ## Known rough edges
 
+- 4 Oct (version 13): watch the rival live (`tools/rival_view.py`). Rival now runs begin()/end() per wave and shops right after each wave; VERSUS share 0.35, wave 0.47 (4–5 sends per wave each way, about half of bot-vs-bot matches end at wave 19). Future: paid 5–10 s scouting in real multiplayer.
+
 - 4 Oct (version 12): arena duel after waves 8, 18, 28 (`tools/arena.py`). Captain aura, Ironwall taunt and Shieldguard shield wall made symmetric so the duel is fair. The arena happens on the battlefield, not a separate round arena (art later).
 
 - 4 Oct (version 11): 1v1 against the computer (`tools/versus.py`, details in the multiplayer doc). Next suggested: user plays it; then the wave-8 arena vs the computer; then one big balance pass with sends; then real online multiplayer. Wave 19 is a wall in 1v1 (healing Acolytes).

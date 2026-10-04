@@ -17,7 +17,7 @@ const SEND = { husk: 3, spider: 3, spitter: 5, serpent: 5, brute: 8, beetle: 9, 
   raptor: 10, hornback: 30, snapper: 8, clubtail: 28, urdragon: 45, tyrant: 70, frillspitter: 16, earthshaker: 90, revenant: 20 };
 const RIVAL_BREAK = 55;
 // Knapper for 1 mot 1: hvor mye computeren sender (andel av gullet), hvor sterke portalens egne waves er, og sendeprisene.
-const VERSUS = { share: 0.3, wave: 0.45, price: 1 };
+const VERSUS = { share: 0.35, wave: 0.47, price: 1 };
 const sendPrice = k => Math.max(1, Math.round(SEND[k] * VERSUS.price));
 const versusScale = W => ({ hp: W.scale.hp * VERSUS.wave, dmg: W.scale.dmg * Math.sqrt(VERSUS.wave) });
 // Det man kan sende i wave wi: skapninger fra verdenen man er i nå, som allerede har vist seg.
@@ -43,17 +43,27 @@ function sentLeaks(sim, by) {
 __BOT__
 const RIVAL_L = { TYPES, BARRACKS, NODES, UPGRADES, MAX_LEVEL, supplyOf, ARCHERS, upgradeSpent, REFUND, WALLS };
 class Rival {
-  constructor() { this.ec = new Econ(); this.army = []; this.t = 45; this.alive = true; this.hold = null; }
-  // Spiller rivalens wave wi med det spilleren sendte. Gir tilbake gull til spilleren for lekk, og det rivalen sender tilbake.
-  playWave(wi, incoming) {
+  constructor() { this.ec = new Econ(); this.army = []; this.t = 45; this.alive = true; this.hold = null; this.sim = null; this.wi = -1; this.shop(); this.makeView(); }
+  // Rivalen handler for pengene sine, men holder av det han vil sende.
+  shop() {
+    const ec = this.ec, keep = this.wi + 1 >= 2 ? Math.floor(ec.res.gold * VERSUS.share) : 0;
+    ec.res.gold -= keep; rivalBot(RIVAL_L, ec, this.army, Math.min(WAVES.length - 1, this.wi + 1)); ec.res.gold += keep; this.saved = keep;
+  }
+  // Det som vises av rivalen mellom wavene: hæren hans hjemme.
+  makeView() { const ec = this.ec; this.view = new Sim(this.army, { types: ec.types(TYPES), enemies: [], gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count }); }
+  running() { return !!(this.sim && !this.sim.result); }
+  // Waven starter: rivalen samler inn, handler, og kampen bygges. Den kjøres steg for steg (live) eller med end().
+  begin(wi, incoming) {
     const ec = this.ec, W = WAVES[wi];
-    ec.tick(this.t);
-    const budget = wi >= 2 ? Math.floor(ec.res.gold * VERSUS.share) : 0;
-    ec.res.gold -= budget;
-    rivalBot(RIVAL_L, ec, this.army, wi);
-    ec.res.gold += budget;
-    const base = buildWave(W);
-    const sim = new Sim(this.army, { types: ec.types(TYPES, versusScale(W)), enemies: base.concat(placeSent(incoming, base)), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count });
+    ec.tick(this.t); this.wi = wi;
+    this.budget = wi >= 2 ? Math.min(Math.floor(ec.res.gold), Math.max(this.saved || 0, Math.floor(ec.res.gold * VERSUS.share))) : 0;
+    ec.res.gold -= this.budget; rivalBot(RIVAL_L, ec, this.army, wi); ec.res.gold += this.budget;
+    const base = buildWave(W); this.incoming = incoming || [];
+    this.sim = new Sim(this.army, { types: ec.types(TYPES, versusScale(W)), enemies: base.concat(placeSent(this.incoming, base)), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count });
+  }
+  // Waven er ferdig (spoles frem om nødvendig). Gir gull for lekk til spilleren og det rivalen sender tilbake.
+  end() {
+    const ec = this.ec, sim = this.sim, wi = this.wi, W = WAVES[wi];
     while (!sim.result) sim.step(1 / 15);
     ec.tick(sim.t); ec.gateHp = sim.gateHp; this.t = RIVAL_BREAK;
     let bounty = 0; sim.units.forEach(u => { if (u.side === 'e' && !u.alive) bounty += BOUNTY[u.type] || 0; });
@@ -63,18 +73,23 @@ class Rival {
     if (lost) this.alive = false;
     const leaked = sim.units.filter(u => u.sent && u.sent.by === 'p' && (u.leaked || u.z > MAP.gateZ + 1.5)).length;
     this.hold = { wave: W.n, win: sim.result.win, lost, gate: Math.round(sim.gateHp), gateMax: ec.gateMax(), army: this.army.length,
-      tier: ec.barracks + 1, got: (incoming || []).length, leaked };
+      tier: ec.barracks + 1, got: this.incoming.length, leaked };
     // Rivalen sender for budsjettet sitt, tilfeldig blant det som er råd til.
     const out = [], opts = sendable(wi);
-    let money = Math.min(budget, Math.floor(ec.res.gold));
+    let money = Math.min(this.budget, Math.floor(ec.res.gold));
     for (let g = 0; g < 40 && out.length < 24; g++) {
       const can = opts.filter(k => sendPrice(k) <= money);
       if (!can.length) break;
       const k = can[Math.floor(Math.random() * can.length)], pr = sendPrice(k);
       money -= pr; ec.res.gold -= pr; out.push({ type: k, by: 'r', price: pr });
     }
-    return { leakGold: sentLeaks(sim, 'p'), out, lost };
+    const leakGold = sentLeaks(sim, 'p');
+    this.sim = null;
+    if (!lost) { this.shop(); }
+    this.makeView();
+    return { leakGold, out, lost };
   }
+  playWave(wi, incoming) { this.begin(wi, incoming); return this.end(); }
 }
 """
 
@@ -120,19 +135,19 @@ def apply(s):
     s = sub(s, "      types: ec.types(TYPES, W.scale),\n      enemies: buildWave(W),\n      gateHp: ec.gateHp,", "      types: ec.types(TYPES, state.versus ? versusScale(W) : W.scale),\n      enemies: withSends(buildWave(W)),\n      gateHp: ec.gateHp,")
     s = sub(s, "  function startWave() {\n    if (state.phase !== 'build') return;\n    clearSelection(true);\n    state.tool = null;\n    rebuild();",
                "  const withSends = base => state.versus ? base.concat(placeSent(state.incoming, base)) : base;\n"
-               "  function startWave() {\n    if (state.phase !== 'build') return;\n    clearSelection(true);\n    state.tool = null;\n    rebuild();\n"
-               "    // Rivalen kjemper sin wave samtidig (regnes ut nå, vises når din wave er ferdig).\n"
-               "    if (state.versus && state.rival.alive) { state.rivalRes = state.rival.playWave(state.wave, state.sendQueue); state.sentLast = state.sendQueue; state.sendQueue = []; }\n"
-               "    else state.rivalRes = null;")
+               "  function startWave() {\n    if (state.phase !== 'build') return;\n    clearSelection(true);\n    state.tool = null;\n"
+               "    // Er rivalen fortsatt i sin forrige wave, spoles den ferdig først (så vi vet hva han sender).\n"
+               "    if (state.versus && state.rival.running()) rivalDone();\n    if (state.phase !== 'build') return;\n"
+               "    rebuild();\n"
+               "    // Rivalen starter sin wave samtidig og kjemper live på sin egen slagmark.\n"
+               "    if (state.versus && state.rival.alive) { state.rival.begin(state.wave, state.sendQueue); state.sentLast = state.sendQueue; state.sendQueue = []; state.racc = 0; }\n"
+               "    state.incoming = [];   // de er nå med i waven din")
     s = sub(s, "    if (lostFlame) { state.phase = 'over'; state.outcome = 'lost'; }\n    else if (state.wave >= WAVES.length - 1) { state.phase = 'over'; state.outcome = 'won'; }",
                "    if (state.versus) {\n"
-               "      const rr = state.rivalRes;\n"
-               "      if (rr && rr.leakGold) { ec.add({ gold: rr.leakGold }); popRes('gold', rr.leakGold); }\n"
                "      const back = sentLeaks(sim, 'r'); if (back) state.rival.ec.add({ gold: back });\n"
-               "      report.rival = Object.assign({}, state.rival.hold, { sent: (state.sentLast || []).length, leakGold: rr ? rr.leakGold : 0 });\n"
-               "      state.incoming = rr ? rr.out : [];\n"
+                              "      report.rival = state.rival.running() ? { pending: true } : Object.assign({}, state.rival.hold, { sent: (state.sentLast || []).length, leakGold: state.rivalRes ? state.rivalRes.leakGold : 0 });\n"
                "    }\n"
-               "    const rivalDown = state.versus && !state.rival.alive && report.rival && report.rival.lost;\n"
+               "    const rivalDown = state.versus && !state.rival.alive;\n"
                "    if (lostFlame || rivalDown) { state.phase = 'over'; state.outcome = lostFlame ? (rivalDown ? 'draw' : 'lost') : 'won-vs'; if (rivalDown && !lostFlame) sfx('victory'); }\n"
                "    else if (state.wave >= WAVES.length - 1) { state.phase = 'over'; state.outcome = state.versus && state.rival.alive ? 'draw-alive' : 'won'; }")
     s = sub(s, "      rebuild();\n    }\n    renderPanel(); showResult();\n  }",
@@ -142,7 +157,8 @@ def apply(s):
                "    state.rival = new Rival(); state.sendQueue = []; state.incoming = []; state.rivalRes = null; state.sentLast = [];")
     # Resultat.
     s = sub(s, "    const head = over ? (state.outcome === 'won' ? 'Flammen brenner fortsatt' : `Flammen falt på wave ${r.wave}`)",
-               "    if (r.rival) why.push(`Rivalen: ${r.rival.lost ? 'flammen falt' : r.rival.win ? 'holdt' : 'porten tok skade'} (port ${r.rival.gate}/${r.rival.gateMax}, ${r.rival.army} soldater, Tier ${r.rival.tier}). Du sendte ${r.rival.sent}, ${r.rival.leaked} kom gjennom${r.rival.leakGold ? `, +${r.rival.leakGold} gull` : ''}.`);\n"
+               "    if (r.rival && r.rival.pending) why.push('Rivalen kjemper fortsatt sin wave. Se ham med «Rival»-knappen eller kartet.');\n"
+               "    else if (r.rival) why.push(`Rivalen: ${r.rival.lost ? 'flammen falt' : r.rival.win ? 'holdt' : 'porten tok skade'} (port ${r.rival.gate}/${r.rival.gateMax}, ${r.rival.army} soldater, Tier ${r.rival.tier}). Du sendte ${r.rival.sent}, ${r.rival.leaked} kom gjennom${r.rival.leakGold ? `, +${r.rival.leakGold} gull` : ''}.`);\n"
                "    const head = over && state.outcome === 'won-vs' ? `Seier! Rivalens flamme falt på wave ${r.wave}` : over && state.outcome === 'draw' ? 'Begge flammene falt. Uavgjort.' : over && state.outcome === 'draw-alive' ? 'Begge flammene brenner etter wave 30. Uavgjort.' : over ? (state.outcome === 'won' ? 'Flammen brenner fortsatt' : `Flammen falt på wave ${r.wave}`)")
     # Neste wave viser det rivalen sender.
     s = sub(s, "        ${isNew ? '<span class=\"newtag\">NY</span>' : ''}<span class=\"u-role\">${T.role}</span></div>`;\n    }).join('');",
