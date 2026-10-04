@@ -1,3 +1,4 @@
+// Usage: node tools/tier_timing.js  – median wave the bot reaches each Barracks tier (20 games).
 const G = require('./game_sim.js');
 const L = G.load();
 const origBuy = L.Econ.prototype.buyBarracks; const hist = [];

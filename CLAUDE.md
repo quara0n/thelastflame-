@@ -52,7 +52,7 @@ The Last Flame is a Squadron-inspired unit tower defence. The player holds a gat
 
 ## Locked design decisions (details in docs/)
 
-- Economy: scarcity like Squadron. Worker 5 gold, Tier 1 unit 10 gold, start 75 gold. Deflated 4 Oct: a normal player reaches Tier 2 at the end of World 1, Tier 3 in World 2, Tier 4 in World 3 (bot: waves 9/16/26; an all-in economy rush: 5/12/18). Check with /tmp-style rush and tier scripts before changing prices.
+- Economy: scarcity like Squadron. Worker 5 gold, Tier 1 unit 10 gold, start 75 gold. Deflated 4 Oct: a normal player reaches Tier 2 at the end of World 1, Tier 3 in World 2, Tier 4 in World 3 (bot: waves 9/16/26; an all-in economy rush: 5/12/18). Check with `node tools/tier_timing.js` (bot) and `node tools/rush.js` (rush) before changing prices.
 - Every unit has a base version and 3 upgrades, bought on one specific soldier. Same model with new gear. Forge and Workshop upgrades (all units of a type) stay as well.
 - Army size around 27 units at wave 20 is fine; not 40. Army space 20 / 30 / 40 / 50.
 - Tiers: Tier 4 belongs to World 3 and Tier 5 to World 4, but Barracks prices decide, not wave locks. A strong player may buy Barracks V in World 3.

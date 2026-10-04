@@ -1,8 +1,9 @@
+// Usage: node tools/rush.js [breakSeconds=55] [armyShare=0.5]
 // Greedy economy player: workers everywhere, then Barracks as soon as affordable. Army costs approximated by
 // spending ARMYFRAC of each wave's gold on soldiers. Prints the wave each Barracks level is reached.
 const { load } = require('./game_sim.js');
 const L = load();
-const BUILD = +(process.argv[3] || 55), BATTLE = 60, ARMYFRAC = +(process.argv[4] || 0.5);
+const BUILD = +(process.argv[2] || 55), BATTLE = 60, ARMYFRAC = +(process.argv[3] || 0.5);
 const ec = new L.Econ(); const got = {}; let t = 45;
 for (let w = 1; w <= 30; w++) {
   ec.tick(t + BATTLE);
