@@ -143,5 +143,7 @@ import warden_abilities
 s = warden_abilities.apply(s)
 import forge_gate
 s = forge_gate.apply(s)
+import ashcrow
+s = ashcrow.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))

@@ -25,7 +25,7 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 2. **Ask the user how waves 21–30 feel on the phone.** The balance comes from a bot, not a human.
 3. **Multiplayer basics — locked 3 Oct:** 2 teams of 4; every player has their own gate; one shared Warden per team is the king (leaks from any gate go to the team's citadel; enemy reaches the flame = team loses); arena at wave 8; you send creatures from the world you're in. Draft numbers (send prices, leak gold, arena prize, fixed 1-vs-1 send pairing) are in `docs/design-flyvere-assets-flerspiller.md` under "Flerspiller: grunnregler" and still need the user's OK. Later the same evening: no gold passing between players; a player who has cleared their own wave has their surviving soldiers moved automatically up to the Warden to fight teammates' leaks; leak split 25 % lost / leaker 25 % / helper 50 % (helper may give back); send prices cut 25 %; leak gold for sends approved; arena = army duel. Still open: arena prize and tiebreak, gold when the Warden kills a leak, whether the Warden can die. Note: the user reacted strongly when asked "what is the king" — the Warden is obviously the king; don't ask that again.
 4. **World 4 (divine robotics, waves 31–40) and Tier 5 (Legendary)**, built the same way as World 3: draft in the notes, user approval, `tools/world4.py`, tune with `tune4.js`-style measurement and `tune_waves.js`.
-5. Missing flyer creatures: Ash Crow (wave 5) and drones (wave 35).
+5. Missing flyer creatures: drones (wave 35). Ash Crow done in version 20. Note: locusts (wave 15) have no `flies` flag yet, so they walk instead of flying.
 6. About 30 enemies per wave (today 10–40, uneven).
 7. Models: choose between an AI 3D tool (Meshy, Tripo, Rodin) and bought packs. Start with Husk and Brute, then a clean Warden character sheet.
 
@@ -87,3 +87,12 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 - Han sparer: vanligvis sender han halvparten og legger resten i en sparegris. Stort angrep når porten din er under 60 %, når hæren din har krympet (du solgte for ny tier), før en ny verden, eller når sparegrisen er full.
 - Toast og Send-fanen sier hvorfor han sendte det han sendte, og om han sparer.
 - Målt (`tools/send_test.js`): samme gull gir ca. 75 % mer skade på hæren og porten enn tilfeldige valg. Bot mot bot: smart rival vant 9, tilfeldig 7, uavgjort 3 av 30 (de fleste kampene avgjøres av wave 25).
+
+## 4 Oct 2026 – version 20: askekråker
+
+- Ny skapning Ash Crow (`tools/ashcrow.py`): flyr over hæren rett mot porten, rask, skjør (45 HP, ingen rustning), små hakk (4 skade per 0,9 s). Bare skyttere og bueskyttere på muren når den i lufta; ved porten kan alle slå.
+- Wave 5 er nå «Askekråker»: 16 kråker foran, 10 serpenter på flanken, 4 husks. Send-pris 4, bounty 1.
+- Egen modell (vinger som slår), egne lyder (bird).
+- Straffer få skyttere: 8 enheter med 4 skyttere mister porten, 24 med 12 skyttere skyter alle ned.
+- Re-tunet fra wave 5 (to runder). `node tools/game_sim.js 30`: 18 av 30 når wave 30 (var 14, trolig mest støy). Wave 5 holdes 100 % av boten.
+

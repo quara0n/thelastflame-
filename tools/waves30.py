@@ -11,7 +11,7 @@ W = [
   ("Sverm",      [("spider", 22, "front"), ("husk", 8, "back")], {}),
   ("Spytt",      [("spitter", 20, "back"), ("husk", 10, "front")], {}),
   ("Kile",       [("brute", 18, "front"), ("husk", 8, "back"), ("spitter", 4, "back")], {}),
-  ("Flanker",    [("serpent", 22, "flank"), ("brute", 4, "front"), ("husk", 4, "front")], {}),
+  ("Askekråker", [("ashcrow", 16, "front"), ("serpent", 10, "flank"), ("husk", 4, "front")], {"flyers": True}),
   ("Skall",      [("beetle", 18, "front"), ("spitter", 6, "back"), ("husk", 6, "back")], {}),
   ("Rede",       [("broodmother", 10, "front"), ("spider", 8, "flank"), ("husk", 12, "back")], {}),
   ("Skygger",    [("stalker", 20, "flank"), ("brute", 4, "front"), ("husk", 6, "front")], {}),

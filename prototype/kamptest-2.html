@@ -621,6 +621,7 @@ const TYPES = {
   brute:       { name: 'Ashen Brute', side: 'e', role: 'Tung gjennombrudd, treffer to', hp: 440, armor: 3, dmg: 28, interval: 1.6, range: 0.5, speed: 1.9, radius: 0.75, aggro: 7, cleave: true },
   // Askemyr — FORSLAG til Fallen World 1: en verden av aske og gift.
   spider:      { name: 'Ash Spider', side: 'e', swarm: true, role: 'Rask sverm, lite HP', hp: 55, armor: 0, dmg: 7, interval: 0.6, range: 0.3, speed: 4.2, radius: 0.35, aggro: 9 },
+  ashcrow:     { name: 'Ash Crow', side: 'e', kind: 'bird', flies: true, swarm: true, role: 'Flyr over hæren rett mot porten. Bare skyttere og bueskyttere på muren når den i lufta', hp: 45, armor: 0, dmg: 4, interval: 0.9, range: 0.35, speed: 4.0, radius: 0.35, aggro: 8 },
   spitter:     { name: 'Bile Spitter', side: 'e', role: 'Spytter gift på avstand', hp: 85, armor: 0, dmg: 12, interval: 1.6, range: 6, speed: 2.2, radius: 0.42, aggro: 8, ranged: true },
   serpent:     { name: 'Ash Serpent', side: 'e', role: 'Rask, hardtslående slange', hp: 150, armor: 1, dmg: 19, interval: 0.8, range: 0.4, speed: 3.4, radius: 0.45, aggro: 8 },
   beetle:      { name: 'Carapace Beetle', side: 'e', role: 'Tykt skall, høy rustning', hp: 260, armor: 7, dmg: 14, interval: 1.2, range: 0.45, speed: 1.8, radius: 0.7, aggro: 7 },
@@ -862,7 +863,7 @@ const WAVES = [
   { style: 'Sverm', groups: [['spider', 22, 'front'], ['husk', 8, 'back']] },
   { style: 'Spytt', groups: [['spitter', 20, 'back'], ['husk', 10, 'front']] },
   { style: 'Kile', groups: [['brute', 18, 'front'], ['husk', 8, 'back'], ['spitter', 4, 'back']] },
-  { style: 'Flanker', groups: [['serpent', 22, 'flank'], ['brute', 4, 'front'], ['husk', 4, 'front']] },
+  { style: 'Askekråker', groups: [['ashcrow', 16, 'front'], ['serpent', 10, 'flank'], ['husk', 4, 'front']], flyers: true },
   { style: 'Skall', groups: [['beetle', 18, 'front'], ['spitter', 6, 'back'], ['husk', 6, 'back']] },
   { style: 'Rede', groups: [['broodmother', 10, 'front'], ['spider', 8, 'flank'], ['husk', 12, 'back']] },
   { style: 'Skygger', groups: [['stalker', 20, 'flank'], ['brute', 4, 'front'], ['husk', 6, 'front']] },
@@ -891,7 +892,7 @@ const WAVES = [
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.3, 0.99, 0.847, 0.44, 0.833, 1.162, 1.22, 0.999, 0.619, 0.833, 1.141, 0.525, 2.117, 0.42, 0.801, 0.419, 0.971, 0.529, 0.617, 0.322, 0.95, 0.387, 1.703, 0.636, 1.33, 0.338, 0.704, 0.317, 0.616, 0.551];
+const WAVE_FACTOR = [0.3, 0.99, 0.847, 0.44, 1.6, 1.162, 1.098, 0.999, 0.619, 0.75, 1.13, 0.473, 2.117, 0.42, 0.801, 0.419, 0.961, 0.524, 0.679, 0.322, 0.855, 0.387, 1.703, 0.636, 1.49, 0.334, 0.634, 0.317, 0.61, 0.496];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};
@@ -1650,7 +1651,7 @@ const WARDEN_ABIL = {
 const ABIL_CD = { stun: [18, 15, 12], spin: [30, 25, 20], freeze: [45, 38, 30] };
 const WARDEN_TRAIN = { cost: { gold: 14 }, xp: 5 };
 
-const BOUNTY = { husk: 1, brute: 3, spider: 1, spitter: 2, serpent: 2, beetle: 3, broodmother: 4, stalker: 2, colossus: 8, fallenWarden: 25,
+const BOUNTY = { husk: 1, brute: 3, spider: 1, ashcrow: 1, spitter: 2, serpent: 2, beetle: 3, broodmother: 4, stalker: 2, colossus: 8, fallenWarden: 25,
   wolf: 1, boar: 3, locust: 1, mantis: 3, thornling: 2, treant: 8, crab: 2, siren: 3, acolyte: 3, seraph: 6, warden2: 30 };
 Object.assign(BOUNTY, { raptor: 2, hornback: 4, snapper: 1, clubtail: 4, urdragon: 8, tyrant: 10, frillspitter: 3, earthshaker: 12, revenant: 3, tyrantKing: 40 });
 const WARDEN_KILL_XP = BOUNTY;
@@ -1793,7 +1794,7 @@ class Econ {
 
 // ===== 1 mot 1 mot computer (4. okt 2026) =====
 // Priser for å sende skapninger (gull). World 2 koster ca. 2 ganger, World 3 ca. 3,5 ganger World 1.
-const SEND = { husk: 3, spider: 3, spitter: 5, serpent: 5, brute: 8, beetle: 9, broodmother: 12, stalker: 6, colossus: 30,
+const SEND = { husk: 3, spider: 3, ashcrow: 4, spitter: 5, serpent: 5, brute: 8, beetle: 9, broodmother: 12, stalker: 6, colossus: 30,
   wolf: 6, boar: 16, locust: 5, mantis: 16, thornling: 9, treant: 50, crab: 12, siren: 12, acolyte: 12, seraph: 25,
   raptor: 10, hornback: 30, snapper: 8, clubtail: 28, urdragon: 45, tyrant: 70, frillspitter: 16, earthshaker: 90, revenant: 20 };
 const RIVAL_BREAK = 55;
@@ -2293,6 +2294,7 @@ const Sound = (function () {
   const CREATURE = {
     beast: t => { voice(t, { f: [[0, 260], [0.3, 540], [1.0, 320]], dur: 1.05, v: 0.2, bp: 820, q: 3, a: 0.12, vib: [5, 9] }); voice(t + 0.05, { type: 'triangle', f: [[0, 390], [0.35, 800], [1.0, 470]], dur: 1.0, v: 0.08, bp: 1300, q: 2, a: 0.15 }); },
     boar: t => { voice(t, { type: 'square', f: [[0, 95], [0.35, 68]], dur: 0.45, v: 0.22, bp: 420, q: 1.5, trem: [32, 0.7] }); noise(sfxBus, t, 0.35, { ftype: 'lowpass', f: 600, v: 0.18 }); },
+    bird: t => { [0, 0.22].forEach(d => { voice(t + d, { type: 'sawtooth', f: [[0, 620], [0.06, 820], [0.18, 480]], dur: 0.2, v: 0.12, bp: 1400, q: 3, a: 0.01 }); noise(sfxBus, t + d, 0.16, { ftype: 'bandpass', f: 1800, q: 2, v: 0.06 }); }); },
     insect: t => { voice(t, { f: [[0, 205], [0.5, 230]], dur: 0.55, v: 0.12, bp: 1900, q: 2, trem: [46, 0.8] }); voice(t, { type: 'square', f: [[0, 410], [0.5, 470]], dur: 0.5, v: 0.05, bp: 3200, q: 3, trem: [61, 0.9] }); },
     plant: t => { voice(t, { type: 'square', f: [[0, 58], [0.4, 44], [0.9, 52]], dur: 0.95, v: 0.2, bp: 340, q: 5, trem: [13, 0.85], a: 0.08 }); noise(sfxBus, t + 0.2, 0.4, { f: 260, q: 4, v: 0.12 }); },
     sea: t => { for (let i = 0; i < 6; i++) { const f0 = 260 + Math.random() * 500; voice(t + i * 0.07 + Math.random() * 0.03, { type: 'sine', f: [[0, f0], [0.06, f0 * 1.9]], dur: 0.08, v: 0.13, ftype: 'lowpass', bp: 3000, q: 0.5, a: 0.005 }); } noise(sfxBus, t, 0.5, { ftype: 'lowpass', f: 380, v: 0.12 }); },
@@ -2304,6 +2306,7 @@ const Sound = (function () {
   const CREATURE_DIE = {
     beast: t => voice(t, { f: [[0, 760], [0.3, 280]], dur: 0.32, v: 0.18, bp: 1100, q: 3 }),
     boar: t => { voice(t, { f: [[0, 900], [0.15, 1500], [0.55, 420]], dur: 0.6, v: 0.16, bp: 1500, q: 2, trem: [24, 0.5] }); drum(sfxBus, t + 0.2, 40, 0.4, 0.5); },
+    bird: t => { voice(t, { type: 'sawtooth', f: [[0, 900], [0.35, 260]], dur: 0.38, v: 0.12, bp: 1200, q: 3 }); noise(sfxBus, t + 0.05, 0.25, { ftype: 'highpass', f: 2500, v: 0.08 }); },
     insect: t => { for (let i = 0; i < 5; i++) noise(sfxBus, t + i * 0.045, 0.03, { ftype: 'highpass', f: 4500, v: 0.14 }); voice(t, { f: [[0, 240], [0.4, 70]], dur: 0.42, v: 0.1, bp: 1500, q: 2, trem: [40, 0.8] }); },
     plant: t => { noise(sfxBus, t, 0.18, { ftype: 'lowpass', f: 1400, v: 0.35 }); drum(sfxBus, t, 45, 0.35, 0.4); voice(t + 0.05, { type: 'square', f: [[0, 70], [0.6, 35]], dur: 0.65, v: 0.12, bp: 300, q: 5, trem: [9, 0.9] }); },
     sea: t => { voice(t, { type: 'sine', f: [[0, 520], [0.5, 120]], dur: 0.55, v: 0.18, ftype: 'lowpass', bp: 2000 }); noise(sfxBus, t, 0.4, { ftype: 'lowpass', f: 500, v: 0.18 }); },
@@ -2833,6 +2836,8 @@ const Sound = (function () {
     [[-1, 1], [1, 1], [-1, -1], [1, -1]].forEach(([sx, sz]) => g.add(mesh(new THREE.CylinderGeometry(0.17, 0.15, 0.75, 8), mats.dnHide2, sx * 0.42, 0.37, sz * 0.55)));
     return { g, h: 1.9 * s };
   }
+  Object.assign(mats, { crow: M(0x1b1719, { roughness: 0.85 }), crowAsh: M(0x4a4446, { roughness: 1 }),
+    crowWing: new THREE.MeshStandardMaterial({ color: 0x221d1f, roughness: 0.9, side: THREE.DoubleSide }), crowBeak: M(0x3a3230, { roughness: 0.6 }) });
   // Hjelpere for vridde skapninger.
   function anim(rig, o, kind, a, b, c, d) {
     (rig.userData.anim || (rig.userData.anim = [])).push({ o, kind, a: a || 1, b: b || 0, c: c || 0, d: d || 0, rx: o.rotation.x, ry: o.rotation.y, rz: o.rotation.z, py: o.position.y, s: o.scale.x });
@@ -2977,6 +2982,19 @@ const Sound = (function () {
         rig.add(mesh(new THREE.SphereGeometry(0.25, 10, 8), mats.chitin, 0, 0.35, 0.75), mesh(GEO.eye, mats.eye, -0.1, 0.42, 0.95), mesh(GEO.eye, mats.eye, 0.1, 0.42, 0.95));
         for (let i = 0; i < 3; i++) [-1, 1].forEach(s => { const l = mesh(new THREE.BoxGeometry(0.4, 0.06, 0.06), mats.chitin, s * 0.7, 0.18, 0.4 - i * 0.4); l.rotation.z = s * -0.4; rig.add(l); });
         height = 1.3; break;
+      }
+      case 'ashcrow': {
+        const fl = new THREE.Group(); rig.add(fl); anim(rig, fl, 'float', 3.4, 0.18);
+        const body = mesh(new THREE.SphereGeometry(0.22, 10, 8), mats.crow, 0, 0.55, 0); body.scale.set(0.85, 0.8, 1.5); fl.add(body);
+        fl.add(mesh(new THREE.SphereGeometry(0.15, 10, 8), mats.crow, 0, 0.68, 0.32));
+        const beak = mesh(new THREE.ConeGeometry(0.05, 0.22, 6), mats.crowBeak, 0, 0.66, 0.5); beak.rotation.x = Math.PI / 2; fl.add(beak);
+        fl.add(mesh(GEO.eye, mats.eye, -0.07, 0.72, 0.42), mesh(GEO.eye, mats.eye, 0.07, 0.72, 0.42));
+        const tail = mesh(new THREE.BoxGeometry(0.22, 0.03, 0.3), mats.crowAsh, 0, 0.56, -0.42); tail.rotation.x = 0.2; fl.add(tail);
+        [-1, 1].forEach(k => { const w = new THREE.Group(); w.position.set(k * 0.12, 0.62, 0.02);
+          const p = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.32), mats.crowWing); p.position.x = k * 0.38; p.rotation.x = -Math.PI / 2; w.add(p);
+          const tip = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.26), mats.crowAsh); tip.position.set(k * 0.8, 0.005, -0.04); tip.rotation.x = -Math.PI / 2; w.add(tip);
+          fl.add(w); anim(rig, w, 'flap', 9, k); });
+        rig.scale.setScalar(1.5); height = 1.3; break;
       }
       case 'stalker': {
         const b = mesh(GEO.huskBody, mats.shade, 0, 0.75, 0); b.scale.set(0.8, 1.4, 0.8); rig.add(b);
