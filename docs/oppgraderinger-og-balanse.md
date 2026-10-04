@@ -90,6 +90,14 @@ Spilleren kunne maksere nesten alt og nå Tier 4 før wave 10. Nå er det knapph
 - Brukeren kom til wave 25 nesten bare ved å oppgradere Warden. Fullt oppgradert holdt han wave 3–9 helt alene.
 - Nå: sverd +7 skade og +8 % angrepstakt per nivå (var +12 / +15 %), skjold +220 HP (var +350), rustning +1 (var +2), +5 % HP og skade per Warden-nivå (var +8 %). Fullt oppgradert: ca. 2700 HP, 81 skade, 8 rustning. Han holder nå bare til ca. wave 6 alene.
 
+### Wardens evner og helse (4. okt, kveld)
+- Tre evner man bruker selv under kampen (knapper nede til venstre, eller Z, X, C), kjøpt og oppgradert i Sanctum (3 nivåer, nivå 1 låser opp). De lades opp igjen og er klare ved starten av hver wave:
+  - Flammesjokk: lammer fiender innen 6–8 m i 2–3 s. Lades på 18/15/12 s. Pris 20/30/45 gull + jern (kull på nivå 3).
+  - Virvelvind: snurrer med sverdet i 5 s og treffer alt innen ca. 2,7–3,3 m hvert 0,4 s (60–90 % skade). Lades på 30/25/20 s. Pris 30/45/65 gull + jern (+ kull).
+  - Frostflamme: fryser fiender innen 10–14 m i 3–5 s (de blir blå), så går de sakte. Lades på 45/38/30 s. Pris 40/60/85 gull + jern og kull.
+  - Bosser lammes og fryses kortere.
+- Wardens helse følger med mellom wavene: han får 10 % tilbake i hver pause, og kommer tilbake på 25 % hvis han falt. I Sanctum kan han pleies til full helse for gull (ca. 4 gull per 10 % som mangler).
+
 ### Ordrelinjen (4. okt, kveld)
 - Ordreknappene, «Gå samlet» og venting ligger bak én knapp («Ordre: Avanser ▸»).
 - Tallene står i en tabell: Nå | Etter oppgradering, med endringen i grønt (rødt når det blir dårligere). Gull-radene: lavere er bedre.

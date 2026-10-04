@@ -142,6 +142,15 @@ td:first-child { font-family: var(--body); }
 .om-foot { display: flex; gap: 6px; }
 .om-foot button { flex: 0 0 auto; padding-inline: 14px !important; background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 6px; font-size: 12px; }
 #om-remove { color: #f0a59d; }
+.abilbar { position: absolute; left: 12px; bottom: 12px; display: flex; gap: 8px; z-index: 6; }
+.abil { position: relative; width: 64px; height: 64px; border-radius: 50%; border: 2px solid #e9a23b; background: radial-gradient(circle at 50% 40%, #3a2a12, #120c06); color: var(--fg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 0; overflow: hidden; box-shadow: 0 6px 16px rgba(0, 0, 0, .5); }
+.abil .ai { font-size: 22px; line-height: 1; }
+.abil .an { font-size: 8.5px; font-weight: 600; letter-spacing: .02em; }
+.abil.cool { border-color: #4a4f58; filter: grayscale(.7); }
+.abil.cool::after { content: ''; position: absolute; inset: 0; background: conic-gradient(transparent 0 var(--p), rgba(0, 0, 0, .6) var(--p) 360deg); }
+.abil .acd { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font: 700 20px var(--mono); font-style: normal; color: #fff; z-index: 1; text-shadow: 0 1px 3px #000; }
+@media (max-width: 600px) { .abilbar { left: 6px; bottom: 6px; gap: 6px; } .abil { width: 54px; height: 54px; } .abil .ai { font-size: 19px; } .abil .an { font-size: 7.5px; } }
+
 .om-info { flex: 1 1 100%; display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 10px; align-items: start; border-top: 1px solid var(--line); padding-top: 8px; }
 .oi-card { display: flex; flex-direction: column; align-items: center; gap: 3px; text-align: center; }
 .oi-card img { width: 64px; height: 64px; border-radius: 9px; border: 1px solid var(--line); background: radial-gradient(circle at 50% 35%, #2c3646, #12161e); }
@@ -1092,6 +1101,7 @@ class Sim {
     for (const u of this.units) {
       if (!u.alive) continue;
       u.cd -= dt; u.retarget -= dt; u.moving = false;
+      if (u === this.warden) this._wardenSpin();
       if (u.burnUntil > this.t) { this._hurt(u, u.burnDps * dt, u.burnBy); if (!u.alive) continue; }
       if (u.stunUntil > this.t) continue;
       if (u.side === 'p') this._playerThink(u, enemies, attackers, dt);
@@ -1099,6 +1109,38 @@ class Sim {
     }
     this._separate();
     for (const u of this.units) { u.x = clamp(u.x, -MAP.halfWidth, MAP.halfWidth); if (u.alive) this._walls(u); }
+  }
+
+  // Wardens evner. lv = nivået spilleren har kjøpt. Returnerer antall fiender som ble truffet.
+  wardenAbility(kind, lv) {
+    const w = this.warden; if (!w || !w.alive || !lv) return -1;
+    const foes = this.units.filter(e => e.alive && e.side === 'e');
+    if (kind === 'stun') {
+      const r = 5 + lv, hit = foes.filter(e => dist(e, w) < r);
+      hit.forEach(e => { e.stunUntil = this.t + (e.T.boss ? 0.6 : 1.5 + 0.5 * lv); });
+      this.events.push({ kind: 'ability', ab: 'stun', x: w.x, z: w.z, r });
+      return hit.length;
+    }
+    if (kind === 'spin') {
+      w.spinUntil = this.t + 5; w.spinLv = lv; w.spinNext = this.t;
+      this.events.push({ kind: 'ability', ab: 'spin', x: w.x, z: w.z, r: 2.4 + 0.3 * lv });
+      return foes.filter(e => dist(e, w) < 2.4 + 0.3 * lv + 3).length;
+    }
+    if (kind === 'freeze') {
+      const r = 8 + 2 * lv, hit = foes.filter(e => dist(e, w) < r);
+      hit.forEach(e => { e.stunUntil = this.t + (e.T.boss ? 1 : 2 + lv); e.slowUntil = this.t + (e.T.boss ? 3 : 4 + 2 * lv); e.frozenUntil = this.t + (e.T.boss ? 1 : 2 + lv); });
+      this.events.push({ kind: 'ability', ab: 'freeze', x: w.x, z: w.z, r });
+      return hit.length;
+    }
+    return -1;
+  }
+  _wardenSpin() {
+    const w = this.warden;
+    if (!w || !w.alive || !(w.spinUntil > this.t) || this.t < w.spinNext) return;
+    w.spinNext = this.t + 0.4;
+    const r = 2.4 + 0.3 * w.spinLv;
+    for (const e of this.units) if (e.alive && e.side === 'e' && dist(e, w) < r + e.T.radius) this._damage(w, e, 0.45 + 0.15 * w.spinLv);
+    this.events.push({ kind: 'swing', from: w, to: w, type: 'warden' });
   }
 
   _pickTarget(u, foes, attackers, maxRange) {
@@ -1587,6 +1629,16 @@ const WARDEN_GEAR = {
 };
 const WARDEN_XP = [6, 14, 25, 40, 60, 85, 115, 150, 190];   // total erfaring for nivå 2, 3, 4 …
 const WARDEN_LEVEL_BONUS = 0.05;                            // +5 % HP og skade per nivå (var 8 %)
+// Wardens evner (4. okt 2026): kjøpes og oppgraderes i Sanctum, brukes med knapper under kampen.
+const WARDEN_ABIL = {
+  stun:   { name: 'Flammesjokk', icon: '⚡', desc: lv => `Lammer fiender innen ${5 + lv} m i ${(1.5 + 0.5 * lv).toFixed(1).replace('.', ',')} s. Lades på ${[18, 15, 12][lv - 1]} s.`,
+            levels: [{ cost: { gold: 20, iron: 6 } }, { cost: { gold: 30, iron: 12 } }, { cost: { gold: 45, iron: 18, coal: 6 } }] },
+  spin:   { name: 'Virvelvind', icon: '🌀', desc: lv => `Snurrer med sverdet i 5 s og treffer alt innen ${(2.4 + 0.3 * lv).toFixed(1).replace('.', ',')} m (${Math.round((0.45 + 0.15 * lv) * 100)} % skade hvert 0,4 s). Lades på ${[30, 25, 20][lv - 1]} s.`,
+            levels: [{ cost: { gold: 30, iron: 10 } }, { cost: { gold: 45, iron: 16 } }, { cost: { gold: 65, iron: 24, coal: 10 } }] },
+  freeze: { name: 'Frostflamme', icon: '❄', desc: lv => `Fryser fiender innen ${8 + 2 * lv} m i ${2 + lv} s, så går de sakte en stund. Lades på ${[45, 38, 30][lv - 1]} s.`,
+            levels: [{ cost: { gold: 40, iron: 12, coal: 4 } }, { cost: { gold: 60, iron: 20, coal: 8 } }, { cost: { gold: 85, iron: 28, coal: 14 } }] },
+};
+const ABIL_CD = { stun: [18, 15, 12], spin: [30, 25, 20], freeze: [45, 38, 30] };
 const WARDEN_TRAIN = { cost: { gold: 14 }, xp: 5 };
 
 const BOUNTY = { husk: 1, brute: 3, spider: 1, spitter: 2, serpent: 2, beetle: 3, broodmother: 4, stalker: 2, colossus: 8, fallenWarden: 25,
@@ -1610,7 +1662,7 @@ class Econ {
     this.deep = false;
     this.wall = 0; this.archers = 0;
     this.gateHp = WALLS[0].hp;
-    this.warden = { sword: 0, shield: 0, armor: 0, xp: 0 };
+    this.warden = { sword: 0, shield: 0, armor: 0, xp: 0, abil: { stun: 0, spin: 0, freeze: 0 } };
     this.earned = { gold: 0, timber: 0, stone: 0, iron: 0, coal: 0 };
     this.deliveries = [];   // hendelser grafikken kan vise
   }
@@ -1693,6 +1745,9 @@ class Econ {
   wardenLevel() { let l = 1; for (const t of WARDEN_XP) if (this.warden.xp >= t) l++; return l; }
   wardenNext() { const l = this.wardenLevel(); return WARDEN_XP[l - 1] || null; }
   addWardenXp(n) { const before = this.wardenLevel(); this.warden.xp += n; return this.wardenLevel() > before; }
+  wardenHealCost() { const m = 1 - (this.wardenHp == null ? 1 : this.wardenHp); return m > 0.005 ? { gold: Math.max(1, Math.ceil(m * 40)) } : null; }
+  healWarden() { const c = this.wardenHealCost(); if (!c || !this.pay(c)) return false; this.wardenHp = 1; return true; }
+  buyWardenAbility(k) { const lv = WARDEN_ABIL[k].levels[this.warden.abil[k]]; if (!lv || !this.pay(lv.cost)) return false; this.warden.abil[k]++; return true; }
   buyWardenGear(k) { const lv = WARDEN_GEAR[k].levels[this.warden[k]]; if (!lv || !this.pay(lv.cost)) return false; this.warden[k]++; return true; }
   trainWarden() { if (!this.wardenNext() || !this.pay(WARDEN_TRAIN.cost)) return false; this.addWardenXp(WARDEN_TRAIN.xp); return true; }
   types(baseTypes, enemyScale) {
@@ -3223,6 +3278,7 @@ const Sound = (function () {
       enemies: withSends(buildWave(W)),
       gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count,
     });
+    if (sim.warden && ec.wardenHp != null && ec.wardenHp < 1) sim.warden.hp = Math.max(1, Math.round(sim.warden.maxHp * ec.wardenHp));
     buildArchers();
     styleWall();
     clearVisuals();
@@ -3461,6 +3517,7 @@ const Sound = (function () {
       else if (e.kind === 'drop') { addBlast(e.from.x, e.from.z, 1.6, 0xffa21f); sfx('charge'); toast(`${e.from.T.name} slipper ${e.from.T.carries.n} ${TYPES[e.from.T.carries.type].name} løs!`); }
       else if (e.kind === 'knock') { addBlast(e.to.x, e.to.z, 0.5, 0xc9b9a0); sfx('thud'); }
       else if (e.kind === 'gate') { gateFlash = 0.15; sfx('gate'); }
+      else if (e.kind === 'ability') { addBlast(e.x, e.z, e.r * 0.6, { stun: 0xffcf6a, spin: 0xe9a23b, freeze: 0x9fe0ff }[e.ab]); sfx(e.ab === 'freeze' ? 'heal' : 'boom'); if (e.ab !== 'spin') addBlast(e.x, e.z, e.r * 0.35, { stun: 0xfff1c9, freeze: 0xe8f8ff }[e.ab]); }
       else if (e.kind === 'blast') { addBlast(e.x, e.z, e.r); sfx('boom'); }
       else if (e.kind === 'heal') { addHeal(e.from, e.to, e.foe); sfx('heal'); }
       else if (e.kind === 'death' && e.unit.side === 'p') sfx('unitDie');
@@ -3494,6 +3551,8 @@ const Sound = (function () {
       }
       v.g.visible = !u.staged; v.g.userData.ring.visible = !u.staged; v.rig.rotation.x = 0;
       v.g.position.set(u.x, 0, u.z);
+      if (u.spinUntil > sim.t) v.rig.rotation.y += dt * 18; else if (u.type === 'warden') v.rig.rotation.y = 0;
+      if (u.frozenUntil != null) { const fz = u.frozenUntil > sim.t; if (fz !== !!v.frozen) { v.frozen = fz; v.rig.traverse(o => { if (o.isMesh && o.material && o.material.emissive) { if (fz) { o.userData.em = o.material; o.material = o.material.clone(); o.material.emissive.setHex(0x3aa0d0); } else if (o.userData.em) o.material = o.userData.em; } }); } }
       // Myk dreining mot retningen enheten ser.
       let d = u.facing - v.g.rotation.y;
       d = Math.atan2(Math.sin(d), Math.cos(d));
@@ -3886,7 +3945,7 @@ const Sound = (function () {
     // Rivalen starter sin wave samtidig og kjemper live på sin egen slagmark.
     if (state.versus && state.rival.alive) { state.rival.begin(state.wave, state.sendQueue); state.sentLast = state.sendQueue; state.sendQueue = []; state.racc = 0; }
     state.incoming = [];   // de er nå med i waven din
-    state.phase = 'battle'; state.paused = false; state.acc = 0;
+    state.phase = 'battle'; state.paused = false; state.acc = 0; state.abilReady = {};
     Sound.setMode('battle'); sfx('horn');
     gridGroup.visible = false; hover.visible = false; planGroup.visible = false;
     renderPanel();
@@ -3894,6 +3953,7 @@ const Sound = (function () {
   function finish() {
     const r = sim.result, W = curWave(), ec = state.econ;
     ec.gateHp = sim.gateHp;
+    if (sim.warden) { const f = sim.warden.alive ? Math.max(0, sim.warden.hp) / sim.warden.maxHp : 0.25; ec.wardenHp = Math.min(1, f + (sim.warden.alive ? 0.1 : 0)); }
     const lostFlame = !r.win && r.reason === 'Fienden nådde flammen';
     const report = { wave: W.n, win: r.win, reason: r.reason, t: sim.t, leaks: sim.leaks, bonus: 0, bounty: 0,
       stats: JSON.parse(JSON.stringify(sim.stats)), alive: {}, archers: sim.archers.length, warden: !!sim.wardenFought };
@@ -4135,6 +4195,11 @@ const Sound = (function () {
     helm: '<path d="M8 26 Q8 8 20 7 Q32 8 32 26 V31 H26 V22 H14 V31 H8 Z" fill="#b88b45" stroke="#6e4a17"/><path d="M14 22 H26 V26 H22 V33 H18 V26 H14 Z" fill="#2a2016"/><path d="M20 7 V3" stroke="#a33a2e" stroke-width="3"/>',
     train: '<rect x="18.5" y="22" width="3" height="14" fill="#6b4a2f"/><path d="M12 36 H28" stroke="#6b4a2f" stroke-width="2.4"/><circle cx="20" cy="14" r="9" fill="#d9b07a" stroke="#6b4a2f"/><circle cx="20" cy="14" r="5.5" fill="none" stroke="#a33a2e" stroke-width="1.6"/><circle cx="20" cy="14" r="2" fill="#a33a2e"/><path d="M8 18 H32" stroke="#6b4a2f" stroke-width="2"/>',
   };
+Object.assign(UP_PIC, {
+    stun: '<path d="M22 3 L9 22 H18 L15 37 L31 15 H21 Z" fill="#ffcf6a" stroke="#c4521b" stroke-width="1.2"/>',
+    spin: '<circle cx="20" cy="20" r="13" fill="none" stroke="#e9a23b" stroke-width="2.4" stroke-dasharray="14 6"/><path d="M20 6 L23 20 L20 34 L17 20 Z" fill="#c9d3dd" stroke="#55606b"/><circle cx="20" cy="20" r="2.4" fill="#b88b45"/>',
+    freeze: '<path d="M20 4 V36 M6 12 L34 28 M6 28 L34 12" stroke="#9fe0ff" stroke-width="2.4" stroke-linecap="round"/><path d="M16 7 L20 11 L24 7 M16 33 L20 29 L24 33" stroke="#9fe0ff" stroke-width="1.6" fill="none"/><circle cx="20" cy="20" r="3.2" fill="#e8f8ff"/>',
+  });
   const upPic = k => `<svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">${UP_PIC[k]}</svg>`;
   // Én flis per oppgradering: bilde med info, nivåprikker, hva du har nå, og knapp for neste nivå.
   function upTile({ pic, name, tip, lv, max, now, next, buy }) {
@@ -4184,9 +4249,15 @@ const Sound = (function () {
       const prev = WARDEN_XP[lv - 2] || 0, pct = nx ? (ec.warden.xp - prev) / (nx - prev) * 100 : 100;
       return `<div class="card"><h3>Warden's Sanctum ${tipIcon('Warden forsvarer flammen når fienden kommer gjennom distriktet. Han får erfaring av fiender han dreper. Hvert nivå gir +5 % HP og skade.')} <small>Nivå ${lv}</small></h3>
         <div class="xpbar" data-tip="${nx ? `Erfaring ${ec.warden.xp} av ${nx} til nivå ${lv + 1}` : 'Høyeste nivå'}"><i style="width:${pct}%"></i><span>★ ${lv}</span></div>
-        <div class="wstats"><span data-tip="HP">❤ ${W.hp}</span><span data-tip="Skade per slag">⚔ ${W.dmg}</span><span data-tip="Slag per sekund">⚡ ${(1 / W.interval).toFixed(1).replace('.', ',')}/s</span><span data-tip="Rustning">⛨ ${W.armor}</span></div>
+        <div class="xpbar" data-tip="Wardens helse. Han får 10 % tilbake i hver pause, og kommer tilbake på 25 % hvis han faller."><i style="width:${Math.round((ec.wardenHp == null ? 1 : ec.wardenHp) * 100)}%;background:linear-gradient(90deg,#3e6a2c,#8fd16a)"></i><span>❤ ${Math.round(W.hp * (ec.wardenHp == null ? 1 : ec.wardenHp))} / ${W.hp}</span></div>
+        ${ec.wardenHealCost() ? `<div style="display:flex;justify-content:flex-end">${buyBtn('Pleie til full helse', ec.wardenHealCost(), 'wheal')}</div>` : ''}
+        <div class="wstats"><span data-tip="Maks HP">❤ ${W.hp}</span><span data-tip="Skade per slag">⚔ ${W.dmg}</span><span data-tip="Slag per sekund">⚡ ${(1 / W.interval).toFixed(1).replace('.', ',')}/s</span><span data-tip="Rustning">⛨ ${W.armor}</span></div>
         ${tiles([wardenGearRow('sword'), wardenGearRow('shield'), wardenGearRow('armor'),
-          upTile({ pic: 'train', name: 'Trening', tip: `Kjøp ${WARDEN_TRAIN.xp} erfaring.`, now: `+${WARDEN_TRAIN.xp} XP`, buy: nx && buyBtn('Tren', WARDEN_TRAIN.cost, 'wtrain') })])}</div>`;
+          upTile({ pic: 'train', name: 'Trening', tip: `Kjøp ${WARDEN_TRAIN.xp} erfaring.`, now: `+${WARDEN_TRAIN.xp} XP`, buy: nx && buyBtn('Tren', WARDEN_TRAIN.cost, 'wtrain') })])}
+        <h3 style="margin-top:6px">Evner ${tipIcon('Brukes med knappene nede til venstre under kampen (eller Z, X, C). De lades opp igjen etter noen sekunder, og er klare ved starten av hver wave.')}</h3>
+        ${tiles(Object.keys(WARDEN_ABIL).map(k => { const A = WARDEN_ABIL[k], lv = ec.warden.abil[k], nx2 = A.levels[lv];
+          return upTile({ pic: k, name: A.name, lv, max: A.levels.length, tip: lv ? `Nå: ${A.desc(lv)}${nx2 ? ` Neste: ${A.desc(lv + 1)}` : ''}` : A.desc(1),
+            now: lv ? `Nivå ${lv}` : 'Ikke kjøpt', buy: nx2 && buyBtn(lv ? `Nivå ${lv + 1}` : 'Lær', nx2.cost, 'wabil', `data-k="${k}"`) }); }))}</div>`;
     },
     longhouse: longhouseHtml,
     barracks() {
@@ -4471,6 +4542,39 @@ const Sound = (function () {
       <p class="oi-note">Gull-radene: lavere er bedre. ${tipIcon(`Jern og kull teller som 2 gull. Rustning trekkes fra hvert slag, men minst 1 skade går gjennom. «HP m/rustning» regner med et vanlig fiendeslag på ${ARMOR_REF}: rustning 5 gir 15 skade per slag, så uniten tåler 20/15 = 1,33 ganger så mye.`)}</p>`;
   }
 
+
+  // ---------- Wardens evner: knapper under kampen ----------
+  const abilBar = document.createElement('div'); abilBar.className = 'abilbar'; $('.stage').appendChild(abilBar);
+  abilBar.innerHTML = Object.keys(WARDEN_ABIL).map(k => `<button type="button" class="abil" data-abil="${k}" title="${WARDEN_ABIL[k].name}"><span class="ai">${WARDEN_ABIL[k].icon}</span><span class="an">${WARDEN_ABIL[k].name}</span><i class="acd"></i></button>`).join('');
+  state.abilReady = {};
+  function useAbility(k) {
+    const lv = state.econ.warden.abil[k];
+    if (!lv) { toast(`${WARDEN_ABIL[k].name} kjøpes i Warden's Sanctum (klikk flammen).`); return; }
+    if (state.phase !== 'battle' || !sim) { toast('Evnene brukes under kampen.'); return; }
+    if ((state.abilReady[k] || 0) > sim.t) return;
+    const n = sim.wardenAbility(k, lv);
+    if (n < 0) { toast('Warden kan ikke bruke evner nå.'); return; }
+    state.abilReady[k] = sim.t + ABIL_CD[k][lv - 1];
+    if (n === 0 && k !== 'spin') toast(`${WARDEN_ABIL[k].name}: ingen fiender nær Warden.`);
+    camGoto(0, MAP.flameZ - 14, PHONE ? 46 : 36, 0.75);
+  }
+  abilBar.addEventListener('click', e => { const b = e.target.closest('[data-abil]'); if (b) useAbility(b.dataset.abil); });
+  window.addEventListener('keydown', e => { const m = { z: 'stun', x: 'spin', c: 'freeze' }[e.key.toLowerCase()]; if (m && state.phase === 'battle' && !(e.target.closest && e.target.closest('input, select'))) useAbility(m); });
+  function syncAbilBar() {
+    const owned = Object.keys(WARDEN_ABIL).filter(k => state.econ.warden.abil[k]);
+    abilBar.hidden = !owned.length || state.phase !== 'battle';
+    if (abilBar.hidden) return;
+    abilBar.querySelectorAll('[data-abil]').forEach(b => {
+      const k = b.dataset.abil, lv = state.econ.warden.abil[k];
+      b.hidden = !lv;
+      if (!lv) return;
+      const left = Math.max(0, (state.abilReady[k] || 0) - sim.t), cd = ABIL_CD[k][lv - 1];
+      b.classList.toggle('cool', left > 0);
+      b.style.setProperty('--p', `${(1 - left / cd) * 360}deg`);
+      b.querySelector('.acd').textContent = left > 0 ? Math.ceil(left) : '';
+    });
+  }
+
   // ---------- 1 mot 1: Send-fanen ----------
   function sentChips(list, et) {
     if (!list || !list.length) return '';
@@ -4709,7 +4813,7 @@ const Sound = (function () {
     const acts = {
       'worker+': () => ec.addWorker(k), 'worker-': () => ec.removeWorker(k),
       unlock: () => ec.unlockNode(k), expand: () => ec.expandNode(k), deepen: () => ec.deepen(), tools: () => ec.buyTools(),
-      track: () => ec.buyTrack(k), wgear: () => ec.buyWardenGear(k), wtrain: () => ec.trainWarden(), barracks: () => ec.buyBarracks(), wall: () => ec.buyWall(), archers: () => ec.buyArchers(), repair: () => ec.repair(),
+      track: () => ec.buyTrack(k), wgear: () => ec.buyWardenGear(k), wtrain: () => ec.trainWarden(), wabil: () => ec.buyWardenAbility(k), wheal: () => ec.healWarden(), barracks: () => ec.buyBarracks(), wall: () => ec.buyWall(), archers: () => ec.buyArchers(), repair: () => ec.repair(),
     };
     if (acts[b.dataset.act] && acts[b.dataset.act]()) {
       sfx('build');
@@ -4847,7 +4951,7 @@ const Sound = (function () {
     updateFx(state.phase === 'battle' && state.paused ? 0 : dt * (state.phase === 'battle' ? state.speed : 1));
     const vdt = state.phase === 'battle' && state.paused ? 0 : dt * (state.phase === 'battle' ? state.speed : 1);
     syncVisuals(vdt);
-    syncRival(vdt); drawMinimap(dt);
+    syncRival(vdt); drawMinimap(dt); syncAbilBar();
     if (state.versus && state.rival.running() && state.phase !== 'over' && !(state.phase === 'battle' && state.paused)) {
       state.racc = (state.racc || 0) + dt * (state.phase === 'build' ? 1 : state.speed);
       let rn = 0; while (state.racc >= STEP && rn < 12 && state.rival.running()) { state.rival.sim.step(STEP); state.racc -= STEP; rn++; }
