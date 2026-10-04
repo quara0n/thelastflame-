@@ -142,6 +142,25 @@ td:first-child { font-family: var(--body); }
 .om-foot { display: flex; gap: 6px; }
 .om-foot button { flex: 0 0 auto; padding-inline: 14px !important; background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 6px; font-size: 12px; }
 #om-remove { color: #f0a59d; }
+.foe.sent { border-color: #6b3a8a; box-shadow: inset 0 0 0 1px #6b3a8a; }
+.senttag { position: absolute; top: 12px; left: 12px; font: 700 10px var(--mono); background: #a35ae0; color: #12061c; padding: 1px 6px; border-radius: 4px; }
+.rival { display: flex; flex-direction: column; gap: 4px; }
+.rival .rv-h { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.rival .rv-h b { font-family: var(--display); font-size: 15px; }
+.rival .rv-h span { font-size: 12px; color: var(--muted); }
+.rival .gatebar2 i { background: #a35ae0; }
+.sgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.scard { background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; display: flex; flex-direction: column; align-items: stretch; overflow: hidden; min-width: 0; position: relative; }
+.scard img { width: 100%; height: 50px; object-fit: cover; object-position: 50% 35%; background: radial-gradient(circle at 50% 35%, #3a2224, #140e10); }
+.scard .sn { font-size: 12px; font-weight: 600; padding: 3px 6px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.scard .sq { position: absolute; top: 4px; right: 4px; font: 600 11px var(--mono); background: #a35ae0; color: #12061c; border-radius: 999px; padding: 0 6px; }
+.scard button { border: 0; border-top: 1px solid var(--line); background: none; padding: 6px; font-weight: 600; font-size: 12px; color: #c99af0; display: flex; justify-content: center; align-items: center; gap: 4px; }
+.scard button.cant { color: var(--muted); }
+.squeue { font-size: 12px; color: var(--fg); display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.squeue button { background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; font-size: 12px; }
+.vs-tog { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.vs-tog input { accent-color: #a35ae0; }
+
 .om-up { flex: 1 1 100%; display: flex; align-items: center; gap: 10px; border-top: 1px solid var(--line); padding-top: 8px; min-width: 0; }
 .om-up button { flex: none; background: var(--flame); color: var(--flame-ink); border: 1px solid var(--flame); border-radius: 6px; padding: 7px 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
 .om-up button .cost { color: var(--flame-ink); }
@@ -420,6 +439,7 @@ button.tier-h:hover b { text-decoration: underline; }
 
     <nav class="tabs" role="tablist">
       <button type="button" role="tab" id="tab-army" data-tab="army">Hær</button>
+      <button type="button" role="tab" id="tab-send" data-tab="send">Send</button>
       <button type="button" role="tab" id="tab-village" data-tab="village">Landsby</button>
       <button type="button" role="tab" id="tab-build" data-tab="build">Bygninger</button>
       <button type="button" role="tab" id="tab-test" data-tab="test">Testbenk</button>
@@ -450,6 +470,7 @@ button.tier-h:hover b { text-decoration: underline; }
     </div>
 
     <div class="tabpane" id="pane-test" hidden></div>
+    <div class="tabpane" id="pane-send" hidden></div>
 
     <div class="tabpane" id="pane-build" hidden>
       <div id="buildings" class="buildings"></div>
@@ -886,7 +907,7 @@ class Sim {
       this.units.push(w); this.warden = w;
     }
     const enemies = cfg.enemies || FORMATIONS[cfg.formation || 'linje'].build();
-    for (const e of enemies) this.units.push(this._make(id++, e.type, e.x, e.z, null));
+    for (const e of enemies) { const m = this._make(id++, e.type, e.x, e.z, null); if (e.sent) m.sent = e.sent; this.units.push(m); }
     this.nextId = id;
     this.units.forEach(u => this.stats[u.type].count++);
   }
@@ -1640,6 +1661,157 @@ class Econ {
   }
 }
 
+
+// ===== 1 mot 1 mot computer (4. okt 2026) =====
+// Priser for å sende skapninger (gull). World 2 koster ca. 2 ganger, World 3 ca. 3,5 ganger World 1.
+const SEND = { husk: 3, spider: 3, spitter: 5, serpent: 5, brute: 8, beetle: 9, broodmother: 12, stalker: 6, colossus: 30,
+  wolf: 6, boar: 16, locust: 5, mantis: 16, thornling: 9, treant: 50, crab: 12, siren: 12, acolyte: 12, seraph: 25,
+  raptor: 10, hornback: 30, snapper: 8, clubtail: 28, urdragon: 45, tyrant: 70, frillspitter: 16, earthshaker: 90, revenant: 20 };
+const RIVAL_BREAK = 55;
+// Knapper for 1 mot 1: hvor mye computeren sender (andel av gullet), hvor sterke portalens egne waves er, og sendeprisene.
+const VERSUS = { share: 0.3, wave: 0.45, price: 1 };
+const sendPrice = k => Math.max(1, Math.round(SEND[k] * VERSUS.price));
+const versusScale = W => ({ hp: W.scale.hp * VERSUS.wave, dmg: W.scale.dmg * Math.sqrt(VERSUS.wave) });
+// Det man kan sende i wave wi: skapninger fra verdenen man er i nå, som allerede har vist seg.
+function sendable(wi) {
+  const W = WAVES[Math.min(wi, WAVES.length - 1)];
+  return Object.keys(SEND).filter(k => FIRST_SEEN[k] && FIRST_SEEN[k] <= W.n && WAVES[FIRST_SEEN[k] - 1].world === W.world);
+}
+// Sendte skapninger stiller seg bak waven, i rader på åtte.
+function placeSent(list, base) {
+  if (!list || !list.length) return [];
+  const z0 = (base.length ? Math.min(...base.map(e => e.z)) : -15) - 2;
+  return list.map((s, i) => {
+    const r = Math.floor(i / 8), inRow = Math.min(8, list.length - r * 8), c = i % 8;
+    return { type: s.type, x: (c - (inRow - 1) / 2) * 1.7, z: Math.max(MAP.portalZ + 1.5, z0 - r * 1.7), sent: { by: s.by, price: s.price } };
+  });
+}
+// Gull avsenderen får tilbake: halve prisen for hver sendt skapning som kom seg gjennom porten.
+function sentLeaks(sim, by) {
+  let g = 0;
+  for (const u of sim.units) if (u.sent && u.sent.by === by && (u.leaked || u.z > MAP.gateZ + 1.5)) g += u.sent.price / 2;
+  return Math.floor(g);
+}
+// Rivalens hjerne: den samme fornuftige spilleren som game_sim.js bruker til balansen.
+function rivalBot(L, ec, army, waveIdx) {
+  const T = L.TYPES, sup = () => army.reduce((n, a) => n + L.supplyOf(T[a.type]), 0);
+  const unitsOf = tier => ({ 1: ['shieldguard', 'stormreaver', 'ironshot', 'longfang'], 2: ['ironwall', 'frostbrand', 'thunderbore', 'hearthkeeper'], 3: ['captain', 'huskarl', 'pyreguard', 'siegebreaker'], 4: ['ironhulk', 'mammoth', 'skyspear', 'hearthengine'] })[tier];
+  const melee = a => !T[a.type || a].ranged;
+  const free = (ranged) => {
+    const rows = ranged ? [3, 4, 2, 5] : [0, 1, 2];
+    const order = [7, 8, 6, 9, 5, 10, 4, 11, 3, 12, 2, 13, 1, 14, 0, 15];
+    for (const r of rows) for (const c of order) if (!army.some(a => a.col === c && a.row === r)) return { col: c, row: r };
+    return null;
+  };
+  const buy = type => {
+    const p = ec.unitPrice(T[type]);
+    if (!ec.unitUnlocked(type) || sup() + L.supplyOf(T[type]) > ec.supplyCap() || !ec.can(p)) return false;
+    const spot = free(T[type].ranged); if (!spot) return false;
+    ec.pay(p); army.push({ type, level: 0, ...spot, order: T[type].ranged ? 'follow' : 'advance' }); return true;
+  };
+  const upgrade = a => {
+    if ((a.level || 0) >= L.MAX_LEVEL) return false;
+    const c = L.UPGRADES[a.type][a.level || 0].cost;
+    if (!ec.can(c)) return false; ec.pay(c); a.level = (a.level || 0) + 1; return true;
+  };
+  const w = waveIdx + 1;
+  for (let guard = 0; guard < 80; guard++) {
+    let did = false;
+    // Economy first in the early game: gold workers while they are cheap.
+    if (w <= 6 && ec.nodes.gold.workers < ec.cap('gold') && ec.workerPrice() <= 9 && ec.res.gold >= ec.workerPrice() + 10) did = ec.addWorker('gold');
+    if (!did && w >= 3 && !ec.nodes.iron.unlocked && ec.can(L.NODES.iron.unlock)) did = ec.unlockNode('iron');
+    if (!did && ec.nodes.iron.unlocked && ec.nodes.iron.workers < 3 && ec.res.gold >= ec.workerPrice() + 8) did = ec.addWorker('iron');
+    if (!did && ec.barracks >= 1 && !ec.nodes.coal.unlocked && ec.can(L.NODES.coal.unlock)) did = ec.unlockNode('coal');
+    if (!did && ec.nodes.coal.unlocked && ec.nodes.coal.workers < (w >= 15 ? 4 : 2) && ec.res.gold >= ec.workerPrice() + 8) did = ec.addWorker('coal');
+    if (!did && ec.nodes.timber.workers < (w >= 3 ? 4 : 2) && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('timber');
+    if (!did && w >= 3 && ec.nodes.stone.workers < (w >= 10 ? 5 : 3) && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('stone');
+    if (!did && w >= 10 && ec.nodes.timber.workers < 5 && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('timber');
+    if (!did && w >= 10 && ec.nodes.iron.workers < 5 && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('iron');
+    if (!did && w >= 6 && !ec.nodes.coal.unlocked && ec.can(L.NODES.coal.unlock)) did = ec.unlockNode('coal');
+    if (!did && w >= 5 && ec.barracks === 0 && ec.can(L.BARRACKS[1].cost)) did = ec.buyBarracks();
+    if (!did && w >= 11 && ec.barracks === 1 && ec.can(L.BARRACKS[2].cost)) did = ec.buyBarracks();
+    if (!did && w >= 20 && ec.barracks === 2 && ec.can(L.BARRACKS[3].cost)) did = ec.buyBarracks();
+    if (!did && ec.gateHp < ec.gateMax() * 0.7) did = ec.repair();
+    if (!did && w >= 3 && ec.archers === 0) did = ec.buyArchers();
+    // Army: keep roughly half melee, half ranged; buy the best tier that is open.
+    if (!did && sup() < ec.supplyCap()) {
+      const nMel = army.filter(melee).length, wantRanged = nMel > army.length - nMel;
+      for (let tier = ec.barracks + 1; tier >= 1 && !did; tier--) {
+        const opts = unitsOf(tier).filter(t => !!T[t].ranged === wantRanged);
+        const pick = opts[(army.length + w) % opts.length];
+        did = buy(pick);
+      }
+    }
+    // Upgrades: cheapest-level units of the highest tier first.
+    if (!did) {
+      const cand = army.filter(a => (a.level || 0) < L.MAX_LEVEL).sort((a, b) => (T[b.type].tier || 1) - (T[a.type].tier || 1) || (a.level || 0) - (b.level || 0));
+      for (const a of cand) if (upgrade(a)) { did = true; break; }
+    }
+    // When the next Barracks is due, save timber, stone and iron for it.
+    const saving = ((ec.barracks === 1 && w >= 12) || (ec.barracks === 2 && w >= 20)) && !ec.can(L.BARRACKS[ec.barracks + 1].cost);
+    // Forge when there is iron to spare.
+    if (!did && !saving && ec.res.iron >= 25) for (const k of ['melee', 'ranged', 'armor']) if (ec.buyTrack(k)) { did = true; break; }
+    // Full army: sell maxed lower-tier units until a unit of the newest tier fits, if it can be afforded.
+    if (!did && ec.barracks >= 1 && army.length && army.every(a => (a.level || 0) >= L.MAX_LEVEL)) {
+      const top = ec.barracks + 1, need = L.supplyOf(T[unitsOf(top)[0]]);
+      if (sup() + need > ec.supplyCap()) {
+        const nMel = army.filter(melee).length, wantRanged = nMel > army.length - nMel;
+        const up = unitsOf(top).filter(t => !!T[t].ranged === wantRanged)[(army.length + w) % 2];
+        const pool = army.filter(a => (T[a.type].tier || 1) < top && (a.level || 0) >= L.MAX_LEVEL).sort((a, b) => (T[a.type].tier || 1) - (T[b.type].tier || 1));
+        const sell = [], refund = {};
+        let freed = 0;
+        for (const a of pool) { if (sup() - freed + need <= ec.supplyCap()) break; sell.push(a); freed += L.supplyOf(T[a.type]); }
+        if (sup() - freed + need <= ec.supplyCap()) {
+          for (const a of sell) { const p = Object.assign({}, ec.unitPrice(T[a.type])), sp = L.upgradeSpent(a.type, a.level); for (const r in sp) p[r] = (p[r] || 0) + sp[r]; for (const r in p) refund[r] = (refund[r] || 0) + Math.floor(p[r] * L.REFUND); }
+          const price = ec.unitPrice(T[up]), have = {}; for (const r in price) have[r] = (ec.res[r] || 0) + (refund[r] || 0);
+          if (Object.keys(price).every(r => have[r] >= price[r])) { sell.forEach(a => army.splice(army.indexOf(a), 1)); ec.add(refund); did = buy(up); }
+        }
+      }
+    }
+    // Spare resources: more archers on the wall, then a stronger wall.
+    if (!did && !saving && w >= 6 && ec.archers < L.ARCHERS.length - 1 && ec.can(L.ARCHERS[ec.archers + 1].cost)) did = ec.buyArchers();
+    if (!did && !saving && w >= 10 && !ec.deep) did = ec.deepen();
+    if (!did && !saving && w >= 10 && ec.wall < L.WALLS.length - 1) did = ec.buyWall();
+    if (!did) break;
+  }
+}
+
+const RIVAL_L = { TYPES, BARRACKS, NODES, UPGRADES, MAX_LEVEL, supplyOf, ARCHERS, upgradeSpent, REFUND, WALLS };
+class Rival {
+  constructor() { this.ec = new Econ(); this.army = []; this.t = 45; this.alive = true; this.hold = null; }
+  // Spiller rivalens wave wi med det spilleren sendte. Gir tilbake gull til spilleren for lekk, og det rivalen sender tilbake.
+  playWave(wi, incoming) {
+    const ec = this.ec, W = WAVES[wi];
+    ec.tick(this.t);
+    const budget = wi >= 2 ? Math.floor(ec.res.gold * VERSUS.share) : 0;
+    ec.res.gold -= budget;
+    rivalBot(RIVAL_L, ec, this.army, wi);
+    ec.res.gold += budget;
+    const base = buildWave(W);
+    const sim = new Sim(this.army, { types: ec.types(TYPES, versusScale(W)), enemies: base.concat(placeSent(incoming, base)), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count });
+    while (!sim.result) sim.step(1 / 15);
+    ec.tick(sim.t); ec.gateHp = sim.gateHp; this.t = RIVAL_BREAK;
+    let bounty = 0; sim.units.forEach(u => { if (u.side === 'e' && !u.alive) bounty += BOUNTY[u.type] || 0; });
+    ec.add({ gold: bounty });
+    if (sim.result.win) ec.add({ gold: waveBonus(W.n) });
+    const lost = sim.result.reason === 'Fienden nådde flammen';
+    if (lost) this.alive = false;
+    const leaked = sim.units.filter(u => u.sent && u.sent.by === 'p' && (u.leaked || u.z > MAP.gateZ + 1.5)).length;
+    this.hold = { wave: W.n, win: sim.result.win, lost, gate: Math.round(sim.gateHp), gateMax: ec.gateMax(), army: this.army.length,
+      tier: ec.barracks + 1, got: (incoming || []).length, leaked };
+    // Rivalen sender for budsjettet sitt, tilfeldig blant det som er råd til.
+    const out = [], opts = sendable(wi);
+    let money = Math.min(budget, Math.floor(ec.res.gold));
+    for (let g = 0; g < 40 && out.length < 24; g++) {
+      const can = opts.filter(k => sendPrice(k) <= money);
+      if (!can.length) break;
+      const k = can[Math.floor(Math.random() * can.length)], pr = sendPrice(k);
+      money -= pr; ec.res.gold -= pr; out.push({ type: k, by: 'r', price: pr });
+    }
+    return { leakGold: sentLeaks(sim, 'p'), out, lost };
+  }
+}
+
 if (typeof module !== 'undefined') module.exports = { supplyOf, WARDEN_GEAR, WARDEN_XP, WARDEN_TRAIN, WARDEN_KILL_XP, Econ, RES, RES_KEYS, NODES, TOOLS, TRACKS, BARRACKS, WALLS, ARCHERS, BOUNTY, waveBonus, DELIVERY, NODE_EXPAND, DEEPEN, REFUND };
 
 // ===== The Last Flame — musikk og lydeffekter, laget med Web Audio (ingen lydfiler) =====
@@ -1939,6 +2111,7 @@ const Sound = (function () {
   const RES_HEX = { gold: '#e2b54a', timber: '#b07a4a', stone: '#9aa3ad', iron: '#7f93a8', coal: '#5a5550' };
   const state = {
     army: [], econ: new Econ(), collapsed: new Set([5]), wave: 0, buildLeft: BUILD_FIRST, buildTotal: BUILD_FIRST, tab: 'army', lastReport: null,
+    versus: true, rival: new Rival(), sendQueue: [], incoming: [], rivalRes: null,
     tool: null, together: true, nextSquad: 10, selection: new Set(), phase: 'build', paused: false, speed: 1, acc: 0,
   };
   const ROSTER = [
@@ -2946,8 +3119,8 @@ const Sound = (function () {
     const W = curWave(), ec = state.econ;
     applyWorldLook(W.world);
     sim = new Sim(state.army, {
-      types: ec.types(TYPES, W.scale),
-      enemies: buildWave(W),
+      types: ec.types(TYPES, state.versus ? versusScale(W) : W.scale),
+      enemies: withSends(buildWave(W)),
       gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count,
     });
     buildArchers();
@@ -3591,11 +3764,15 @@ const Sound = (function () {
   })();
 
   // ---------- Faser ----------
+  const withSends = base => state.versus ? base.concat(placeSent(state.incoming, base)) : base;
   function startWave() {
     if (state.phase !== 'build') return;
     clearSelection(true);
     state.tool = null;
     rebuild();
+    // Rivalen kjemper sin wave samtidig (regnes ut nå, vises når din wave er ferdig).
+    if (state.versus && state.rival.alive) { state.rivalRes = state.rival.playWave(state.wave, state.sendQueue); state.sentLast = state.sendQueue; state.sendQueue = []; }
+    else state.rivalRes = null;
     state.phase = 'battle'; state.paused = false; state.acc = 0;
     Sound.setMode('battle'); sfx('horn');
     gridGroup.visible = false; hover.visible = false; planGroup.visible = false;
@@ -3613,14 +3790,23 @@ const Sound = (function () {
     state.lastReport = report;
     Sound.setMode('build');
     sfx(lostFlame ? 'defeat' : r.win ? 'victory' : 'gate');
-    if (lostFlame) { state.phase = 'over'; state.outcome = 'lost'; }
-    else if (state.wave >= WAVES.length - 1) { state.phase = 'over'; state.outcome = 'won'; }
+    if (state.versus) {
+      const rr = state.rivalRes;
+      if (rr && rr.leakGold) { ec.add({ gold: rr.leakGold }); popRes('gold', rr.leakGold); }
+      const back = sentLeaks(sim, 'r'); if (back) state.rival.ec.add({ gold: back });
+      report.rival = Object.assign({}, state.rival.hold, { sent: (state.sentLast || []).length, leakGold: rr ? rr.leakGold : 0 });
+      state.incoming = rr ? rr.out : [];
+    }
+    const rivalDown = state.versus && !state.rival.alive && report.rival && report.rival.lost;
+    if (lostFlame || rivalDown) { state.phase = 'over'; state.outcome = lostFlame ? (rivalDown ? 'draw' : 'lost') : 'won-vs'; if (rivalDown && !lostFlame) sfx('victory'); }
+    else if (state.wave >= WAVES.length - 1) { state.phase = 'over'; state.outcome = state.versus && state.rival.alive ? 'draw-alive' : 'won'; }
     else {
       state.wave++;
       state.phase = 'build'; state.buildLeft = BUILD_TIME; state.buildTotal = BUILD_TIME;
       announceWave();
       gridGroup.visible = true; planGroup.visible = true;
       rebuild();
+      if (state.versus && state.incoming.length) setTimeout(() => toast(`Rivalen sender deg ${state.incoming.length} skapninger i wave ${curWave().n}. Se «Neste wave».`), 2800);
     }
     renderPanel(); showResult();
   }
@@ -3634,6 +3820,7 @@ const Sound = (function () {
   function newMatch() {
     state.army = []; state.econ = new Econ(); state.wave = 0; state.buildLeft = BUILD_FIRST; state.buildTotal = BUILD_FIRST;
     state.phase = 'build'; state.paused = false; state.lastReport = null; state.outcome = null; state.summonTold = false;
+    state.rival = new Rival(); state.sendQueue = []; state.incoming = []; state.rivalRes = null; state.sentLast = [];
     clearSelection(true); state.tool = null;
     gridGroup.visible = true; planGroup.visible = true;
     $('#result').hidden = true;
@@ -3719,8 +3906,9 @@ const Sound = (function () {
   function renderPanel() {
     const ec = state.econ, build = state.phase === 'build';
     document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === state.tab));
-    ['army', 'village', 'build', 'test'].forEach(t => $('#pane-' + t).hidden = state.tab !== t);
+    ['army', 'village', 'build', 'test', 'send'].forEach(t => $('#pane-' + t).hidden = state.tab !== t);
     if (state.tab === 'test') renderBench();
+    if (state.tab === 'send') renderSend();
     // Hær
     const counts = {}, selCounts = {};
     state.army.forEach(a => counts[a.type] = (counts[a.type] || 0) + 1);
@@ -3764,7 +3952,7 @@ const Sound = (function () {
       return `<div class="foe${isNew ? ' new' : ''}" data-tip="${T.role}. HP ${T.hp}, rustning ${T.armor}, skade ${T.dmg}. Gir ${BOUNTY[k]} gull.">
         <img alt="" src="${portraits[k] || ''}"><div class="u-top"><span class="u-name">${T.name}</span><span class="u-count">×${n}</span></div>
         ${isNew ? '<span class="newtag">NY</span>' : ''}<span class="u-role">${T.role}</span></div>`;
-    }).join('');
+    }).join('') + (state.versus ? sentChips(state.incoming, et) : '');
     renderVillage(); renderBuildings(); renderPop();
     // Knapper og faser
     const start = $('#btn-start');
@@ -3958,6 +4146,44 @@ const Sound = (function () {
     toast(`Mangler ${Math.ceil(cost[r] - ec.res[r])} ${RES[r].name.toLowerCase()}${miss.length > 1 ? ' og mer' : ''}. ${WHERE[r]}`);
   }
 
+
+  // ---------- 1 mot 1: Send-fanen ----------
+  function sentChips(list, et) {
+    if (!list || !list.length) return '';
+    const c = {}; list.forEach(s => c[s.type] = (c[s.type] || 0) + 1);
+    return Object.entries(c).map(([k, n]) => `<div class="foe sent" data-tip="Sendt av rivalen. ${et[k].role}.">
+        <img alt="" src="${portraits[k] || ''}"><div class="u-top"><span class="u-name">${et[k].name}</span><span class="u-count">×${n}</span></div>
+        <span class="senttag">SENDT</span><span class="u-role">Fra rivalen</span></div>`).join('');
+  }
+  function sendOne(k) {
+    const ec = state.econ;
+    if (!state.versus) { toast('Slå på 1 mot 1 før første wave for å sende.'); return; }
+    if (state.phase !== 'build') { toast('Du sender i byggefasen. De kommer med rivalens neste wave.'); return; }
+    if (!state.rival.alive) { toast('Rivalens flamme har falt.'); return; }
+    if (state.sendQueue.length >= 24) { toast('Maks 24 sendte per wave.'); return; }
+    const cost = { gold: sendPrice(k) };
+    if (!ec.can(cost)) { explainMissing(cost); return; }
+    ec.pay(cost); state.sendQueue.push({ type: k, by: 'p', price: sendPrice(k) }); sfx('coin'); renderPanel();
+  }
+  function unsendLast() { const s = state.sendQueue.pop(); if (s) { state.econ.add({ gold: s.price }); renderPanel(); } }
+  function refundQueue() { state.sendQueue.forEach(s => state.econ.add({ gold: s.price })); state.sendQueue = []; }
+  function renderSend() {
+    const ec = state.econ, r = state.rival, h = r.hold, build = state.phase === 'build', opts = sendable(state.wave), W = curWave();
+    const count = {}; state.sendQueue.forEach(s => count[s.type] = (count[s.type] || 0) + 1);
+    const spent = state.sendQueue.reduce((a, s) => a + s.price, 0);
+    const status = !state.versus ? 'Av. Du spiller alene.' : !r.alive ? 'Rivalens flamme har falt.' : h ? `Wave ${h.wave}: ${h.win ? 'holdt' : 'porten tok skade'} · ${h.army} soldater · Tier ${h.tier}` : 'Har ikke kjempet ennå.';
+    const gp = h ? Math.max(0, h.gate / h.gateMax * 100) : 100;
+    $('#pane-send').innerHTML = `<section class="rival"><div class="rv-h"><b>Rival: computer</b><span>${status}</span></div>
+        <div class="gatebar2" data-tip="Rivalens port"><i style="width:${gp}%"></i></div>
+        <label class="vs-tog"><input type="checkbox" id="vs-toggle" ${state.versus ? 'checked' : ''}> 1 mot 1 mot computer ${tipIcon('Rivalen spiller sitt eget spill samtidig, med samme waves. Dere kan sende skapninger til hverandre. Den som mister flammen først, taper. Kan bare slås av eller på før første wave.')}</label></section>
+      ${state.versus ? `<section><h2>Send til rivalen ${tipIcon(`Skapningene kommer med rivalens wave ${W.n}. Bryter en gjennom porten hans, får du halve prisen tilbake. Du kan sende skapninger fra ${WORLDS[W.world].name} som allerede har dukket opp.`)}</h2>
+        <div class="sgrid">${opts.map(k => `<div class="scard"><img alt="" src="${portraits[k] || ''}">${count[k] ? `<span class="sq">${count[k]}</span>` : ''}<span class="sn">${TYPES[k].name}</span>
+          <button type="button" data-send="${k}" class="${!build || ec.res.gold < sendPrice(k) ? 'cant' : ''}">${icon('gold', 13)}${sendPrice(k)}</button></div>`).join('')}</div>
+        <div class="squeue"><span>${state.sendQueue.length ? `Sendes med wave ${W.n}: ${Object.entries(count).map(([k, n]) => `${n} ${TYPES[k].name}`).join(', ')} (${spent} gull)` : 'Ingen sendt ennå denne waven.'}</span>
+          ${state.sendQueue.length && build ? '<button type="button" data-unsend="1">Angre siste</button>' : ''}</div>
+        <p class="note">${state.incoming.length ? `Rivalen sender deg ${state.incoming.length} skapninger i wave ${W.n}. De står i «Neste wave» i Hær-fanen.` : 'Rivalen har ikke sendt deg noe til neste wave.'}</p></section>` : ''}`;
+  }
+
   // ---------- Statkort for units i Hær-fanen ----------
   const ustat = document.createElement('div');
   ustat.className = 'ustat'; ustat.hidden = true;
@@ -4122,6 +4348,9 @@ const Sound = (function () {
 
   // Alle knapper i panelet og bygningsvinduet går gjennom én lytter.
   function onUiClick(e) {
+    const sd = e.target.closest('[data-send]'); if (sd) { sendOne(sd.dataset.send); return; }
+    if (e.target.closest('[data-unsend]')) { unsendLast(); return; }
+    const vt = e.target.closest('#vs-toggle'); if (vt) { if (state.wave === 0 && state.phase === 'build') { state.versus = vt.checked; refundQueue(); rebuild(); renderPanel(); } else { vt.checked = state.versus; toast('Kan bare endres før første wave. Start en ny kamp for å bytte.'); } return; }
     const info = e.target.closest('[data-info]');
     if (info) {
       const k = info.dataset.info;
@@ -4186,7 +4415,8 @@ const Sound = (function () {
     if (top) why.push(`${TYPES[top].name} gjorde mest skade.`);
     why.push(r.leaks ? `${r.leaks} fiender nådde porten.` : 'Ingen fiender nådde porten.');
     if (r.warden) why.push('Warden måtte kjempe.');
-    const head = over ? (state.outcome === 'won' ? 'Flammen brenner fortsatt' : `Flammen falt på wave ${r.wave}`) : r.win ? `Wave ${r.wave} holdt` : `Wave ${r.wave}: ${r.reason.toLowerCase()}`;
+    if (r.rival) why.push(`Rivalen: ${r.rival.lost ? 'flammen falt' : r.rival.win ? 'holdt' : 'porten tok skade'} (port ${r.rival.gate}/${r.rival.gateMax}, ${r.rival.army} soldater, Tier ${r.rival.tier}). Du sendte ${r.rival.sent}, ${r.rival.leaked} kom gjennom${r.rival.leakGold ? `, +${r.rival.leakGold} gull` : ''}.`);
+    const head = over && state.outcome === 'won-vs' ? `Seier! Rivalens flamme falt på wave ${r.wave}` : over && state.outcome === 'draw' ? 'Begge flammene falt. Uavgjort.' : over && state.outcome === 'draw-alive' ? 'Begge flammene brenner etter wave 30. Uavgjort.' : over ? (state.outcome === 'won' ? 'Flammen brenner fortsatt' : `Flammen falt på wave ${r.wave}`) : r.win ? `Wave ${r.wave} holdt` : `Wave ${r.wave}: ${r.reason.toLowerCase()}`;
     el.innerHTML = `<div class="r-head"><h2>${head}</h2><span>${fmtTime(r.t)}</span></div>
       ${r.win ? `<p class="bonus">+${r.bonus} wave-bonus · +${Math.round(r.bounty)} fra drap</p>` : ''}
       <p class="why">${why.join(' ')}</p>

@@ -93,6 +93,17 @@
   - Svakhet: den rikeste spilleren vinner ofte. Laget løser det selv ved å stemme frem den beste hæren.
   - Ikke bestemt: tidsgrense-regel hvis begge står etter 60 sekunder (forslag: mest gjenværende HP vinner), og hvordan arenaen ser ut.
 
+## 1 mot 1 mot computer (bygget 4. okt 2026)
+- Prototype av sending før ekte flerspiller. Rivalen er den samme fornuftige spilleren som simuleringene bruker. Den spiller sitt eget spill i bakgrunnen med samme waves, egen økonomi, hær og Warden.
+- Send-fanen: i byggefasen kjøper du skapninger fra verdenen dere er i, som allerede har dukket opp. De kommer bak rivalens neste wave. Bryter en gjennom porten hans, får du halve prisen tilbake. Maks 24 per wave. «Angre siste» gir pengene tilbake.
+- Rivalen sender 30 % av gullet sitt fra wave 3. Det du får, vises i «Neste wave» merket SENDT.
+- Sendepriser: Husk 3, Spider 3, Spitter 5, Serpent 5, Brute 8, Beetle 9, Stalker 6, Broodmother 12, Colossus 30. World 2 og 3 har egne, høyere priser.
+- I 1 mot 1 er portalens egne waves på 45 % styrke; resten av presset kommer fra rivalen (som i Squadron).
+- Den som mister flammen først, taper. Faller begge samme wave, eller står begge etter wave 30: uavgjort.
+- Målt med to computere mot hverandre: ca. 5 sendte per wave hver vei; ca. 1/3 av kampene avgjøres på wave 19 (18 Acolytes som leger), resten går til wave 30.
+- Kan slås av før første wave (Send-fanen); da er spillet som før.
+- Ikke laget ennå: arena på wave 8, at rivalen sender smartere (nå tilfeldig), ekte flerspiller.
+
 ## Speiding (ikke MVP)
 - Alle kan kjøpe et kort blikk (ca. 5 sekunder) på motstanderlagets units.
 

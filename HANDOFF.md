@@ -21,7 +21,7 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 
 ## Next steps (in suggested order)
 
-1. **Push the repo** once GitHub is linked: `add_repo` quara0n/thelastflame with push access, then `git remote add origin … && git push -u origin main`. In a new thread the local repo is gone: rebuild it from the project (`claude/kode/…` plus the artifacts), or ask the user to attach `thelastflame.zip`.
+1. ~~Push the repo~~ Done 4 Oct: quara0n/thelastflame- (with a trailing dash). Old note: `add_repo` quara0n/thelastflame with push access, then `git remote add origin … && git push -u origin main`. In a new thread the local repo is gone: rebuild it from the project (`claude/kode/…` plus the artifacts), or ask the user to attach `thelastflame.zip`.
 2. **Ask the user how waves 21–30 feel on the phone.** The balance comes from a bot, not a human.
 3. **Multiplayer basics — locked 3 Oct:** 2 teams of 4; every player has their own gate; one shared Warden per team is the king (leaks from any gate go to the team's citadel; enemy reaches the flame = team loses); arena at wave 8; you send creatures from the world you're in. Draft numbers (send prices, leak gold, arena prize, fixed 1-vs-1 send pairing) are in `docs/design-flyvere-assets-flerspiller.md` under "Flerspiller: grunnregler" and still need the user's OK. Later the same evening: no gold passing between players; a player who has cleared their own wave has their surviving soldiers moved automatically up to the Warden to fight teammates' leaks; leak split 25 % lost / leaker 25 % / helper 50 % (helper may give back); send prices cut 25 %; leak gold for sends approved; arena = army duel. Still open: arena prize and tiebreak, gold when the Warden kills a leak, whether the Warden can die. Note: the user reacted strongly when asked "what is the king" — the Warden is obviously the king; don't ask that again.
 4. **World 4 (divine robotics, waves 31–40) and Tier 5 (Legendary)**, built the same way as World 3: draft in the notes, user approval, `tools/world4.py`, tune with `tune4.js`-style measurement and `tune_waves.js`.
@@ -38,6 +38,8 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 5. The Warden images in `docs/art/` only exist in the zip and in the old thread; ask the user to re-attach them if needed.
 
 ## Known rough edges
+
+- 4 Oct (version 11): 1v1 against the computer (`tools/versus.py`, details in the multiplayer doc). Next suggested: user plays it; then the wave-8 arena vs the computer; then one big balance pass with sends; then real online multiplayer. Wave 19 is a wall in 1v1 (healing Acolytes).
 
 - 4 Oct afternoon (version 10): Barracks prices roughly halved (barracksMul 2.4/3.7/3.6/5.8) because the user could only expand near the end. Bot tiers at waves 6/12/22; waves 5–30 retuned; 27/30 reach wave 30.
 
