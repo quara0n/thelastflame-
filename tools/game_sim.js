@@ -5,7 +5,7 @@ function load(extra) {
   const html = fs.readFileSync(__dirname + '/../prototype/kamptest-2.html', 'utf8');
   const a = html.indexOf('// ===== The Last Flame — kampsimulering'), b = html.indexOf('// ===== The Last Flame — musikk');
   const code = html.slice(a, b).replace(/if \(typeof module !== 'undefined'\) module.exports/g, '//') + (extra || '');
-  return new Function(code + ';return { Sim, Econ, TYPES, WAVES, BARRACKS, NODES, TRACKS, BOUNTY, waveBonus, UPGRADES, MAX_LEVEL, supplyOf, ARCHERS, buildWave, upgradeSpent, REFUND, WALLS, Rival: typeof Rival !== "undefined" ? Rival : null, sendable: typeof sendable !== "undefined" ? sendable : null };')();
+  return new Function(code + ';return { Sim, Econ, TYPES, WAVES, BARRACKS, NODES, TRACKS, BOUNTY, waveBonus, UPGRADES, MAX_LEVEL, supplyOf, ARCHERS, buildWave, upgradeSpent, REFUND, WALLS, Rival: typeof Rival !== "undefined" ? Rival : null, sendable: typeof sendable !== "undefined" ? sendable : null, arenaSim: typeof arenaSim !== "undefined" ? arenaSim : null, arenaOutcome: typeof arenaOutcome !== "undefined" ? arenaOutcome : null };')();
 }
 
 function bot(L, ec, army, waveIdx) {

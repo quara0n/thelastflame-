@@ -37,6 +37,7 @@ The Last Flame is a Squadron-inspired unit tower defence. The player holds a gat
   4. `tools/mobile.py`: phone layout.
   7. `tools/tier_cap.py`: all tiers open; max 2 units of a tier without its Barracks. 8. `tools/waves30.py`: the whole wave line-up (30 creatures, new species is the majority).
   9. `tools/versus.py`: 1v1 against the computer (Send tab, Rival class running the game_sim bot, VERSUS knobs). Measure with `node tools/versus_sim.js 16 '{"share":0.3,"wave":0.45}'`.
+  10. `tools/arena.py`: arena duel vs the computer after waves 8, 18, 28 (`node tools/arena_sim.js` to check fairness).
   6. `tools/economy.py` (numbers in `tools/economy.json`): deflation — slower gathering, pricier workers, Barracks priced per world, Warden gear ×2.
   5. `tools/music.py`: recorded music (build phase rotates 2 tracks, battle rotates 3) and 55 s between waves. The mp3s live in `prototype/musikk/` and must be published with the page via the Artifact `files` map (`musikk/<name>.mp3`).
 - Every patch uses `sub()`, which fails loudly if the target text isn't found exactly once. If a build fails, the anchor text moved; fix the patch, don't hand-edit kamptest-2.

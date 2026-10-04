@@ -74,7 +74,7 @@
 - **Hver spiller har sin egen port og sin egen hær.** Fire porter per lag, side om side.
 - **Én felles Warden per lag (kongen).** Alle fire porter fører opp til samme citadell med flammen. Fiender som bryter gjennom hos hvem som helst, går dit, og Warden kjemper mot dem. Når en fiende når flammen, taper hele laget.
 - **Warden eies av laget.** Alle fire kan betale for utstyr og trening i Warden's Sanctum. Erfaring fra drap gjelder for laget.
-- **Arena:** wave 8.
+- **Arena:** etter wave 8, 18 og 28 (endret 4. okt: tre arenaer, ikke bare én).
 - **Sending:** man sender skapninger fra verdenen laget er i nå (World 1 sender Askemyr-skapninger osv.). Pris og styrke stiger per verden.
 
 - **Lagspill: ingen deling av gull.** Spillere kan ikke gi hverandre gull (det blir bare krangel).
@@ -102,7 +102,9 @@
 - Den som mister flammen først, taper. Faller begge samme wave, eller står begge etter wave 30: uavgjort.
 - Målt med to computere mot hverandre: ca. 5 sendte per wave hver vei; ca. 1/3 av kampene avgjøres på wave 19 (18 Acolytes som leger), resten går til wave 30.
 - Kan slås av før første wave (Send-fanen); da er spillet som før.
-- Ikke laget ennå: arena på wave 8, at rivalen sender smartere (nå tilfeldig), ekte flerspiller.
+- Arena (bygget 4. okt): etter wave 8, 18 og 28 møter en kopi av hæren din en kopi av rivalens hær på slagmarken, i maks 60 sekunder. Ingen dør på ekte. Siste hær som står, vinner; går tiden ut, vinner den med mest helse igjen (andel). Vinneren får 40/80/120 gull, 20/40/60 tømmer og stein, 10/20/30 kull og et Champion-flagg. Byggefasen starter etter arenaen med full tid.
+- For at arenaen skal være rettferdig virker Warbanner Captains aura, Ironwalls taunt og Shieldguards skjoldmur nå for begge sider. Målt med to computere: omtrent jevnt (9–8), kampene tar ca. 20 sekunder.
+- Ikke laget ennå: at rivalen sender smartere (nå tilfeldig), ekte flerspiller.
 
 ## Speiding (ikke MVP)
 - Alle kan kjøpe et kort blikk (ca. 5 sekunder) på motstanderlagets units.
