@@ -39,6 +39,8 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 
 ## Known rough edges
 
+- 4 Oct evening (version 17): Tier 1–5 buttons above «Plass i hæren» (`tools/tier_chips.py`).
+
 - 4 Oct evening (version 16): Warden abilities and persistent Warden HP (`tools/warden_abilities.py`). Not used by the bot, so not in balance measurements.
 
 - 4 Oct evening (version 15): Warden nerf (`tools/warden_nerf.py`), order bar with collapsible orders and a stats table. The bot never buys Warden gear, so the nerf doesn't change bot balance.

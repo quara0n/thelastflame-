@@ -42,6 +42,7 @@ The Last Flame is a Squadron-inspired unit tower defence. The player holds a gat
   12. `tools/tier_power.py` (applied right after world3): higher tiers worth more per supply and gold; raptor buff. 13. `tools/select_info.py`: order bar picture, upgrade deltas, value numbers.
   14. `tools/warden_nerf.py`: weaker Warden gear and level bonus.
   15. `tools/warden_abilities.py`: Warden abilities (stun, spin, freeze) and Warden HP carried between waves.
+  16. `tools/tier_chips.py`: Tier 1–5 buttons above army space; only Tier 1 open at start.
   6. `tools/economy.py` (numbers in `tools/economy.json`): deflation — slower gathering, pricier workers, Barracks priced per world, Warden gear ×2.
   5. `tools/music.py`: recorded music (build phase rotates 2 tracks, battle rotates 3) and 55 s between waves. The mp3s live in `prototype/musikk/` and must be published with the page via the Artifact `files` map (`musikk/<name>.mp3`).
 - Every patch uses `sub()`, which fails loudly if the target text isn't found exactly once. If a build fails, the anchor text moved; fix the patch, don't hand-edit kamptest-2.

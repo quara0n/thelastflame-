@@ -125,6 +125,8 @@ import economy
 s = economy.apply(s)
 import tier_cap
 s = tier_cap.apply(s)
+import tier_chips
+s = tier_chips.apply(s)
 import waves30
 s = waves30.apply(s)
 import versus

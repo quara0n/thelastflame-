@@ -217,6 +217,11 @@ td:first-child { font-family: var(--body); }
 .vs-tog { display: flex; align-items: center; gap: 6px; font-size: 12px; }
 .vs-tog input { accent-color: #a35ae0; }
 
+.tierchips { display: flex; gap: 4px; flex-wrap: wrap; margin: 0 0 8px; }
+.tierchips button { flex: 1 1 0; min-width: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; padding: 5px 4px; font-size: 12px; font-weight: 600; color: var(--muted); display: flex; flex-direction: column; align-items: center; line-height: 1.15; }
+.tierchips button small { font-size: 9.5px; font-weight: 500; opacity: .85; }
+.tierchips button.on { border-color: var(--flame); color: var(--flame); background: #2a2012; }
+
 .om-up { flex: 1 1 100%; display: flex; align-items: center; gap: 10px; border-top: 1px solid var(--line); padding-top: 8px; min-width: 0; }
 .om-up button { flex: none; background: var(--flame); color: var(--flame-ink); border: 1px solid var(--flame); border-radius: 6px; padding: 7px 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
 .om-up button .cost { color: var(--flame-ink); }
@@ -504,6 +509,7 @@ button.tier-h:hover b { text-decoration: underline; }
     <div class="tabpane" id="pane-army">
       <section>
         <h2>Hær <span class="tipi" tabindex="0" data-tip="Klikk bildet for å velge alle av typen på kartet. Hold musen over et kort, eller trykk «i», for å se tallene. Klikk en tier for å lukke eller åpne den.">i</span></h2>
+        <div class="tierchips" id="tierchips"></div>
         <div class="supply" id="supply"></div>
         <div class="roster" id="palette"></div>
         <p class="note">«+ Plasser» kjøper units i byggefasen. Velg en unit på kartet og trykk «Oppgrader» for å gjøre akkurat den soldaten sterkere (tre nivåer). Fjerner du en, får du tilbake 75 % av alt du brukte på den, rundet ned.</p>
@@ -2264,7 +2270,7 @@ const Sound = (function () {
   const PLAYER_TYPES = ['shieldguard', 'stormreaver', 'ironshot', 'longfang', 'ironwall', 'frostbrand', 'thunderbore', 'hearthkeeper', 'pyreguard', 'siegebreaker', 'captain', 'huskarl', 'ironhulk', 'mammoth', 'skyspear', 'hearthengine'];
   const RES_HEX = { gold: '#e2b54a', timber: '#b07a4a', stone: '#9aa3ad', iron: '#7f93a8', coal: '#5a5550' };
   const state = {
-    army: [], econ: new Econ(), collapsed: new Set([5]), wave: 0, buildLeft: BUILD_FIRST, buildTotal: BUILD_FIRST, tab: 'army', lastReport: null,
+    army: [], econ: new Econ(), collapsed: new Set([2, 3, 4, 5]), wave: 0, buildLeft: BUILD_FIRST, buildTotal: BUILD_FIRST, tab: 'army', lastReport: null,
     versus: true, flags: 0, rivalFlags: 0, rival: new Rival(), sendQueue: [], incoming: [], rivalRes: null,
     tool: null, together: true, nextSquad: 10, selection: new Set(), phase: 'build', paused: false, speed: 1, acc: 0,
   };
@@ -4091,10 +4097,13 @@ const Sound = (function () {
     const used = armySupply(), cap = ec.supplyCap(), nbx = BARRACKS[ec.barracks + 1];
     $('#supply').innerHTML = `<span class="sl">${SUP_SVG} Plass i hæren</span><b>${used}/${cap}</b><span class="sbar"><i style="width:${Math.min(100, used / cap * 100)}%"></i></span>${tipIcon(`Hver unit tar plass: Tier 1 tar 1, Tier 2 tar 2, Tier 3 tar 3. ${ec.barracks + 1 < BARRACKS.length ? `${BARRACKS[ec.barracks].name} gir ${cap} plass.${nbx && !nbx.future ? ` ${nbx.name} gir ${nbx.supply}.` : ''}` : ''} Når hæren er full, bytter du ut svakere units med sterkere.`)}`;
     $('#supply').classList.toggle('full', used >= cap);
+    $('#tierchips').innerHTML = ROSTER.map(t => { const on = !state.collapsed.has(t.tier), capInfo = t.units && !ec.unitUnlocked(t.units[0]) ? `${tierCount(t.tier)}/${TIER_CAP}` : !t.units ? 'kommer' : 'åpen';
+      return `<button type="button" class="${on ? 'on' : ''}" data-tier="${t.tier}" aria-pressed="${on}">Tier ${t.tier}<small>${capInfo}</small></button>`; }).join('');
     $('#palette').innerHTML = ROSTER.map(tier => {
       const unlocked = tier.units && tier.units.length && ec.unitUnlocked(tier.units[0]);
       const open = !state.collapsed.has(tier.tier);
       const head = `<button type="button" class="tier-h" data-tier="${tier.tier}" aria-expanded="${open}"><span class="chev">${open ? '▾' : '▸'}</span><b>Tier ${tier.tier}</b><span>${tier.name}</span>${tier.units && !unlocked ? `<em data-tip="Uten ${tier.need} kan du ha maks ${TIER_CAP} av denne tieren. ${tier.need} fjerner taket og gir mer plass i hæren.">${tierCount(tier.tier)}/${TIER_CAP} · ${tier.need} fjerner taket</em>` : ''}${!tier.units ? '<em>Kommer</em>' : ''}</button>`;
+      if (!open) return '';   // lukket tier tar ingen plass; knappene over åpner den
       if (!tier.units) return `<section class="tier future">${head}${open ? `<div class="ugrid">${'<div class="ucard ghost"><span class="lock">🔒</span><span>Ikke designet ennå</span></div>'.repeat(2)}</div>` : ''}</section>`;
       if (!open) return `<section class="tier">${head}</section>`;
       return `<section class="tier">${head}<div class="ugrid">` + tier.units.map(k => {
