@@ -79,3 +79,11 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 - Barracks gir mer plass: 20 / 32 / 46 / 62 / 80.
 - World 1 litt tøffere: tune_waves-mål 0,9 (1–4), 0,85 (5–9), 0,7 (10). Resultat: bølge 5–7 ca. +10 %, bølge 10 ca. +25 %; 1–4 uendret (allerede +10 % gjorde at boten tapte). Hele lista retunet; game_sim 30: 14 av 30 når wave 30.
 - Venter fortsatt (brukeren sier fra): oppgraderingspris ≥ unitpris og stigende per nivå.
+
+## 4 Oct 2026 – version 19: smartere rival
+
+- Rivalen ser på hæren din før han sender: flyvere når du har få skyttere, raptorer når du har mange, sverm når du mangler områdeskade, tykt skall når slagene dine er svake. Litt tilfeldighet, så han ikke er helt forutsigbar.
+- Han husker hvor langt hver art kom sist og velger mer av det som virket.
+- Han sparer: vanligvis sender han halvparten og legger resten i en sparegris. Stort angrep når porten din er under 60 %, når hæren din har krympet (du solgte for ny tier), før en ny verden, eller når sparegrisen er full.
+- Toast og Send-fanen sier hvorfor han sendte det han sendte, og om han sparer.
+- Målt (`tools/send_test.js`): samme gull gir ca. 75 % mer skade på hæren og porten enn tilfeldige valg. Bot mot bot: smart rival vant 9, tilfeldig 7, uavgjort 3 av 30 (de fleste kampene avgjøres av wave 25).

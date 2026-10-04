@@ -65,12 +65,12 @@ UI = r"""
   }
   // Rivalens wave er ferdig: resultatene kommer nå (gull for lekk, det han sender deg, om flammen hans falt).
   function rivalDone() {
-    const rr = state.rival.end();
+    const rr = state.rival.end({ army: state.army, ec: state.econ });
     state.rivalRes = rr;
     if (rr.leakGold) { state.econ.add({ gold: rr.leakGold }); popRes('gold', rr.leakGold); }
     state.incoming = rr.out;
     const h = state.rival.hold;
-    toast(rr.lost ? `Rivalens flamme falt på wave ${h.wave}!` : `Rivalen ${h.win ? 'holdt' : 'klarte seg så vidt i'} wave ${h.wave}. ${h.leaked ? `${h.leaked} av dine kom gjennom, +${rr.leakGold} gull. ` : ''}${rr.out.length ? `Han sender deg ${rr.out.length} skapninger.` : ''}`);
+    toast(rr.lost ? `Rivalens flamme falt på wave ${h.wave}!` : `Rivalen ${h.win ? 'holdt' : 'klarte seg så vidt i'} wave ${h.wave}. ${h.leaked ? `${h.leaked} av dine kom gjennom, +${rr.leakGold} gull. ` : ''}${rr.out.length ? `${state.rival.strike ? 'Stort angrep: ' : ''}han sender deg ${rr.out.length} skapninger${state.rival.why ? ` (${state.rival.why})` : ''}.` : ''}${state.rival.bank > 0 ? ' Han sparer gull til noe større.' : ''}`);
     if (rr.lost && state.phase === 'build') {
       state.phase = 'over'; state.outcome = 'won-vs'; sfx('victory');
       const el = $('#result'); el.hidden = false; el.className = 'result win';

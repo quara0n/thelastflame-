@@ -36,7 +36,7 @@ The Last Flame is a Squadron-inspired unit tower defence. The player holds a gat
   3. `tools/world3.py`: World 3 (Urheim) creatures and mechanics, Tier 4 units and upgrades, Barracks IV, models, world look, sounds.
   4. `tools/mobile.py`: phone layout.
   7. `tools/tier_cap.py`: all tiers open; max 2 units of a tier without its Barracks. 8. `tools/waves30.py`: the whole wave line-up (30 creatures, new species is the majority).
-  9. `tools/versus.py`: 1v1 against the computer (Send tab, Rival class running the game_sim bot, VERSUS knobs). Measure with `node tools/versus_sim.js 16 '{"share":0.3,"wave":0.45}'`.
+  9. `tools/versus.py`: 1v1 against the computer (Send tab, Rival class running the game_sim bot, VERSUS knobs). Since version 19 the rival picks sends from your army (`foeProfile`, `sendValue`, `pickSends`), learns from how far its sends got (`learn`), and saves up for big attacks. Measure with `node tools/versus_sim.js 20 '{}' mix` (smart vs random rival) and `node tools/send_test.js 8` (trouble per gold, smart vs random).
   10. `tools/arena.py`: arena duel vs the computer after waves 8, 18, 28 (`node tools/arena_sim.js` to check fairness).
   11. `tools/rival_view.py`: the rival's own battlefield at x = 90, his wave live, minimap, «Rival» button.
   12. `tools/tier_power.py` (applied right after world3): higher tiers worth more per supply and gold; raptor buff. 13. `tools/select_info.py`: order bar picture, upgrade deltas, value numbers.

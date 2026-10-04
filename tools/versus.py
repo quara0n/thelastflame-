@@ -17,7 +17,7 @@ const SEND = { husk: 3, spider: 3, spitter: 5, serpent: 5, brute: 8, beetle: 9, 
   raptor: 10, hornback: 30, snapper: 8, clubtail: 28, urdragon: 45, tyrant: 70, frillspitter: 16, earthshaker: 90, revenant: 20 };
 const RIVAL_BREAK = 55;
 // Knapper for 1 mot 1: hvor mye computeren sender (andel av gullet), hvor sterke portalens egne waves er, og sendeprisene.
-const VERSUS = { share: 0.35, wave: 0.47, price: 1 };
+const VERSUS = { share: 0.35, wave: 0.47, price: 1, smart: true };
 const sendPrice = k => Math.max(1, Math.round(SEND[k] * VERSUS.price));
 const versusScale = W => ({ hp: W.scale.hp * VERSUS.wave, dmg: W.scale.dmg * Math.sqrt(VERSUS.wave) });
 // Det man kan sende i wave wi: skapninger fra verdenen man er i nå, som allerede har vist seg.
@@ -41,12 +41,59 @@ function sentLeaks(sim, by) {
   return Math.floor(g);
 }
 __BOT__
+// ----- Rivalens sende-hjerne (versjon 19) -----
+// Ser på motstanderens hær og velger skapningene den er svakest mot: flyvere når den har få skyttere, tykt skall når
+// den slår svakt, raptorer når den har mange skyttere, sverm når den mangler områdeskade. Den husker hvor langt
+// det den sendte sist kom, og sparer opp til et stort angrep når porten din er skadet eller en ny art kommer.
+function foeProfile(foe) {
+  const p = { dps: 0, ranged: 0, splash: 0, hit: 0, pierce: 0, aa: 0, n: 0 };
+  if (!foe || !foe.army || !foe.army.length) return null;
+  const ft = foe.ec ? foe.ec.types(TYPES) : TYPES;
+  for (const a of foe.army) {
+    const t = ft[a.type] || TYPES[a.type]; if (!t) continue;
+    const m = 1 + 0.2 * (a.level || 0), d = t.dmg * m / (t.interval || 1);
+    p.dps += d; p.hit += d * t.dmg * m; p.pierce += d * (t.pierce || 0); p.n++;
+    if (t.ranged) p.ranged += d;
+    if (t.splash) p.splash += d;
+  }
+  if (!p.dps) return null;
+  const arch = foe.ec ? (ARCHERS[foe.ec.archers] || ARCHERS[0]).count * 12 : 0;
+  p.hit /= p.dps; p.pierce /= p.dps;
+  p.aa = Math.min(1, (p.ranged + arch) / (p.dps + arch));
+  p.rangedShare = p.ranged / p.dps; p.splashShare = p.splash / p.dps;
+  p.gate = foe.ec ? foe.ec.gateHp / Math.max(1, foe.ec.gateMax()) : 1;
+  return p;
+}
+// Hvor mye trøbbel én gullbit av skapning k gir denne hæren. Høyere er bedre for den som sender.
+function sendValue(k, prof, memo) {
+  const t = TYPES[k], price = sendPrice(k);
+  if (!prof) return 1 / price;
+  const eff = Math.max(1, prof.hit - Math.max(0, (t.armor || 0) - prof.pierce));
+  const tough = t.hp * (prof.hit / eff), dps = t.dmg / (t.interval || 1) * (t.cleave ? 1.3 : 1);
+  let v = Math.sqrt(tough * dps) / price;
+  if (t.flies) v *= 0.7 + 1.6 * (1 - prof.aa);
+  if (t.hunts === 'ranged') v *= 0.8 + 0.9 * prof.rangedShare;
+  if (t.swarm) v *= 1.15 - 0.9 * prof.splashShare;
+  if (t.ranged) v *= 1.1 - 0.4 * prof.rangedShare;
+  return v * ((memo && memo[k]) || 1);
+}
+function pickSends(opts, money, prof, memo) {
+  const ranked = opts.map(k => ({ k, v: sendValue(k, prof, memo) * (0.88 + Math.random() * 0.24) })).sort((a, b) => b.v - a.v);
+  const out = []; if (!ranked.length) return out;
+  // 70 % av pengene på det beste valget, resten på nest beste, og småpenger på det billigste av de to.
+  const plan = [[ranked[0].k, money * 0.7], [(ranked[1] || ranked[0]).k, money * 0.3]];
+  let left = money;
+  for (const [k, part] of plan) { let m = part; const pr = sendPrice(k); while (m >= pr && left >= pr && out.length < 24) { out.push(k); m -= pr; left -= pr; } }
+  const cheap = ranked.slice(0, 2).map(r => r.k).sort((a, b) => sendPrice(a) - sendPrice(b))[0];
+  while (left >= sendPrice(cheap) && out.length < 24) { out.push(cheap); left -= sendPrice(cheap); }
+  return out;
+}
 const RIVAL_L = { TYPES, BARRACKS, NODES, UPGRADES, MAX_LEVEL, supplyOf, ARCHERS, upgradeSpent, REFUND, WALLS };
 class Rival {
-  constructor() { this.ec = new Econ(); this.army = []; this.t = 45; this.alive = true; this.hold = null; this.sim = null; this.wi = -1; this.shop(); this.makeView(); }
+  constructor() { this.ec = new Econ(); this.army = []; this.memo = {}; this.bank = 0; this.intent = ''; this.t = 45; this.alive = true; this.hold = null; this.sim = null; this.wi = -1; this.shop(); this.makeView(); }
   // Rivalen handler for pengene sine, men holder av det han vil sende.
   shop() {
-    const ec = this.ec, keep = this.wi + 1 >= 2 ? Math.floor(ec.res.gold * VERSUS.share) : 0;
+    const ec = this.ec, keep = this.wi + 1 >= 2 ? Math.min(Math.floor(ec.res.gold), Math.floor(ec.res.gold * VERSUS.share) + this.bank) : 0;
     ec.res.gold -= keep; rivalBot(RIVAL_L, ec, this.army, Math.min(WAVES.length - 1, this.wi + 1)); ec.res.gold += keep; this.saved = keep;
   }
   // Det som vises av rivalen mellom wavene: hæren hans hjemme.
@@ -56,13 +103,13 @@ class Rival {
   begin(wi, incoming) {
     const ec = this.ec, W = WAVES[wi];
     ec.tick(this.t); this.wi = wi;
-    this.budget = wi >= 2 ? Math.min(Math.floor(ec.res.gold), Math.max(this.saved || 0, Math.floor(ec.res.gold * VERSUS.share))) : 0;
+    this.budget = wi >= 2 ? Math.min(Math.floor(ec.res.gold), Math.max(this.saved || 0, Math.floor(ec.res.gold * VERSUS.share) + this.bank)) : 0;
     ec.res.gold -= this.budget; rivalBot(RIVAL_L, ec, this.army, wi); ec.res.gold += this.budget;
     const base = buildWave(W); this.incoming = incoming || [];
     this.sim = new Sim(this.army, { types: ec.types(TYPES, versusScale(W)), enemies: base.concat(placeSent(this.incoming, base)), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count });
   }
   // Waven er ferdig (spoles frem om nødvendig). Gir gull for lekk til spilleren og det rivalen sender tilbake.
-  end() {
+  end(foe) {
     const ec = this.ec, sim = this.sim, wi = this.wi, W = WAVES[wi];
     while (!sim.result) sim.step(1 / 15);
     ec.tick(sim.t); ec.gateHp = sim.gateHp; this.t = RIVAL_BREAK;
@@ -74,22 +121,50 @@ class Rival {
     const leaked = sim.units.filter(u => u.sent && u.sent.by === 'p' && (u.leaked || u.z > MAP.gateZ + 1.5)).length;
     this.hold = { wave: W.n, win: sim.result.win, lost, gate: Math.round(sim.gateHp), gateMax: ec.gateMax(), army: this.army.length,
       tier: ec.barracks + 1, got: this.incoming.length, leaked };
-    // Rivalen sender for budsjettet sitt, tilfeldig blant det som er råd til.
     const out = [], opts = sendable(wi);
     let money = Math.min(this.budget, Math.floor(ec.res.gold));
-    for (let g = 0; g < 40 && out.length < 24; g++) {
-      const can = opts.filter(k => sendPrice(k) <= money);
-      if (!can.length) break;
-      const k = can[Math.floor(Math.random() * can.length)], pr = sendPrice(k);
-      money -= pr; ec.res.gold -= pr; out.push({ type: k, by: 'r', price: pr });
+    if (this.smart !== undefined ? this.smart : VERSUS.smart) {
+      // Sparer eller slår til: alt når porten din er skadet, en ny art kommer neste wave, eller sparegrisen er full.
+      const prof = foeProfile(foe), nx = WAVES[wi + 1];
+      this.strike = false;
+      // Ny verden neste wave (sterkere skapninger kommer), hæren din har krympet (solgt for ny tier), porten er skadet,
+      // eller han har spart i to runder.
+      const newWorld = nx && nx.world !== WAVES[wi].world;
+      const shrunk = prof && this.foeDps && prof.dps < this.foeDps * 0.85;
+      const strike = !prof || prof.gate < 0.6 || newWorld || shrunk || this.bank >= money * 0.45;
+      if (prof) this.foeDps = prof.dps;
+      const spend = strike ? money : Math.floor(money * 0.5);
+      const kinds = pickSends(opts, spend, prof, this.memo);
+      kinds.forEach(k => { const pr = sendPrice(k); money -= pr; ec.res.gold -= pr; out.push({ type: k, by: 'r', price: pr }); });
+      this.bank = strike ? 0 : Math.max(0, money); this.strike = strike && kinds.length > 0;
+      const top = kinds.length ? kinds.reduce((c, k) => (c[k] = (c[k] || 0) + 1, c), {}) : {};
+      const main = Object.keys(top).sort((a, b) => top[b] - top[a])[0];
+      this.intent = !kinds.length ? 'sparer' : strike ? `stort angrep${main ? ' med ' + TYPES[main].name : ''}` : `sparer litt, sender ${main ? TYPES[main].name : ''}`;
+      this.why = main && prof ? (TYPES[main].flies && prof.aa < 0.5 ? 'du har få skyttere' : TYPES[main].hunts === 'ranged' && prof.rangedShare > 0.4 ? 'du har mange skyttere' : TYPES[main].swarm && prof.splashShare < 0.2 ? 'du mangler områdeskade' : (TYPES[main].armor || 0) > prof.hit / 3 ? 'skallet tåler slagene dine' : '') : '';
+    } else {
+      for (let g = 0; g < 40 && out.length < 24; g++) {
+        const can = opts.filter(k => sendPrice(k) <= money);
+        if (!can.length) break;
+        const k = can[Math.floor(Math.random() * can.length)], pr = sendPrice(k);
+        money -= pr; ec.res.gold -= pr; out.push({ type: k, by: 'r', price: pr });
+      }
     }
     const leakGold = sentLeaks(sim, 'p');
     this.sim = null;
     if (!lost) { this.shop(); }
     this.makeView();
-    return { leakGold, out, lost };
+    return { leakGold, out, lost, sim };
   }
-  playWave(wi, incoming) { this.begin(wi, incoming); return this.end(); }
+  playWave(wi, incoming, foe) { this.begin(wi, incoming); return this.end(foe); }
+  // Etter motstanderens wave: hvor langt kom det han sendte? Godt resultat gir den arten mer vekt neste gang.
+  learn(sim, by) {
+    const got = {};
+    for (const u of sim.units) if (u.sent && u.sent.by === (by || 'r')) {
+      const prog = u.leaked || u.z > MAP.gateZ + 1.5 ? 1 : Math.max(0, Math.min(1, (u.z - MAP.portalZ) / (MAP.gateZ - MAP.portalZ)));
+      (got[u.type] = got[u.type] || []).push(prog);
+    }
+    for (const k in got) { const avg = got[k].reduce((a, b) => a + b, 0) / got[k].length; this.memo[k] = 0.6 * (this.memo[k] || 1) + 0.4 * (0.5 + 1.5 * avg); }
+  }
 }
 """
 
@@ -145,7 +220,7 @@ def apply(s):
                "    state.incoming = [];   // de er nå med i waven din")
     s = sub(s, "    if (lostFlame) { state.phase = 'over'; state.outcome = 'lost'; }\n    else if (state.wave >= WAVES.length - 1) { state.phase = 'over'; state.outcome = 'won'; }",
                "    if (state.versus) {\n"
-               "      const back = sentLeaks(sim, 'r'); if (back) state.rival.ec.add({ gold: back });\n"
+               "      const back = sentLeaks(sim, 'r'); if (back) state.rival.ec.add({ gold: back });\n      state.rival.learn(sim, 'r');\n"
                               "      report.rival = state.rival.running() ? { pending: true } : Object.assign({}, state.rival.hold, { sent: (state.sentLast || []).length, leakGold: state.rivalRes ? state.rivalRes.leakGold : 0 });\n"
                "    }\n"
                "    const rivalDown = state.versus && !state.rival.alive;\n"
@@ -204,7 +279,7 @@ def apply(s):
           <button type="button" data-send="${k}" class="${!build || ec.res.gold < sendPrice(k) ? 'cant' : ''}">${icon('gold', 13)}${sendPrice(k)}</button></div>`).join('')}</div>
         <div class="squeue"><span>${state.sendQueue.length ? `Sendes med wave ${W.n}: ${Object.entries(count).map(([k, n]) => `${n} ${TYPES[k].name}`).join(', ')} (${spent} gull)` : 'Ingen sendt ennå denne waven.'}</span>
           ${state.sendQueue.length && build ? '<button type="button" data-unsend="1">Angre siste</button>' : ''}</div>
-        <p class="note">${state.incoming.length ? `Rivalen sender deg ${state.incoming.length} skapninger i wave ${W.n}. De står i «Neste wave» i Hær-fanen.` : 'Rivalen har ikke sendt deg noe til neste wave.'}</p></section>` : ''}`;
+        <p class="note">${state.incoming.length ? `Rivalen sender deg ${state.incoming.length} skapninger i wave ${W.n}${r.strike ? ' – et stort angrep' : ''}. De står i «Neste wave» i Hær-fanen.` : 'Rivalen har ikke sendt deg noe til neste wave.'}${r.why && state.incoming.length ? ` Han valgte dem fordi ${r.why}.` : ''}${r.bank > 0 ? ' Han sparer gull til et større angrep – pass på når porten din er skadet, eller når du selger units for å bytte tier.' : ''}</p></section>` : ''}`;
   }
 """
     s = sub(s, "  // ---------- Statkort for units i Hær-fanen ----------", UI + "\n  // ---------- Statkort for units i Hær-fanen ----------")

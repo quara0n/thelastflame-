@@ -119,3 +119,7 @@
 - Arenapremie, tidsgrense i arenaen, og hvem får gull når Warden dreper en lekk.
 - Kan Warden dø, eller bare flammen? (I dag: fiende ved flammen = tap, Warden har HP men kampen går videre.)
 - Modeller: AI 3D-verktøy eller ferdigkjøpte pakker?
+
+## Smartere rival (4. okt, versjon 19)
+
+Computeren velger det den sender ut fra hæren din, husker hva som virket, og sparer opp til store angrep (porten din under 60 %, hæren krympet, ny verden neste wave, eller full sparegris). Samme gull gir ca. 75 % mer trøbbel enn tilfeldige valg. Spillet forteller hvorfor han valgte som han gjorde.
