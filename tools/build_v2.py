@@ -145,5 +145,7 @@ import forge_gate
 s = forge_gate.apply(s)
 import ashcrow
 s = ashcrow.apply(s)
+import online
+s = online.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))

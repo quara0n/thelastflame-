@@ -25,7 +25,7 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 2. **Ask the user how waves 21–30 feel on the phone.** The balance comes from a bot, not a human.
 3. **Multiplayer basics — locked 3 Oct:** 2 teams of 4; every player has their own gate; one shared Warden per team is the king (leaks from any gate go to the team's citadel; enemy reaches the flame = team loses); arena at wave 8; you send creatures from the world you're in. Draft numbers (send prices, leak gold, arena prize, fixed 1-vs-1 send pairing) are in `docs/design-flyvere-assets-flerspiller.md` under "Flerspiller: grunnregler" and still need the user's OK. Later the same evening: no gold passing between players; a player who has cleared their own wave has their surviving soldiers moved automatically up to the Warden to fight teammates' leaks; leak split 25 % lost / leaker 25 % / helper 50 % (helper may give back); send prices cut 25 %; leak gold for sends approved; arena = army duel. Still open: arena prize and tiebreak, gold when the Warden kills a leak, whether the Warden can die. Note: the user reacted strongly when asked "what is the king" — the Warden is obviously the king; don't ask that again.
 4. **World 4 (divine robotics, waves 31–40) and Tier 5 (Legendary)**, built the same way as World 3: draft in the notes, user approval, `tools/world4.py`, tune with `tune4.js`-style measurement and `tune_waves.js`.
-5. Missing flyer creatures: drones (wave 35). Ash Crow done in version 20. Note: locusts (wave 15) have no `flies` flag yet, so they walk instead of flying.
+5. Missing flyer creatures: drones (wave 35). Ash Crow done in version 20, flying locusts in version 21.
 6. About 30 enemies per wave (today 10–40, uneven).
 7. Models: choose between an AI 3D tool (Meshy, Tripo, Rodin) and bought packs. Start with Husk and Brute, then a clean Warden character sheet.
 
@@ -95,4 +95,15 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 - Egen modell (vinger som slår), egne lyder (bird).
 - Straffer få skyttere: 8 enheter med 4 skyttere mister porten, 24 med 12 skyttere skyter alle ned.
 - Re-tunet fra wave 5 (to runder). `node tools/game_sim.js 30`: 18 av 30 når wave 30 (var 14, trolig mest støy). Wave 5 holdes 100 % av boten.
+
+## 4 Oct 2026 – version 21: online 1 mot 1 og flyvende gresshopper
+
+- Rune valgte flerspiller foran World 4 (4 Oct).
+- Gresshopper flyr nå (`flies` i `tools/ashcrow.py`). «Sverm» (22 gresshopper) flyttet til wave 15, «Tornkratt» til wave 13. Re-tunet fra wave 13. `game_sim 30`: 12 av 30 når wave 30 (støy er stor; wave 12 og 20 er de tøffeste, de er ikke endret). Wave 15 holdes 92 %.
+- Online 1 mot 1 (`tools/online.py`): Send-fanen har «Lag rom» / «Bli med» med kode, begge trykker Klar, og en ny kamp starter hos begge. Hver telefon kjører sitt eget spill; `RemoteRival` tar computerens plass. Alt går gjennom artifactens `room`-capability (presence): sendte skapninger (sekvensnummer), lekk-gull (løpende sum), port, hær hjemme og slagmarken live 4 ganger i sekundet. Rivalens slagmark (x = 90) viser motspilleren.
+- Publiser alltid med `capabilities: {room: {}}` (lagret på artifacten; utelat feltet ved senere publisering for å beholde det).
+- Krav: begge logget inn i Claude, og motspilleren må få tilgang via Del-menyen. Telefon og PC på samme konto er to spillere (test alene).
+- Gi opp = tap. Borte i 2 minutter = walkover. Arena er av online (begge må se samme kamp; neste steg: én telefon kjører, den andre spiller av).
+- Test: `tools/online_test.js` med `tools/online_mockroom.js` (to sider, BroadcastChannel i stedet for rommet).
+- Neste: arena online, så 2 mot 2 / 4 mot 4 med felles Warden. Åpne regler før det: arena-premie og uavgjort, gull når Warden dreper en lekk, kan Warden dø.
 

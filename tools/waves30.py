@@ -20,9 +20,9 @@ W = [
   # World 2 – Vrangheim
   ("Flokk",      [("wolf", 22, "front"), ("serpent", 4, "flank"), ("spitter", 4, "back")], {"world": 2}),
   ("Stampede",   [("boar", 16, "front"), ("wolf", 14, "flank")], {"world": 2}),
-  ("Sverm",      [("locust", 22, "front"), ("boar", 2, "front"), ("wolf", 6, "flank")], {"world": 2}),
-  ("Ljåer",      [("mantis", 18, "front"), ("locust", 12, "flank")], {"world": 2}),
   ("Tornkratt",  [("thornling", 20, "front"), ("locust", 6, "flank"), ("mantis", 4, "back")], {"world": 2}),
+  ("Ljåer",      [("mantis", 18, "front"), ("locust", 12, "flank")], {"world": 2}),
+  ("Sverm",      [("locust", 22, "front"), ("boar", 2, "front"), ("wolf", 6, "flank")], {"world": 2, "flyers": True}),
   ("Råtne røtter", [("treant", 6, "boss"), ("thornling", 18, "front"), ("wolf", 6, "flank")], {"world": 2, "heavy": True}),
   ("Skall",      [("crab", 20, "front"), ("thornling", 6, "back"), ("locust", 4, "flank")], {"world": 2}),
   ("Sang",       [("siren", 18, "back"), ("crab", 10, "front"), ("boar", 2, "front")], {"world": 2}),

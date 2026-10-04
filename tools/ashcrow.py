@@ -36,4 +36,7 @@ def apply(s):
     s = sub(s, "      case 'stalker': {", MODEL + "      case 'stalker': {")
     s = sub(s, "    insect: t => { voice(t, { f: [[0, 205]", CALL + "    insect: t => { voice(t, { f: [[0, 205]")
     s = sub(s, "    insect: t => { for (let i = 0; i < 5; i++)", DIE + "    insect: t => { for (let i = 0; i < 5; i++)")
+    # Locusts fly too (wave 15 is the World 2 flyer wave): same flyer rules as the crows.
+    s = sub(s, "  locust:      { name: 'Locust Swarm', side: 'e', kind: 'insect', swarm: true, role: 'Hundrevis av små munner',",
+               "  locust:      { name: 'Locust Swarm', side: 'e', kind: 'insect', flies: true, swarm: true, role: 'Hundrevis av små munner som flyr over hæren. Bare skyttere når dem i lufta',")
     return s

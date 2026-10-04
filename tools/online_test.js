@@ -1,0 +1,41 @@
+const { chromium } = require('playwright');
+const fs = require('fs');
+(async () => {
+  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+  await ctx.addInitScript({ content: fs.readFileSync(__dirname + '/online_mockroom.js', 'utf8') });
+  const errs = [];
+  const open = async tag => { const p = await ctx.newPage(); p.on('pageerror', e => errs.push(tag + ': ' + e.message)); p.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|net::/.test(m.text())) errs.push(tag + ' console: ' + m.text()); }); await p.goto('http://localhost:8765/ton.html#dbg'); await p.waitForTimeout(2500); return p; };
+  const A = await open('A'), B = await open('B');
+  const tab = async p => { await p.click('#tab-send'); await p.waitForTimeout(300); };
+  await tab(A); await tab(B);
+  await A.click('[data-net="create"]'); await A.waitForTimeout(500);
+  const code = await A.evaluate(() => __dbg.net().code); console.log('code', code);
+  await B.fill('#net-code', code); await B.click('[data-net="join"]'); await B.waitForTimeout(1500);
+  await A.evaluate(() => renderPanel && 0).catch(() => {});
+  console.log('A sees foe', await A.evaluate(() => !!__dbg.net().foe), 'B sees foe', await B.evaluate(() => !!__dbg.net().foe));
+  await A.screenshot({ path: 'on1.png' });
+  await A.click('[data-net="ready"]'); await A.waitForTimeout(500); await B.click('[data-net="ready"]'); await B.waitForTimeout(1500);
+  console.log('mid', await A.evaluate(() => __dbg.net().mid), await B.evaluate(() => __dbg.net().mid));
+  await A.screenshot({ path: 'on2.png' });
+  // A sender skapninger og starter waven.
+  await A.evaluate(() => { __dbg.state.econ.res.gold = 200; __dbg.state.wave = 2; });
+  await A.evaluate(() => document.querySelector('#tab-army').click()); await A.waitForTimeout(200); await tab(A);
+  const sendBtns = await A.$$('[data-send]'); console.log('send options', sendBtns.length);
+  for (let i = 0; i < 5; i++) await A.click('[data-send]');
+  console.log('A queue', await A.evaluate(() => __dbg.state.sendQueue.length));
+  await A.click('#btn-start'); await A.waitForTimeout(2500);
+  console.log('B incoming', await B.evaluate(() => __dbg.state.incoming.length), 'A bytes', await A.evaluate(() => window.__mockBytes));
+  console.log('B sees A battle units', await B.evaluate(() => { const r = __dbg.state.rival; return r.sim ? r.sim.units.filter(u => u.alive).length : 'no live'; }));
+  await B.evaluate(() => __dbg.cam && (__dbg.cam.tx = 90)); await B.waitForTimeout(1500);
+  await B.screenshot({ path: 'on3.png' });
+  const g0 = await B.evaluate(() => __dbg.state.econ.res.gold); await A.evaluate(() => __dbg.state.rival.ec.add({ gold: 7 })); await A.waitForTimeout(1200);
+  console.log('B leak gold +', (await B.evaluate(() => __dbg.state.econ.res.gold)) - g0);
+  // A gir opp: B vinner.
+  await tab(A); await A.click('[data-net="leave"]'); await A.waitForTimeout(2000);
+  console.log('B phase', await B.evaluate(() => [__dbg.state.phase, __dbg.state.outcome, __dbg.state.rival.alive]));
+  await B.click('#tab-send').catch(() => {}); await B.waitForTimeout(500);
+  await B.screenshot({ path: 'on4.png' });
+  console.log('errors', errs);
+  await b.close();
+})();

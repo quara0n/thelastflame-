@@ -54,7 +54,7 @@
 
 ## Flyver-waves (låst)
 - Wave 5 (World 1, Askemyr): Ash Crow / askekråker. Ny skapning. Bygget i versjon 20 (`tools/ashcrow.py`).
-- Wave 15 (World 2, Vrangheim): Locust Swarm. Sverm, skjør, passer Pyreguard.
+- Wave 15 (World 2, Vrangheim): Locust Swarm. Sverm, skjør, passer Pyreguard. Flyr fra versjon 21 (gresshopper finnes også i wave 13, 14 og 17).
 - Wave 25 (World 3): drager. Unntaket fra "mange og skjøre": få, store og skremmende.
 - Wave 35 (World 4, guddommelig robotikk): gale droner. Maskinfamilien.
 
