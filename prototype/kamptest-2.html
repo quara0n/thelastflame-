@@ -804,7 +804,7 @@ const WAVES = [
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.72, 1.61, 1.205, 0.977, 0.911, 0.861, 1.502, 0.802, 0.671, 0.69, 0.58, 0.627, 0.528, 0.523, 0.507, 0.412, 0.422, 0.54, 0.525, 0.648, 0.866, 0.604, 0.701, 0.649, 0.57, 0.344, 0.47, 0.332, 0.299, 0.268];
+const WAVE_FACTOR = [0.72, 1.61, 1.205, 0.733, 0.911, 0.947, 1.502, 0.802, 0.671, 0.621, 0.58, 0.627, 0.581, 0.575, 0.507, 0.371, 0.422, 0.432, 0.473, 0.454, 0.866, 0.664, 0.771, 0.649, 0.456, 0.344, 0.423, 0.266, 0.269, 0.295];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};
@@ -1722,7 +1722,7 @@ const Sound = (function () {
       const F = files[m] = { gain: ctx.createGain(), els: [], idx: -1, ok: false, cur: null };
       F.gain.gain.value = 0; F.gain.connect(musicBus);
       F.els = TRACKS[m].map((src, i) => {
-        const a = new Audio(); a.preload = m === 'build' ? 'auto' : 'metadata'; a.src = src;
+        const a = new Audio(); a.preload = 'auto'; a.src = src;
         a.addEventListener('ended', () => { if (mode === m && F.cur === a) playTrack(m, (i + 1) % F.els.length); });
         a.addEventListener('canplay', () => {
           if (F.ok) return; F.ok = true;
@@ -1730,10 +1730,16 @@ const Sound = (function () {
           if (mode === m) startFiles(m);
         }, { once: true });
         try { ctx.createMediaElementSource(a).connect(F.gain); } catch (e) { /* uten Web Audio-ruting spilles den rett ut */ }
+        // Telefoner tillater bare lyd som startes rett etter et trykk. Vi starter hvert spor stille én gang her
+        // (init kjøres fra spillerens første trykk), så de senere kan startes når som helst.
+        const p = a.play(); if (p && p.then) p.then(() => { if (F.cur !== a) a.pause(); }).catch(() => {});
         return a;
       });
-      // Kampsporene lastes litt senere, så byggemusikken får starte først.
-      if (m === 'battle') setTimeout(() => F.els.forEach(a => { a.preload = 'auto'; a.load(); }), 1500);
+    });
+    // Ble et spor likevel stoppet av nettleseren, prøver vi igjen ved neste trykk.
+    window.addEventListener('pointerdown', () => {
+      const F = files[mode];
+      if (F && F.ok && F.cur && F.cur.paused && musicOn) { const p = F.cur.play(); if (p && p.catch) p.catch(() => {}); }
     });
   }
   function playTrack(m, i) {

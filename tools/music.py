@@ -18,7 +18,7 @@ FILES = """  // Innspilt musikk: byggefasen og kampen har hver sin liste med spo
       const F = files[m] = { gain: ctx.createGain(), els: [], idx: -1, ok: false, cur: null };
       F.gain.gain.value = 0; F.gain.connect(musicBus);
       F.els = TRACKS[m].map((src, i) => {
-        const a = new Audio(); a.preload = m === 'build' ? 'auto' : 'metadata'; a.src = src;
+        const a = new Audio(); a.preload = 'auto'; a.src = src;
         a.addEventListener('ended', () => { if (mode === m && F.cur === a) playTrack(m, (i + 1) % F.els.length); });
         a.addEventListener('canplay', () => {
           if (F.ok) return; F.ok = true;
@@ -26,10 +26,16 @@ FILES = """  // Innspilt musikk: byggefasen og kampen har hver sin liste med spo
           if (mode === m) startFiles(m);
         }, { once: true });
         try { ctx.createMediaElementSource(a).connect(F.gain); } catch (e) { /* uten Web Audio-ruting spilles den rett ut */ }
+        // Telefoner tillater bare lyd som startes rett etter et trykk. Vi starter hvert spor stille én gang her
+        // (init kjøres fra spillerens første trykk), så de senere kan startes når som helst.
+        const p = a.play(); if (p && p.then) p.then(() => { if (F.cur !== a) a.pause(); }).catch(() => {});
         return a;
       });
-      // Kampsporene lastes litt senere, så byggemusikken får starte først.
-      if (m === 'battle') setTimeout(() => F.els.forEach(a => { a.preload = 'auto'; a.load(); }), 1500);
+    });
+    // Ble et spor likevel stoppet av nettleseren, prøver vi igjen ved neste trykk.
+    window.addEventListener('pointerdown', () => {
+      const F = files[mode];
+      if (F && F.ok && F.cur && F.cur.paused && musicOn) { const p = F.cur.play(); if (p && p.catch) p.catch(() => {}); }
     });
   }
   function playTrack(m, i) {
