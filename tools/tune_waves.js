@@ -5,7 +5,8 @@ const fs = require('fs');
 const L = load();
 const R = +(process.argv[2] || 16);
 // 4. okt (2): World 1 litt tøffere (spilleren syntes 1–10 ble for lett). World 2 og 3 som før.
-const TARGET = w => w <= 4 ? 0.9 : w <= 9 ? 0.85 : w === 10 ? 0.7 : w <= 19 ? 0.8 : w === 20 ? 0.6 : w <= 29 ? 0.72 : 0.5;
+// Version 22: lower targets (harder waves). The bot plays a weaker game than Rune, so waves tuned for it felt too easy.
+const TARGET = w => w <= 4 ? 0.85 : w <= 9 ? 0.75 : w === 10 ? 0.6 : w <= 19 ? 0.7 : w === 20 ? 0.5 : w <= 29 ? 0.62 : 0.4;
 // Waves before FROM keep the factor already built into the prototype; only later waves are searched.
 const FROM = +(process.argv[3] || 1);
 const GRID = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.25, 1.4, 1.6];

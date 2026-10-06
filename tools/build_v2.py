@@ -147,5 +147,7 @@ import ashcrow
 s = ashcrow.apply(s)
 import online
 s = online.apply(s)
+import scarcity
+s = scarcity.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))

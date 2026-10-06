@@ -272,6 +272,8 @@ td:first-child { font-family: var(--body); }
 .cost span.lack { color: var(--enemy); }
 .buy:disabled .cost span:not(.lack) { color: var(--muted); }
 .maxed { font-size: 12px; color: var(--good); }
+.maxed.needs { color: var(--muted); }
+.wprice { font-size: 11.5px; color: var(--muted); }
 .nodes { display: flex; flex-direction: column; gap: 6px; }
 .node { background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; }
 .node.locked { border-style: dashed; }
@@ -899,7 +901,7 @@ const WAVES = [
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.3, 0.99, 0.847, 0.44, 1.6, 1.162, 1.098, 0.999, 0.619, 0.75, 1.13, 0.473, 0.801, 0.42, 1.27, 0.419, 0.961, 0.524, 0.679, 0.322, 0.941, 0.426, 1.703, 0.636, 1.043, 0.301, 0.634, 0.317, 0.61, 0.496];
+const WAVE_FACTOR = [0.3, 0.792, 0.508, 0.396, 1.25, 0.93, 0.988, 0.899, 0.619, 0.631, 0.904, 0.416, 0.617, 0.294, 0.813, 0.351, 0.769, 0.288, 0.476, 0.272, 0.725, 0.375, 1.362, 0.541, 0.998, 0.211, 0.488, 0.244, 0.47, 0.397];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};
@@ -1290,14 +1292,15 @@ class Sim {
     if (!this.contact) { u.moving = true; u.z += marchSpeed * dt; u.facing = 0; return; }
     if (!u.atGate && !u.T.flies && this._engage(u, players, attackers, dt, u.T.aggro)) return;
     if (this.gateHp > 0) {
-      if (u.z >= MAP.gateZ - 0.9) {
+      if (u.z >= MAP.gateZ - 0.9 && (!u.T.flies || Math.abs(u.x) <= MAP.gateHalf)) {
         if (!u.leaked) { u.leaked = true; this.leaks++; }
         u.atGate = true; u.target = null;
         if (u.cd <= 0) { this.gateHp = Math.max(0, this.gateHp - u.T.dmg); u.cd = u.T.interval; this.events.push({ kind: 'gate' }); }
         u.facing = 0;
         return;
       }
-      this._moveTo(u, clamp(u.x, -MAP.gateHalf + 0.5, MAP.gateHalf - 0.5), MAP.gateZ, dt);
+      const gx = clamp(u.x, -MAP.gateHalf + 0.5, MAP.gateHalf - 0.5);
+      this._moveTo(u, gx, u.T.flies && Math.abs(u.x) > MAP.gateHalf ? Math.min(u.z, MAP.gateZ - 1.6) : MAP.gateZ, dt);
     } else {
       u.atGate = false;
       this._moveTo(u, clamp(u.x, -2, 2), MAP.flameZ, dt);
@@ -1564,8 +1567,8 @@ const NODES = {
   gold:   { name: 'Gullgruve',  res: 'gold',   yield: 1, every: 12, cap: 6 },
   timber: { name: 'Tømmerleir', res: 'timber', yield: 1, every: 10, cap: 5 },
   stone:  { name: 'Steinbrudd', res: 'stone',  yield: 1, every: 10, cap: 5 },
-  iron:   { name: 'Jerngruve',  res: 'iron',   yield: 1, every: 12, cap: 5, unlock: { timber: 20, stone: 15 } },
-  coal:   { name: 'Kullgruve',  res: 'coal',   yield: 1, every: 16, cap: 4, unlock: { timber: 25, stone: 20, iron: 10 } },
+  iron:   { name: 'Jerngruve',  res: 'iron',   yield: 1, every: 14, cap: 5, unlock: { timber: 20, stone: 15 } },
+  coal:   { name: 'Kullgruve',  res: 'coal',   yield: 1, every: 22, cap: 4, unlock: { timber: 25, stone: 20, iron: 10 } },
 };
 const NODE_EXPAND = { cost: { gold: 13, timber: 15, stone: 10 }, extra: 3 };
 const DEEPEN = { gold: 9, stone: 25, timber: 15 };
@@ -1692,7 +1695,8 @@ class Econ {
   }
   perWorkerMinute(k) { return this.rate(k) * 60 / NODES[k].every; }
   // Pris for neste arbeider på stedet k: grunnpris for de 6 første, deretter dyrere for hver.
-  workerPrice(k) { const w = k ? this.nodes[k].workers : 0; return WORKER_BASE + Math.max(0, w + 1 - WORKER_FREE) * WORKER_STEP; }
+  // Hver arbeider på samme sted koster mer enn den forrige. Jern og kull er dyrest.
+  workerPrice(k) { const c = SCARCE.worker[k || 'gold']; return c[0] + Math.max(0, (k ? this.nodes[k].workers : 0) - c[2]) * c[1]; }
 
   // Inntekt: hver arbeider samler fortløpende fra kjøpsøyeblikket; nodene leverer hvert 5. sekund.
   // Hver arbeider går en tur: fra gruva til lageret (leverer når han kommer frem) og tilbake. En tur tar «every» sekunder.
@@ -1731,7 +1735,7 @@ class Econ {
   }
   removeWorker(k) { const n = this.nodes[k]; if (n.workers <= 0) return false; n.workers--; this.idle++; return true; }
   unlockNode(k) { const n = this.nodes[k]; if (n.unlocked || !this.pay(NODES[k].unlock)) return false; n.unlocked = true; return true; }
-  expandNode(k) { const n = this.nodes[k]; if (!n.unlocked || n.expanded || !this.pay(NODE_EXPAND.cost)) return false; n.expanded = true; return true; }
+  expandNode(k) { const n = this.nodes[k]; if (!n.unlocked || n.expanded || this.barracks < expandNeeds(k) || !this.pay(SCARCE.expand[k].cost)) return false; n.expanded = true; return true; }
   deepen() { if (this.deep || !this.pay(DEEPEN)) return false; this.deep = true; return true; }
   buyTools() { const t = TOOLS[this.tools]; if (!t || !this.pay(t.cost)) return false; this.tools++; return true; }
 
@@ -1827,7 +1831,7 @@ function arenaOutcome(sim) {
   return { done, win: ea ? (pa ? share(p) >= share(e) : false) : true, mine: share(p), theirs: share(e) };
 }
 // Knapper for 1 mot 1: hvor mye computeren sender (andel av gullet), hvor sterke portalens egne waves er, og sendeprisene.
-const VERSUS = { share: 0.35, wave: 0.47, price: 1, smart: true };
+const VERSUS = { share: 0.35, wave: 0.5, price: 1, smart: true };
 const sendPrice = k => Math.max(1, Math.round(SEND[k] * VERSUS.price));
 const versusScale = W => ({ hp: W.scale.hp * VERSUS.wave, dmg: W.scale.dmg * Math.sqrt(VERSUS.wave) });
 // Det man kan sende i wave wi: skapninger fra verdenen man er i nå, som allerede har vist seg.
@@ -1875,16 +1879,20 @@ function rivalBot(L, ec, army, waveIdx) {
   const w = waveIdx + 1;
   for (let guard = 0; guard < 80; guard++) {
     let did = false;
-    // Economy first in the early game: gold workers while they are cheap.
-    if (w <= 6 && ec.nodes.gold.workers < ec.cap('gold') && ec.workerPrice() <= 9 && ec.res.gold >= ec.workerPrice() + 10) did = ec.addWorker('gold');
+    // Economy (version 22): fill each mine while the next worker is cheap compared to how far the game has come.
+    // Workers get dearer one by one, so a sensible player stops when the price outruns the payback.
     if (!did && w >= 3 && !ec.nodes.iron.unlocked && ec.can(L.NODES.iron.unlock)) did = ec.unlockNode('iron');
-    if (!did && ec.nodes.iron.unlocked && ec.nodes.iron.workers < 3 && ec.res.gold >= ec.workerPrice() + 8) did = ec.addWorker('iron');
     if (!did && ec.barracks >= 1 && !ec.nodes.coal.unlocked && ec.can(L.NODES.coal.unlock)) did = ec.unlockNode('coal');
-    if (!did && ec.nodes.coal.unlocked && ec.nodes.coal.workers < (w >= 15 ? 4 : 2) && ec.res.gold >= ec.workerPrice() + 8) did = ec.addWorker('coal');
-    if (!did && ec.nodes.timber.workers < (w >= 3 ? 4 : 2) && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('timber');
-    if (!did && w >= 3 && ec.nodes.stone.workers < (w >= 10 ? 5 : 3) && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('stone');
-    if (!did && w >= 10 && ec.nodes.timber.workers < 5 && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('timber');
-    if (!did && w >= 10 && ec.nodes.iron.workers < 5 && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('iron');
+    const wantW = { gold: 99, timber: w >= 3 ? 99 : 2, stone: w >= 3 ? 99 : 1, iron: 99, coal: 99 };
+    for (const k of ['gold', 'iron', 'coal', 'timber', 'stone']) {
+      if (did) break;
+      const n = ec.nodes[k];
+      if (!n.unlocked || n.workers >= ec.cap(k) || n.workers >= wantW[k]) continue;
+      const pr = ec.workerPrice(k);
+      if (pr <= 10 + 2.5 * w && ec.res.gold >= pr + (w <= 4 ? 8 : 18)) did = ec.addWorker(k);
+    }
+    // A full mine gets more places as soon as the Barracks allows it.
+    for (const k of ['gold', 'iron', 'timber', 'stone', 'coal']) if (!did && ec.nodes[k].unlocked && !ec.nodes[k].expanded && ec.nodes[k].workers >= ec.cap(k)) did = ec.expandNode(k);
     if (!did && w >= 6 && !ec.nodes.coal.unlocked && ec.can(L.NODES.coal.unlock)) did = ec.unlockNode('coal');
     if (!did && w >= 5 && ec.barracks === 0 && ec.can(L.BARRACKS[1].cost)) did = ec.buyBarracks();
     if (!did && w >= 11 && ec.barracks === 1 && ec.can(L.BARRACKS[2].cost)) did = ec.buyBarracks();
@@ -2059,6 +2067,25 @@ class Rival {
     for (const k in got) { const avg = got[k].reduce((a, b) => a + b, 0) / got[k].length; this.memo[k] = 0.6 * (this.memo[k] || 1) + 0.4 * (0.5 + 1.5 * avg); }
   }
 }
+
+
+// ===== Knapphet (versjon 22): dyrere arbeidere, utvidelse krever Barracks, jern og kull teller mer i høye tiers =====
+const SCARCE = {"cap": {"timber": 4, "stone": 4, "iron": 4, "coal": 3}, "worker": {"gold": [5, 4, 3], "timber": [5, 4, 2], "stone": [5, 4, 2], "iron": [12, 5, 0], "coal": [16, 7, 0]}, "expand": {"gold": {"needs": 2, "cost": {"gold": 40, "timber": 40, "stone": 30}}, "timber": {"needs": 2, "cost": {"gold": 40, "timber": 30, "stone": 30}}, "stone": {"needs": 2, "cost": {"gold": 40, "timber": 40, "stone": 20}}, "iron": {"needs": 2, "cost": {"gold": 90, "timber": 60, "stone": 60}}, "coal": {"needs": 3, "cost": {"gold": 130, "timber": 80, "stone": 80, "iron": 40}}}, "unitIron": {"2": 2, "3": 3, "4": 3}, "unitCoalMin": {"3": 1}, "unitCoal": {"3": 2, "4": 3}, "upgradeIron": 2, "upgradeCoal": 2, "barracksWood": {"3": 0.55, "4": 0.55}};
+(() => {
+  for (const k in SCARCE.cap) NODES[k].cap = SCARCE.cap[k];
+  for (const k in TYPES) {
+    const t = TYPES[k]; if (t.side !== 'p' || !t.tier || t.tier < 2) continue;
+    const mi = SCARCE.unitIron[t.tier], mc = SCARCE.unitCoal[t.tier], c0 = SCARCE.unitCoalMin[t.tier];
+    if (mi) t.iron = Math.round((t.iron || 1) * mi);
+    if (mc) t.coal = Math.round(Math.max(t.coal || 0, c0 || 0) * mc) || undefined;
+  }
+  for (const k in UPGRADES) for (const u of UPGRADES[k]) {
+    if (u.cost.iron) u.cost.iron = Math.round(u.cost.iron * SCARCE.upgradeIron);
+    if (u.cost.coal) u.cost.coal = Math.round(u.cost.coal * SCARCE.upgradeCoal);
+  }
+  for (const i in SCARCE.barracksWood) { const c = BARRACKS[i].cost; ['timber', 'stone'].forEach(r => { if (c[r]) c[r] = Math.round(c[r] * SCARCE.barracksWood[i]); }); }
+})();
+const expandNeeds = k => SCARCE.expand[k].needs;
 
 if (typeof module !== 'undefined') module.exports = { supplyOf, WARDEN_GEAR, WARDEN_XP, WARDEN_TRAIN, WARDEN_KILL_XP, Econ, RES, RES_KEYS, NODES, TOOLS, TRACKS, BARRACKS, WALLS, ARCHERS, BOUNTY, waveBonus, DELIVERY, NODE_EXPAND, DEEPEN, REFUND };
 
@@ -4275,7 +4302,7 @@ const Sound = (function () {
     const ec = state.econ, tl = TOOLS[ec.tools];
     const total = Object.values(ec.nodes).reduce((s, n) => s + n.workers, 0);
     return `<div class="card"><h3>Longhouse ${tipIcon(`Her kjøper du arbeidere. Trykk + ved en node, så kjøpes en ny arbeider og settes i arbeid der. Arbeidere koster ${WORKER_BASE} gull, og blir dyrere etter ${WORKER_FREE} på samme sted nå, og prisen stiger etter 10. Verktøy gir +15 % fra alle arbeidere per nivå.`)}
-        <small>👷 ${total}${ec.idle ? ` · ${ec.idle} ledige` : ''} · ${icon('gold', 12)}${WORKER_BASE} per arbeider</small></h3>
+        <small>👷 ${total}${ec.idle ? ` · ${ec.idle} ledige` : ''} · <span data-tip="Hver arbeider på samme sted koster mer enn den forrige. Jern og kull er dyrest.">arbeidere fra ${icon('gold', 12)}${WORKER_BASE}</span></small></h3>
       ${tiles([toolsTile()])}</div>`;
   }
   function nodeHtml(k) {
@@ -4284,16 +4311,18 @@ const Sound = (function () {
     if (!n.unlocked) return `<div class="node locked" data-tip="${tip} Må bygges først.">${nodePic(k)}
       <div class="nmid"><span class="nrate">${icon(N.res, 14)} ikke bygget</span></div>${buyBtn('Bygg', N.unlock, 'unlock', `data-k="${k}"`)}</div>`;
     const extras = [];
-    if (!n.expanded) extras.push(buyBtn(`+${NODE_EXPAND.extra} plasser`, NODE_EXPAND.cost, 'expand', `data-k="${k}" data-tip="Utvid ${N.name.toLowerCase()} med ${NODE_EXPAND.extra} plasser for arbeidere"`));
+    if (!n.expanded && ec.barracks < expandNeeds(k)) extras.push(`<span class="maxed needs" data-tip="Flere plasser i ${N.name.toLowerCase()} krever ${BARRACKS[expandNeeds(k)].name}">+${NODE_EXPAND.extra} plasser: ${BARRACKS[expandNeeds(k)].name}</span>`);
+    else if (!n.expanded) extras.push(buyBtn(`+${NODE_EXPAND.extra} plasser`, SCARCE.expand[k].cost, 'expand', `data-k="${k}" data-tip="Utvid ${N.name.toLowerCase()} med ${NODE_EXPAND.extra} plasser for arbeidere"`));
     if (k === 'stone' && !ec.deep) extras.push(buyBtn('Dypere', DEEPEN, 'deepen', 'data-tip="Grav dypere: åpner Deepstone-muren i Gatehouse"'));
     if (k === 'stone' && ec.deep) extras.push('<span class="maxed" data-tip="Deepstone-muren kan bygges i Gatehouse">Deepstone ✓</span>');
     return `<div class="node">
       <span data-tip="${tip}">${nodePic(k)}</span>
       <div class="nmid"><span class="nrate" data-tip="Inntekt nå, per minutt">${icon(N.res, 14)} +${Math.round(n.workers * ec.perWorkerMinute(k))}/min</span>
+        ${n.workers < ec.cap(k) ? `<span class="wprice">Neste arbeider: ${ec.idle ? 'ledig, gratis' : `${icon('gold', 11)}${ec.workerPrice(k)}`}</span>` : ''}
         ${extras.length ? `<div class="extra">${extras.join('')}</div>` : ''}</div>
       <div class="wk"><button type="button" class="step" data-act="worker-" data-k="${k}" ${n.workers ? '' : 'disabled'} aria-label="Fjern arbeider fra ${N.name}">−</button>
         <b data-tip="Arbeidere / plasser">${n.workers}/${ec.cap(k)}</b>
-        <button type="button" class="step" data-act="worker+" data-k="${k}" aria-label="Legg til arbeider i ${N.name}">+</button></div></div>`;
+        <button type="button" class="step" data-act="worker+" data-k="${k}" aria-label="Legg til arbeider i ${N.name}" data-tip="Neste arbeider: ${ec.idle ? 'ledig arbeider, gratis' : ec.workerPrice(k) + ' gull'}">+</button></div></div>`;
   }
   // Bilder av det som forbedres. Alle tegnet i en 40×40-rute.
   const UP_PIC = {

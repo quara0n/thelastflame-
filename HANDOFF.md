@@ -107,3 +107,19 @@ Read `CLAUDE.md` first. This file says where the work stopped and what comes nex
 - Test: `tools/online_test.js` med `tools/online_mockroom.js` (to sider, BroadcastChannel i stedet for rommet).
 - Neste: arena online, så 2 mot 2 / 4 mot 4 med felles Warden. Åpne regler før det: arena-premie og uavgjort, gull når Warden dreper en lekk, kan Warden dø.
 
+## 6 Oct 2026 – version 22: knappere økonomi, vanskeligere waves, flyvere til porten
+
+Rune (6. okt): flyvere angrep muren mens skytterne sto til høyre; altfor lett; alle gruver fulle på wave 10; jern og kull må bli knappere og bety mer jo høyere tier; Barracks IV (vist fra Tier 3) altfor dyr.
+- Flyvere landet på muren ved siden av porten. Nå svever de inn foran portåpningen før de angriper (`tools/ashcrow.py`).
+- Hvorfor det var lett: boten fylte aldri gruvene (og utvidet aldri), så wavene ble tunet for en svak økonomi. Rune maxet alt. Nå bygger boten full økonomi, og `tune_waves.js` har lavere mål (vanskeligere).
+- Økonomi (`tools/scarcity.py`, tall i `economy.json` → `scarce`):
+  - Arbeidere blir dyrere én for én per gruve (gull/tømmer/stein: 5 gull for de første, så +4 per arbeider; jern 12 +5; kull 16 +7). Prisen står under inntekten i Landsby.
+  - Tømmer- og steinbrudd 4 plasser, jern 4, kull 3. Jern hvert 14. s, kull hvert 22. s.
+  - +3 plasser krever Barracks III (kull: Barracks IV) og koster mer.
+  - Jern ×2–3 og kull ×2–3 på Tier 2–4-enheter og alle oppgraderinger. Tier 3 trenger nå kull.
+  - Barracks IV og V: tømmer og stein ×0,55 (IV: 347 tømmer, 231 stein, 245 jern, 105 kull).
+- Tier-timing: boten Tier 2/3/4 på wave 5/13/20, full økonomi-rush 4/8/13. Gruvene er fulle rundt wave 13 for boten (var 10 for Rune).
+- Tømmer og stein hoper seg opp sent i spillet (bare bygninger bruker dem). Mulig neste: noe å bruke dem på.
+- 1 mot 1 mot computeren: VERSUS.wave 0,47 → 0,5. Bot mot bot er alt-eller-ingenting der (0,55 og over: begge dør på wave 7), så det må prøves av Rune.
+- `game_sim 30` etter alt: 2 av 30 når wave 30; de fleste faller i wave 16–19 (World 1 er lett for boten, World 2 sent er veggen).
+

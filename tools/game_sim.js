@@ -32,16 +32,20 @@ function bot(L, ec, army, waveIdx) {
   const w = waveIdx + 1;
   for (let guard = 0; guard < 80; guard++) {
     let did = false;
-    // Economy first in the early game: gold workers while they are cheap.
-    if (w <= 6 && ec.nodes.gold.workers < ec.cap('gold') && ec.workerPrice() <= 9 && ec.res.gold >= ec.workerPrice() + 10) did = ec.addWorker('gold');
+    // Economy (version 22): fill each mine while the next worker is cheap compared to how far the game has come.
+    // Workers get dearer one by one, so a sensible player stops when the price outruns the payback.
     if (!did && w >= 3 && !ec.nodes.iron.unlocked && ec.can(L.NODES.iron.unlock)) did = ec.unlockNode('iron');
-    if (!did && ec.nodes.iron.unlocked && ec.nodes.iron.workers < 3 && ec.res.gold >= ec.workerPrice() + 8) did = ec.addWorker('iron');
     if (!did && ec.barracks >= 1 && !ec.nodes.coal.unlocked && ec.can(L.NODES.coal.unlock)) did = ec.unlockNode('coal');
-    if (!did && ec.nodes.coal.unlocked && ec.nodes.coal.workers < (w >= 15 ? 4 : 2) && ec.res.gold >= ec.workerPrice() + 8) did = ec.addWorker('coal');
-    if (!did && ec.nodes.timber.workers < (w >= 3 ? 4 : 2) && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('timber');
-    if (!did && w >= 3 && ec.nodes.stone.workers < (w >= 10 ? 5 : 3) && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('stone');
-    if (!did && w >= 10 && ec.nodes.timber.workers < 5 && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('timber');
-    if (!did && w >= 10 && ec.nodes.iron.workers < 5 && ec.res.gold >= ec.workerPrice() + 15) did = ec.addWorker('iron');
+    const wantW = { gold: 99, timber: w >= 3 ? 99 : 2, stone: w >= 3 ? 99 : 1, iron: 99, coal: 99 };
+    for (const k of ['gold', 'iron', 'coal', 'timber', 'stone']) {
+      if (did) break;
+      const n = ec.nodes[k];
+      if (!n.unlocked || n.workers >= ec.cap(k) || n.workers >= wantW[k]) continue;
+      const pr = ec.workerPrice(k);
+      if (pr <= 10 + 2.5 * w && ec.res.gold >= pr + (w <= 4 ? 8 : 18)) did = ec.addWorker(k);
+    }
+    // A full mine gets more places as soon as the Barracks allows it.
+    for (const k of ['gold', 'iron', 'timber', 'stone', 'coal']) if (!did && ec.nodes[k].unlocked && !ec.nodes[k].expanded && ec.nodes[k].workers >= ec.cap(k)) did = ec.expandNode(k);
     if (!did && w >= 6 && !ec.nodes.coal.unlocked && ec.can(L.NODES.coal.unlock)) did = ec.unlockNode('coal');
     if (!did && w >= 5 && ec.barracks === 0 && ec.can(L.BARRACKS[1].cost)) did = ec.buyBarracks();
     if (!did && w >= 11 && ec.barracks === 1 && ec.can(L.BARRACKS[2].cost)) did = ec.buyBarracks();

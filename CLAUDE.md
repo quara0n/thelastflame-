@@ -46,6 +46,7 @@ The Last Flame is a Squadron-inspired unit tower defence. The player holds a gat
   17. `tools/forge_gate.py`: each Barracks level opens the next Forge level (new level 4 needs Barracks IV); army space 20/32/46/62/80. Tab order Hær, Landsby, Bygninger, Testbenk, Send (Send moved in versus.py).
   18. `tools/ashcrow.py`: Ash Crow flyer (TYPES, bounty, send price, model, bird sounds). Wave 5 uses it (waves30.py). Also makes locusts fly.
   19. `tools/online.py`: online 1v1 through the artifact `room` capability (RemoteRival, room code lobby in the Send tab, presence sync). Publish with `capabilities: {room: {}}`. Test with `tools/online_test.js`.
+  20. `tools/scarcity.py` (numbers in `economy.json` under `scarce`): workers dearer one by one per mine (iron and coal dearest, fewer places), mine expansion needs Barracks III (coal: IV), iron and coal costs ×2–3 for Tier 2–4 units and upgrades, Barracks IV/V timber and stone ×0.55. Check the economy with `node tools/econ_probe.js` (the bot through 30 waves: workers, resources, Barracks per wave).
   6. `tools/economy.py` (numbers in `tools/economy.json`): deflation — slower gathering, pricier workers, Barracks priced per world, Warden gear ×2.
   5. `tools/music.py`: recorded music (build phase rotates 2 tracks, battle rotates 3) and 55 s between waves. The mp3s live in `prototype/musikk/` and must be published with the page via the Artifact `files` map (`musikk/<name>.mp3`).
 - Every patch uses `sub()`, which fails loudly if the target text isn't found exactly once. If a build fails, the anchor text moved; fix the patch, don't hand-edit kamptest-2.
@@ -60,10 +61,11 @@ The Last Flame is a Squadron-inspired unit tower defence. The player holds a gat
 - **Check:** `node tools/game_sim.js 30` – the current state is about 12–18 of 30 games reaching wave 30 (versions 20–21; the run-to-run noise is large) (after wave 10 made harder on 4 Oct, then World 1 a bit tougher in version 18) (55 s breaks, deflated economy).
 - The bot and the tuner use 55 s between waves (`t = 55` in game_sim.js and tune_waves.js); change both if the break changes.
 - If the bot's strategy changes, earlier waves shift too. Retune from wave 1 afterwards.
+- Version 22: the bot now fills every mine and expands as soon as the Barracks allows (a real player does; the old bot left mines half empty, so waves felt easy). `tune_waves.js` targets were lowered (harder waves) because Rune plays better than the bot.
 
 ## Locked design decisions (details in docs/)
 
-- Economy: scarcity like Squadron. Worker 5 gold, Tier 1 unit 10 gold, start 75 gold. Deflated 4 Oct: a normal player reaches Tier 2 at the end of World 1, Tier 3 in World 2, Tier 4 in World 3 (after the 4 Oct price cut: bot waves 6/12/22; all-in economy rush 3/7/12). Check with `node tools/tier_timing.js` (bot) and `node tools/rush.js` (rush) before changing prices.
+- Economy: scarcity like Squadron. Worker 5 gold, Tier 1 unit 10 gold, start 75 gold. Deflated 4 Oct: a normal player reaches Tier 2 at the end of World 1, Tier 3 in World 2, Tier 4 in World 3 (version 22: bot waves 5/13/20; all-in economy rush 4/8/13). Check with `node tools/tier_timing.js` (bot) and `node tools/rush.js` (rush) before changing prices.
 - Every unit has a base version and 3 upgrades, bought on one specific soldier. Same model with new gear. Forge and Workshop upgrades (all units of a type) stay as well.
 - Army size around 27 units at wave 20 is fine; not 40.
 - Waves: 30 creatures each, new species is the majority; giants and carriers count heavier (6–10). All tiers open; without a tier's Barracks max 2 of that tier. Army space 20 / 32 / 46 / 62 / 80. Forge level n needs Barracks level n.

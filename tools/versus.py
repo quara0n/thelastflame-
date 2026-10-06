@@ -17,7 +17,7 @@ const SEND = { husk: 3, spider: 3, spitter: 5, serpent: 5, brute: 8, beetle: 9, 
   raptor: 10, hornback: 30, snapper: 8, clubtail: 28, urdragon: 45, tyrant: 70, frillspitter: 16, earthshaker: 90, revenant: 20 };
 const RIVAL_BREAK = 55;
 // Knapper for 1 mot 1: hvor mye computeren sender (andel av gullet), hvor sterke portalens egne waves er, og sendeprisene.
-const VERSUS = { share: 0.35, wave: 0.47, price: 1, smart: true };
+const VERSUS = { share: 0.35, wave: 0.5, price: 1, smart: true };
 const sendPrice = k => Math.max(1, Math.round(SEND[k] * VERSUS.price));
 const versusScale = W => ({ hp: W.scale.hp * VERSUS.wave, dmg: W.scale.dmg * Math.sqrt(VERSUS.wave) });
 // Det man kan sende i wave wi: skapninger fra verdenen man er i nå, som allerede har vist seg.

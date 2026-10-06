@@ -39,4 +39,11 @@ def apply(s):
     # Locusts fly too (wave 15 is the World 2 flyer wave): same flyer rules as the crows.
     s = sub(s, "  locust:      { name: 'Locust Swarm', side: 'e', kind: 'insect', swarm: true, role: 'Hundrevis av små munner',",
                "  locust:      { name: 'Locust Swarm', side: 'e', kind: 'insect', flies: true, swarm: true, role: 'Hundrevis av små munner som flyr over hæren. Bare skyttere når dem i lufta',")
+    # Flyvere landet på muren ved siden av porten og hakket på porten derfra (Rune, 6. okt). Nå flyr de inn foran
+    # selve porten først: står de utenfor portåpningen, svever de mot den før de angriper.
+    s = sub(s, "      if (u.z >= MAP.gateZ - 0.9) {\n        if (!u.leaked) { u.leaked = true; this.leaks++; }",
+               "      if (u.z >= MAP.gateZ - 0.9 && (!u.T.flies || Math.abs(u.x) <= MAP.gateHalf)) {\n        if (!u.leaked) { u.leaked = true; this.leaks++; }")
+    s = sub(s, "      this._moveTo(u, clamp(u.x, -MAP.gateHalf + 0.5, MAP.gateHalf - 0.5), MAP.gateZ, dt);\n    } else {",
+               "      const gx = clamp(u.x, -MAP.gateHalf + 0.5, MAP.gateHalf - 0.5);\n"
+               "      this._moveTo(u, gx, u.T.flies && Math.abs(u.x) > MAP.gateHalf ? Math.min(u.z, MAP.gateZ - 1.6) : MAP.gateZ, dt);\n    } else {")
     return s

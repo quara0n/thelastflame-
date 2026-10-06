@@ -3,8 +3,8 @@
   "gold": 12,
   "timber": 10,
   "stone": 10,
-  "iron": 12,
-  "coal": 16
+  "iron": 14,
+  "coal": 22
  },
  "worker": {
   "base": 5,
@@ -18,5 +18,101 @@
   5.8
  ],
  "wardenMul": 2,
- "toolsMul": 1.5
+ "toolsMul": 1.5,
+ "scarce": {
+  "cap": {
+   "timber": 4,
+   "stone": 4,
+   "iron": 4,
+   "coal": 3
+  },
+  "worker": {
+   "gold": [
+    5,
+    4,
+    3
+   ],
+   "timber": [
+    5,
+    4,
+    2
+   ],
+   "stone": [
+    5,
+    4,
+    2
+   ],
+   "iron": [
+    12,
+    5,
+    0
+   ],
+   "coal": [
+    16,
+    7,
+    0
+   ]
+  },
+  "expand": {
+   "gold": {
+    "needs": 2,
+    "cost": {
+     "gold": 40,
+     "timber": 40,
+     "stone": 30
+    }
+   },
+   "timber": {
+    "needs": 2,
+    "cost": {
+     "gold": 40,
+     "timber": 30,
+     "stone": 30
+    }
+   },
+   "stone": {
+    "needs": 2,
+    "cost": {
+     "gold": 40,
+     "timber": 40,
+     "stone": 20
+    }
+   },
+   "iron": {
+    "needs": 2,
+    "cost": {
+     "gold": 90,
+     "timber": 60,
+     "stone": 60
+    }
+   },
+   "coal": {
+    "needs": 3,
+    "cost": {
+     "gold": 130,
+     "timber": 80,
+     "stone": 80,
+     "iron": 40
+    }
+   }
+  },
+  "unitIron": {
+   "2": 2,
+   "3": 3,
+   "4": 3
+  },
+  "unitCoalMin": {
+   "3": 1
+  },
+  "unitCoal": {
+   "3": 2,
+   "4": 3
+  },
+  "upgradeIron": 2,
+  "upgradeCoal": 2,
+  "barracksWood": {
+   "3": 0.55,
+   "4": 0.55
+  }
+ }
 }
