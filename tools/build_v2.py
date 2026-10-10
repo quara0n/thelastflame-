@@ -151,6 +151,8 @@ import scarcity
 s = scarcity.apply(s)
 import bastion
 s = bastion.apply(s)
+import biomes
+s = biomes.apply(s)
 import hero
 s = hero.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)

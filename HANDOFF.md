@@ -130,3 +130,21 @@ Rune (6. okt): flyvere angrep muren mens skytterne sto til høyre; altfor lett; 
 - Port til flamme er uendret (35 m), så balansen er uendret (Sim-koden er ikke rørt, bare `SIDES`/`sideToWorld` lagt til). Muren er nå et kvadrat på ca. 70 m; distriktene skrår inn mot citadellet; gamlebyen i hjørnene.
 - Rivalen flyttet til x = 140 (`tools/rival_view.py`); minikartet hopper over tomrommet.
 - Neste: spillere på sidene (2 mot 2 / 4 mot 4), waves der, hjelp via ringveien.
+
+## 10 Oct 2026 – version 24: hver side har sitt landskap
+
+- Rune: høyre side (øst) grønnere med trær, havet mot vest, det guddommelige og himmelske med hvite skyer mot sør. Nord beholder dagens utseende.
+- Bygget i `tools/biomes.py` (etter bastion.py). Navn: Øst Grønnlund, Sør Lysheim, Vest Havbryn (kan byttes). Vestbanneret er nå havblått, sør gull.
+- Bare utseende; kampen og balansen er uendret.
+- Neste mulig: la nordsiden følge verdenen også for de andre (eller gi sidene egne fiender), lyd per side (bølger, fuglesang, kor).
+
+## 10 Oct 2026 – version 25: helt, Barracks-doktriner og arbeiderfunn
+
+- Rune ba om flere ting i Barracks og for arbeiderne, og en helt man lager og levler opp, med ulike veier og mindre forutsigbart. Forslag og alt som er bygget: `docs/helt-barracks-arbeidere.md` (også i prosjektets `design/`).
+- Bygget i `tools/hero.py` (siste steg i build_v2.py, etter biomes.py):
+  - **Helten:** Heltehallen (Bygninger) eller «Velg helt» i Hær-fanen, 40 gull. Flammeridder, Askejeger eller Glødeprest. Tar ingen plass, kan ikke selges. Erfaring fra drap (bounty) og 40 % av det som faller innen 10 m, +2 per wave han står. Hvert nivå +6 % og 1 av 3 tilfeldige talenter (trekk på nytt 10/20/30 gull); nivå 5 velger retning (to per klasse).
+  - **Doktriner:** hvert nytt Barracks-nivå trekker 3 av 9; du velger 1 for resten av spillet.
+  - **Arbeiderfunn:** 0,5 % sjanse per leveranse (gullåre, gammelt våpen = heltens erfaring, jernklump, glo = Warden-erfaring).
+  - Boten og rivalen får helt fra wave 2 og velger tilfeldig. Rivalens helt står i hæren hans via `withHero` (ikke i army-lista).
+- Balanse: wavene retunet (`wave_factors.json`). `game_sim 30`: 1–3 av 30 når wave 30, median ca. 15–17 (som før).
+- Åpne spørsmål til Rune: kan helten dø for godt; hva neste (karavanen, relikvier, formenn, leiesoldater).
