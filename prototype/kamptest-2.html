@@ -181,6 +181,32 @@ td:first-child { font-family: var(--body); }
 .ordermenu.ord-open #om-ordtog { border-color: var(--flame); color: var(--flame); }
 @media (max-width: 600px) { .om-info { grid-template-columns: 76px minmax(0, 1fr); } .oi-card img { width: 52px; height: 52px; } }
 
+/* Kompakt valgpanel (versjon 27): tabellen ligger bak «Tall», X lukker. */
+.ordermenu { width: min(520px, calc(100% - 24px)); padding: 8px 10px; gap: 6px; }
+.om-x { position: absolute; top: 4px; right: 6px; background: none; border: 0; color: var(--muted); font-size: 22px; line-height: 1; padding: 2px 8px; z-index: 1; }
+.om-x:hover { color: var(--fg); }
+.om-head { padding-right: 30px; }
+#om-cancel { display: none; }
+.oi-line { display: none; font-family: var(--mono); font-size: 12px; color: var(--fg); }
+.oi-line i { font-style: normal; color: var(--good); font-size: 11px; margin-left: 2px; }
+.ordermenu:not(.num-open) .om-info { grid-template-columns: minmax(0, 1fr); padding-top: 6px; }
+.ordermenu:not(.num-open) .oi-card { flex-direction: row; align-items: center; gap: 8px; text-align: left; flex-wrap: wrap; }
+.ordermenu:not(.num-open) .oi-card img { width: 40px; height: 40px; border-radius: 7px; }
+.ordermenu:not(.num-open) .oi-tab, .ordermenu:not(.num-open) .oi-note { display: none; }
+.ordermenu:not(.num-open) .oi-line { display: block; flex: 1 1 100%; }
+.oi-card .oi-nm { display: flex; flex-direction: column; gap: 0; }
+#om-numtog { color: var(--fg); }
+.ordermenu.num-open #om-numtog { border-color: var(--flame); color: var(--flame); }
+.om-up { padding-top: 6px; }
+.om-up button { padding: 6px 10px; }
+.om-up span { font-size: 11.5px; }
+@media (max-width: 600px) { .ordermenu { max-height: 45vh; padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); } .ordermenu:not(.num-open) .oi-line { flex: 1 1 0; min-width: 0; } }
+/* Heltekortet: knappen under teksten når det er trangt. */
+.herostrip { flex-wrap: wrap; }
+.herostrip .hs-mid { flex: 1 1 160px; }
+.herostrip .hs-fallen { color: #f0a59d; }
+.herostrip > .buy, .herostrip > .hs-go { margin-left: auto; }
+
 .hud-sub.rivalhud .pill { border-color: #a35ae0; }
 #minimap { position: absolute; right: 12px; bottom: 12px; width: 150px; height: 96px; border: 1px solid var(--line); border-radius: 8px; background: rgba(11, 14, 20, .82); z-index: 4; touch-action: none; cursor: pointer; }
 .ordermenu:not([hidden]) ~ #minimap { display: none; }
@@ -226,6 +252,9 @@ td:first-child { font-family: var(--body); }
 .chips { display: flex; flex-wrap: wrap; gap: 4px; }
 .chips span { font-size: 11px; border: 1px solid #5a4630; border-radius: 999px; padding: 1px 7px; color: #e6d2b0; }
 .chips span.path { border-color: var(--flame); color: var(--flame); }
+.hs-gear { flex: 1 1 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.hs-gear .buy, .hs-gear .maxed { align-items: center; padding: 4px; font-size: 11.5px; white-space: normal; text-align: center; }
+.hs-gear .buy small { color: var(--muted); font-weight: 400; }
 .hs-go { background: var(--flame); color: var(--flame-ink); border: 0; border-radius: 8px; padding: 8px 10px; font-weight: 700; flex: none; font: inherit; font-weight: 700; }
 
 .foe.sent { border-color: #6b3a8a; box-shadow: inset 0 0 0 1px #6b3a8a; }
@@ -608,12 +637,13 @@ button.tier-h:hover b { text-decoration: underline; }
     </div>
     <div class="selbox" id="selbox" hidden></div>
     <div class="ordermenu" id="ordermenu" hidden role="toolbar" aria-label="Ordre for valgte units">
+      <button type="button" class="om-x" id="om-x" aria-label="Lukk">×</button>
       <div class="om-head"><b id="om-title">0 valgt</b><span id="om-sub"></span><span class="om-tip">Dra en av dem for å flytte alle</span></div>
       <div class="om-info" id="om-info"></div>
       <div class="om-orders" id="om-orders"></div>
       <div class="om-up"><button type="button" id="om-upbtn">Oppgrader</button><span id="om-updesc"></span></div>
       <div class="om-foot">
-        <button type="button" id="om-ordtog">Ordre ▸</button><label class="om-tog"><input type="checkbox" id="om-together" checked> Gå samlet</label>
+        <button type="button" id="om-numtog">Tall ▸</button><button type="button" id="om-ordtog">Ordre ▸</button><label class="om-tog"><input type="checkbox" id="om-together" checked> Gå samlet</label>
         <span class="om-dl"><span>Vent før de går</span><span class="om-dbtns" id="om-delay"></span></span>
         <button type="button" id="om-remove">Fjern</button><button type="button" id="om-cancel">Avbryt</button>
       </div>
@@ -941,7 +971,7 @@ const WAVES = [
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.3, 0.663, 0.467, 0.396, 1.349, 0.93, 1.066, 0.899, 0.641, 0.793, 0.954, 0.44, 0.74, 0.352, 0.975, 0.337, 0.812, 0.346, 0.503, 0.287, 0.765, 0.396, 1.635, 0.649, 1.198, 0.253, 0.586, 0.328, 0.632, 0.534];
+const WAVE_FACTOR = [0.3, 0.663, 0.42, 0.317, 1.349, 0.837, 1.066, 0.989, 0.513, 0.793, 0.954, 0.396, 0.592, 0.282, 0.975, 0.337, 0.65, 0.432, 0.453, 0.287, 0.842, 0.436, 1.799, 0.909, 0.719, 0.405, 0.938, 0.525, 1.011, 0.748];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};
@@ -1609,7 +1639,7 @@ const NODES = {
   gold:   { name: 'Gullgruve',  res: 'gold',   yield: 1, every: 12, cap: 6 },
   timber: { name: 'Tømmerleir', res: 'timber', yield: 1, every: 10, cap: 5 },
   stone:  { name: 'Steinbrudd', res: 'stone',  yield: 1, every: 10, cap: 5 },
-  iron:   { name: 'Jerngruve',  res: 'iron',   yield: 1, every: 14, cap: 5, unlock: { timber: 20, stone: 15 } },
+  iron:   { name: 'Jerngruve',  res: 'iron',   yield: 1, every: 12, cap: 5, unlock: { timber: 20, stone: 15 } },
   coal:   { name: 'Kullgruve',  res: 'coal',   yield: 1, every: 22, cap: 4, unlock: { timber: 25, stone: 20, iron: 10 } },
 };
 const NODE_EXPAND = { cost: { gold: 13, timber: 15, stone: 10 }, extra: 3 };
@@ -2114,7 +2144,7 @@ class Rival {
 
 
 // ===== Knapphet (versjon 22): dyrere arbeidere, utvidelse krever Barracks, jern og kull teller mer i høye tiers =====
-const SCARCE = {"cap": {"timber": 4, "stone": 4, "iron": 4, "coal": 3}, "worker": {"gold": [5, 4, 3], "timber": [5, 4, 2], "stone": [5, 4, 2], "iron": [12, 5, 0], "coal": [16, 7, 0]}, "expand": {"gold": {"needs": 2, "cost": {"gold": 40, "timber": 40, "stone": 30}}, "timber": {"needs": 2, "cost": {"gold": 40, "timber": 30, "stone": 30}}, "stone": {"needs": 2, "cost": {"gold": 40, "timber": 40, "stone": 20}}, "iron": {"needs": 2, "cost": {"gold": 90, "timber": 60, "stone": 60}}, "coal": {"needs": 3, "cost": {"gold": 130, "timber": 80, "stone": 80, "iron": 40}}}, "unitIron": {"2": 2, "3": 3, "4": 3}, "unitCoalMin": {"3": 1}, "unitCoal": {"3": 2, "4": 3}, "upgradeIron": 2, "upgradeCoal": 2, "barracksWood": {"3": 0.55, "4": 0.55}};
+const SCARCE = {"cap": {"timber": 4, "stone": 4, "iron": 4, "coal": 3}, "worker": {"gold": [5, 4, 3], "timber": [5, 4, 2], "stone": [5, 4, 2], "iron": [10, 5, 0], "coal": [16, 7, 0]}, "expand": {"gold": {"needs": 2, "cost": {"gold": 40, "timber": 40, "stone": 30}}, "timber": {"needs": 2, "cost": {"gold": 40, "timber": 30, "stone": 30}}, "stone": {"needs": 2, "cost": {"gold": 40, "timber": 40, "stone": 20}}, "iron": {"needs": 2, "cost": {"gold": 90, "timber": 60, "stone": 60}}, "coal": {"needs": 3, "cost": {"gold": 130, "timber": 80, "stone": 80, "iron": 40}}}, "unitIron": {"2": 2, "3": 3, "4": 3}, "unitCoalMin": {"3": 1}, "unitCoal": {"3": 2, "4": 3}, "upgradeIron": 2, "upgradeCoal": 2, "barracksWood": {"3": 0.55, "4": 0.55}};
 (() => {
   for (const k in SCARCE.cap) NODES[k].cap = SCARCE.cap[k];
   for (const k in TYPES) {
@@ -2135,10 +2165,17 @@ const expandNeeds = k => SCARCE.expand[k].needs;
 // Helten er din egen kriger ved porten (Warden er lagets konge ved flammen). Han tar ingen plass i hæren.
 const HERO_COST = { gold: 40 };
 const HERO_XP = [12, 35, 70, 150, 225, 290, 370, 500, 680];   // total erfaring for nivå 2, 3, 4 … 10
-const HERO_GROWTH = 0.06;                                    // +6 % helse og skade per nivå
+const HERO_GROWTH = 0.08;                                    // +8 % helse og skade per nivå (var 6 %; Rune: helten falt av for fort)
 const HERO_PATH_LEVEL = 5;
 const HERO_REVIVE = { base: 5, perLevel: 2 };   // nivå 1: 7 gull, nivå 10: 25 gull (å rekruttere koster 40)
 const HERO_FALL_LOSS = 0.25;                      // andel av fremgangen mot neste nivå som går tapt
+// Heltens utstyr (versjon 27): tre spor à tre nivåer, kjøpes i Heltehallen for gull og jern. Gjør helten sterkere uavhengig av erfaring.
+const HERO_GEAR = {
+  vapen:    { name: 'Våpen', desc: '+15 % skade per nivå.', lv: [{ dmgMul: 1.15 }, { dmgMul: 1.15 }, { dmgMul: 1.15 }] },
+  rustning: { name: 'Rustning', desc: '+15 % helse og +1 rustning per nivå.', lv: [{ hpMul: 1.15, armor: 1 }, { hpMul: 1.15, armor: 1 }, { hpMul: 1.15, armor: 1 }] },
+  amulett:  { name: 'Flammeamulett', desc: 'Nivå 1 og 2: gror 0,4 % helse per sekund. Nivå 3, «Siste glød»: reiser seg én gang per wave med 40 % helse.', lv: [{ regenPct: 0.004 }, { regenPct: 0.004 }, { revive: 0.4 }] },
+};
+const HERO_GEAR_COST = [{ gold: 25, iron: 3 }, { gold: 50, iron: 8 }, { gold: 90, iron: 15 }];
 const HERO_CLASSES = {
   heroKnight: { name: 'Flammeridder', short: 'Nærkamp. Står foran og tåler mye.', paths: ['paladin', 'berserker'] },
   heroHunter: { name: 'Askejeger', short: 'Skytter med lang rekkevidde, god mot flyvere.', paths: ['falkoye', 'stormskytter'] },
@@ -2221,6 +2258,7 @@ function heroStats(T, h, lv) {
   if (T.bonus) out.bonus = Object.assign({}, T.bonus);
   const g = 1 + HERO_GROWTH * (lv - 1);
   out.hp = Math.round(out.hp * g); out.dmg = Math.round(out.dmg * g);
+  for (const k in HERO_GEAR) for (let i = 0; i < ((h.gear || {})[k] || 0); i++) heroMod(out, HERO_GEAR[k].lv[i]);
   for (const id of h.talents) heroMod(out, HERO_TALENTS[id].mod);
   if (h.path) heroMod(out, HERO_PATHS[h.path].mod);
   if (out.regenPct) out.regen = (out.regen || 0) + out.hp * out.regenPct;
@@ -2268,6 +2306,9 @@ Object.assign(Econ.prototype, {
     h.xp -= lost; h.fallen = true;
     return lost;
   },
+  heroGearLevel(k) { return this.hero && this.hero.gear ? this.hero.gear[k] || 0 : 0; },
+  heroGearCost(k) { return HERO_GEAR_COST[this.heroGearLevel(k)] || null; },
+  buyHeroGear(k) { const c = HERO_GEAR[k] && this.heroGearCost(k); if (!this.hero || !c || !this.pay(c)) return false; (this.hero.gear = this.hero.gear || {})[k] = this.heroGearLevel(k) + 1; return true; },
   heroRevive() { const h = this.hero; if (!h || !h.fallen || !this.pay(this.heroReviveCost())) return false; h.fallen = false; return true; },
   heroRerollCost() { return { gold: 10 * ((this.hero && this.hero.rerolls || 0) + 1) }; },
   heroReroll() { const h = this.hero; if (!h || h.kind !== 'talent' || !this.pay(this.heroRerollCost())) return false; h.rerolls++; this.heroDraw(); return true; },
@@ -2349,6 +2390,9 @@ function withHero(army, ec) {
 function heroBot(ec, w) {
   if (!ec.hero && w >= 2 && ec.res.gold >= HERO_COST.gold + 12) ec.recruitHero(anyOf(Object.keys(HERO_CLASSES)));
   if (ec.hero && ec.hero.fallen && ec.res.gold >= ec.heroReviveCost().gold + 10) ec.heroRevive();
+  // Utstyr: billigste spor først, bare når det er gull og jern til overs.
+  if (ec.hero && w >= 8) { const k = Object.keys(HERO_GEAR).sort((a, b) => ec.heroGearLevel(a) - ec.heroGearLevel(b))[0], c = ec.heroGearCost(k);
+    if (c && ec.res.gold >= c.gold + 80 && ec.res.iron >= c.iron + 25) ec.buyHeroGear(k); }
   heroAuto(ec);
 }
 
@@ -4471,7 +4515,7 @@ const Sound = (function () {
         else if (c) placeAt(c, 'remove');
       } else if (state.tool && c) placeAt(c, state.tool);
       else clickSelect(c, e.shiftKey || e.ctrlKey || e.metaKey);
-    }
+    } else if (drag && !drag.moved && pointers.size === 1 && drag.button === 0 && state.selection.size) clearSelection();
     pointers.delete(e.pointerId);
     if (pointers.size < 2) pinch = null;
     if (pointers.size === 0) drag = null;
@@ -4570,32 +4614,39 @@ const Sound = (function () {
     menu.hidden = false;
     renderPanel();
   }
-  // Oppgradering av valgte units: hver får sitt neste nivå. Prisen er summen for alle som kan oppgraderes.
+  // Oppgradering av valgte units: hver får sitt neste nivå. Har du ikke råd til alle, oppgraderes så mange du har råd til, billigste først.
   function upgradePlan() {
     const list = [...state.selection].map(i => state.army[i]).filter(a => a && UPGRADES[a.type] && (a.level || 0) < MAX_LEVEL);
-    const cost = {};
-    list.forEach(a => { const c = UPGRADES[a.type][a.level || 0].cost; for (const r in c) cost[r] = (cost[r] || 0) + c[r]; });
-    return { list, cost };
+    const costOf = a => UPGRADES[a.type][a.level || 0].cost, worth = c => (c.gold || 0) + (c.timber || 0) / 2 + (c.stone || 0) / 2 + 2 * (c.iron || 0) + 2 * (c.coal || 0);
+    const add = (t, c) => { for (const r in c) t[r] = (t[r] || 0) + c[r]; return t; };
+    const full = list.reduce((t, a) => add(t, costOf(a)), {});
+    const left = { ...state.econ.res }, pick = [], cost = {};
+    [...list].sort((a, b) => worth(costOf(a)) - worth(costOf(b))).forEach(a => {
+      const c = costOf(a); if (Object.keys(c).every(r => (left[r] || 0) >= c[r])) { for (const r in c) left[r] -= c[r]; add(cost, c); pick.push(a); }
+    });
+    const cheapest = list.length ? list.map(costOf).sort((a, b) => worth(a) - worth(b))[0] : {};
+    return { list, pick, cost: pick.length ? cost : full, cheapest };
   }
   function syncUpgradeBtn() {
-    const btn = $('#om-upbtn'), desc = $('#om-updesc'), { list, cost } = upgradePlan();
+    const btn = $('#om-upbtn'), desc = $('#om-updesc'), { list, pick, cost } = upgradePlan();
     if (!list.length) { btn.disabled = true; btn.textContent = 'Fullt oppgradert'; desc.textContent = 'Alle valgte har nådd nivå 3.'; return; }
     btn.disabled = false;
     const one = list.length === 1 || list.every(a => a.type === list[0].type && (a.level || 0) === (list[0].level || 0));
-    const up = UPGRADES[list[0].type][list[0].level || 0];
-    btn.innerHTML = `${one ? `Oppgrader: ${up.name}` : `Oppgrader ${list.length} units`} <span class="cost">${costHtml(cost)}</span>`;
-    btn.classList.toggle('cant', !state.econ.can(cost));
-    desc.textContent = one ? `Nivå ${(list[0].level || 0) + 1} av 3${list.length > 1 ? ` for ${list.length} ${TYPES[list[0].type].name}` : ''}. ${up.desc}` : 'Hver valgt unit får sitt neste nivå.';
+    const up = UPGRADES[list[0].type][list[0].level || 0], part = pick.length && pick.length < list.length;
+    btn.innerHTML = `${part ? `Oppgrader ${pick.length} av ${list.length}` : one && list.length === 1 ? `Oppgrader: ${up.name}` : `Oppgrader ${list.length}${one ? ` · ${up.name}` : ' units'}`} <span class="cost">${costHtml(cost)}</span>`;
+    btn.classList.toggle('cant', !pick.length);
+    desc.textContent = part ? `Du har råd til ${pick.length} av ${list.length} nå (billigste først). ${one ? up.desc : ''}`
+      : one ? `Nivå ${(list[0].level || 0) + 1} av 3${list.length > 1 ? ` for ${list.length} ${TYPES[list[0].type].name}` : ''}. ${up.desc}` : 'Hver valgt unit får sitt neste nivå.';
   }
   function costHtml(c) { return Object.keys(c).map(r => `${icon(r, 13)}${c[r]}`).join(' '); }
   function upgradeSelected() {
-    const { list, cost } = upgradePlan();
+    const { list, pick, cost, cheapest } = upgradePlan();
     if (!list.length) return;
-    if (!state.econ.can(cost)) { explainMissing(cost); return; }
+    if (!pick.length) { explainMissing(cheapest); return; }
     state.econ.pay(cost);
-    const first = list[0], name = UPGRADES[first.type][first.level || 0].name;
-    list.forEach(a => { a.level = (a.level || 0) + 1; });
-    toast(list.length === 1 ? `${TYPES[first.type].name} fikk ${name}.` : `${list.length} units ble oppgradert.`);
+    const first = pick[0], name = UPGRADES[first.type][first.level || 0].name;
+    pick.forEach(a => { a.level = (a.level || 0) + 1; });
+    toast(pick.length === 1 && list.length === 1 ? `${TYPES[first.type].name} fikk ${name}.` : pick.length < list.length ? `${pick.length} av ${list.length} ble oppgradert. Resten når du har råd.` : `${pick.length} units ble oppgradert.`);
     sfx('coin');
     rebuild(); selectionChanged();
   }
@@ -4639,6 +4690,13 @@ const Sound = (function () {
     $('#om-upbtn').onclick = upgradeSelected;
     $('#om-ordtog').onclick = () => { menu.classList.toggle('ord-open'); renderSelInfo(); };
     $('#om-cancel').onclick = () => clearSelection();
+    $('#om-x').onclick = () => clearSelection();
+    $('#om-numtog').onclick = () => { menu.classList.toggle('num-open'); $('#om-numtog').textContent = `Tall ${menu.classList.contains('num-open') ? '▾' : '▸'}`; };
+    // Trykk utenfor panelet lukker det (kartet håndterer egne trykk; sidepanelet og kort lar det stå).
+    document.addEventListener('pointerdown', e => {
+      if (menu.hidden || menu.contains(e.target) || canvas.contains(e.target) || e.target.closest('.panel, .choicecard, .arenacard, .bpop, .ustat, #minimap')) return;
+      clearSelection();
+    }, true);
     $('#om-together').onchange = ev => { state.together = ev.target.checked; };
     const dl = $('#om-delay');
     DELAYS.forEach(d => {
@@ -5112,6 +5170,11 @@ Object.assign(UP_PIC, {
     const h = state.econ.hero; if (!h || !h.fallen || !sim) return;
     sim.units.forEach(u => { if (u.side === 'p' && u.type === h.type) { u.alive = false; u.hp = 0; const v = visuals.get(u.id); if (v) v.deadT = 3; } });
   }
+  function heroGearHtml() {
+    const ec = state.econ;
+    return `<div class="hs-gear">${Object.keys(HERO_GEAR).map(k => { const g = HERO_GEAR[k], l = ec.heroGearLevel(k), c = ec.heroGearCost(k);
+      return c ? buyBtn(`${g.name} <small>${l}/3</small>`, c, 'heroGear', `data-k="${k}" data-tip="${g.desc}"`) : `<span class="maxed" data-tip="${g.desc}">${g.name} 3/3</span>`; }).join('')}</div>`;
+  }
   function heroStripHtml() {
     const ec = state.econ, h = ec.hero;
     if (!h) return `<div class="herostrip"><img alt="" src="${portraits.heroKnight || ''}"><div class="hs-mid"><b>Helt</b><small>Din egen kriger. Tar ingen plass i hæren og blir sterkere for hver wave.</small></div><button type="button" class="hs-go" data-act="heroOpen">Velg helt</button></div>`;
@@ -5120,9 +5183,9 @@ Object.assign(UP_PIC, {
     return `<div class="herostrip"><img alt="" src="${portraits[h.type] || ''}"${h.fallen ? ' style="filter:grayscale(1) brightness(.6)"' : ''}><div class="hs-mid"><b>${HERO_CLASSES[h.type].name} · nivå ${lv}${h.fallen ? ' · falt' : ''}</b>
       <div class="xpbar" data-tip="${nx ? `Erfaring ${h.xp} av ${nx} til nivå ${lv + 1}` : 'Høyeste nivå'}"><i style="width:${pct}%"></i><span>★ ${lv}</span></div>
       <small>${heroStatLine(T)}</small>
-      ${h.path || h.talents.length ? `<div class="chips">${h.path ? `<span class="path">${HERO_PATHS[h.path].name}</span>` : ''}${h.talents.map(id => `<span data-tip="${HERO_TALENTS[id].desc}">${HERO_TALENTS[id].name}</span>`).join('')}</div>` : ''}</div>
-      ${h.fallen ? `<small style="color:#f0a59d">Falt i kamp. Gjenopplives for å kjempe igjen.</small>` : ''}</div>
-      ${h.fallen ? buyBtn('Gjenopplive', ec.heroReviveCost(), 'heroRevive') : pend > 0 ? `<button type="button" class="hs-go" data-act="heroChoice">Velg${pend > 1 ? ` (${pend})` : ''}</button>` : ''}</div>`;
+      ${h.path || h.talents.length ? `<div class="chips">${h.path ? `<span class="path">${HERO_PATHS[h.path].name}</span>` : ''}${h.talents.map(id => `<span data-tip="${HERO_TALENTS[id].desc}">${HERO_TALENTS[id].name}</span>`).join('')}</div>` : ''}
+      ${h.fallen ? `<small class="hs-fallen">Falt i kamp. Gjenopplives for å kjempe igjen.</small>` : ''}</div>
+      ${h.fallen ? buyBtn('Gjenopplive', ec.heroReviveCost(), 'heroRevive') : pend > 0 ? `<button type="button" class="hs-go" data-act="heroChoice">Velg${pend > 1 ? ` (${pend})` : ''}</button>` : ''}${heroGearHtml()}</div>`;
   }
   function doctrineHtml() {
     const ec = state.econ, d = ec.docs || [];
@@ -5131,7 +5194,7 @@ Object.assign(UP_PIC, {
       ${ec.docOffer ? `<button type="button" class="hs-go" data-act="docChoice" style="margin-top:6px">Velg doktrine</button>` : ''}`;
   }
   function renderBuildings() {
-    $('#buildings').innerHTML = `<div class="card"><h3>Heltehallen ${tipIcon('Din egen helt. Han tar ingen plass i hæren, kommer tilbake hver wave og får erfaring av fiender han dreper.')}</h3>${heroStripHtml()}</div>` + ['barracks', 'forge', 'workshop', 'gatehouse', 'sanctum'].map(k => BUILDING_HTML[k]()).join('');
+    $('#buildings').innerHTML = `<div class="card"><h3>Heltehallen ${tipIcon('Din egen helt. Han tar ingen plass i hæren og får erfaring av fiender han dreper. Faller han, mister han litt erfaring og må gjenopplives for gull.')}</h3>${heroStripHtml()}</div>` + ['barracks', 'forge', 'workshop', 'gatehouse', 'sanctum'].map(k => BUILDING_HTML[k]()).join('');
   }
 
   // ---------- Bygningsvindu: klikk på en bygning i verden ----------
@@ -5381,7 +5444,9 @@ Object.assign(UP_PIC, {
     rows.push(row('Gull per skade/s', (T, l) => goldOf(k, l) / Math.max(0.1, dps(T)), 'val', true));
     rows.push(row('Gull per 100 HP', (T, l) => goldOf(k, l) / ehp(T) * 100, 'val', true));
     const pips = Array.from({ length: MAX_LEVEL }, (_, i) => i < lvl ? '◆' : '◇').join('');
-    el.innerHTML = `<div class="oi-card"><img alt="" src="${portraits[k] || ''}"><b>${TYPES[k].name}</b><span>${TYPES[k].hero ? `Helt · nivå ${state.econ.heroLevel()}` : `Nivå ${lvl}/${MAX_LEVEL} ${pips}`}</span></div>
+    const q = (ic, f) => { const a = f(now), d = next ? Math.round((f(next) - a) * 10) / 10 : 0; return `${ic} ${nb(a)}${d > 0 ? `<i>+${nb(d)}</i>` : ''}`; };
+    const line = [q('❤', T => T.hp), q('⚔', dps), q('⛨', T => T.armor)].concat(now.ranged ? [q('➶', T => T.range)] : []).join(' · ');
+    el.innerHTML = `<div class="oi-card"><img alt="" src="${portraits[k] || ''}"><span class="oi-nm"><b>${TYPES[k].name}</b><span>${TYPES[k].hero ? `Helt · nivå ${state.econ.heroLevel()}` : `Nivå ${lvl}/${MAX_LEVEL} ${pips}`}</span></span><span class="oi-line">${line}${next ? ' <small style="color:var(--muted)">(grønt = neste nivå)</small>' : ''}</span></div>
       <table class="oi-tab"><thead><tr><th></th><th>Nå</th>${next ? '<th>Etter oppgr.</th>' : ''}</tr></thead><tbody>${rows.join('')}</tbody></table>
       <p class="oi-note">Gull-radene: lavere er bedre. ${tipIcon(`Jern og kull teller som 2 gull. Rustning trekkes fra hvert slag, men minst 1 skade går gjennom. «HP m/rustning» regner med et vanlig fiendeslag på ${ARMOR_REF}: rustning 5 gir 15 skade per slag, så uniten tåler 20/15 = 1,33 ganger så mye.`)}</p>`;
   }
@@ -5889,7 +5954,7 @@ Object.assign(UP_PIC, {
     const acts = {
       'worker+': () => ec.addWorker(k), 'worker-': () => ec.removeWorker(k),
       unlock: () => ec.unlockNode(k), expand: () => ec.expandNode(k), deepen: () => ec.deepen(), tools: () => ec.buyTools(),
-      track: () => ec.buyTrack(k), wgear: () => ec.buyWardenGear(k), wtrain: () => ec.trainWarden(), wabil: () => ec.buyWardenAbility(k), wheal: () => ec.healWarden(), heroOpen: () => (openChoice('class'), false), heroRevive: () => { if (state.phase !== 'build') { toast('Helten kan gjenopplives i byggefasen.'); return false; } if (!ec.heroRevive()) return false; toast(`${HERO_CLASSES[ec.hero.type].name} er tilbake i hæren.`); return true; }, heroChoice: () => (openChoice('talent'), false), docChoice: () => (openChoice('doctrine'), false),
+      track: () => ec.buyTrack(k), wgear: () => ec.buyWardenGear(k), wtrain: () => ec.trainWarden(), wabil: () => ec.buyWardenAbility(k), wheal: () => ec.healWarden(), heroGear: () => { if (!ec.buyHeroGear(k)) return false; toast(`${HERO_CLASSES[ec.hero.type].name} fikk ${HERO_GEAR[k].name.toLowerCase()} nivå ${ec.heroGearLevel(k)}.`); return true; }, heroOpen: () => (openChoice('class'), false), heroRevive: () => { if (state.phase !== 'build') { toast('Helten kan gjenopplives i byggefasen.'); return false; } if (!ec.heroRevive()) return false; toast(`${HERO_CLASSES[ec.hero.type].name} er tilbake i hæren.`); return true; }, heroChoice: () => (openChoice('talent'), false), docChoice: () => (openChoice('doctrine'), false),
       barracks: () => ec.buyBarracks(), wall: () => ec.buyWall(), archers: () => ec.buyArchers(), repair: () => ec.repair(),
     };
     if (acts[b.dataset.act] && acts[b.dataset.act]()) {

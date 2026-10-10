@@ -149,3 +149,13 @@ Rune (6. okt): flyvere angrep muren mens skytterne sto til høyre; altfor lett; 
 - Balanse: wavene retunet (`wave_factors.json`). `game_sim 30`: 1–3 av 30 når wave 30, median ca. 15–17 (som før).
 - **Helten kan dø (Runes valg, samme dag):** faller han, mister han 25 % av fremgangen mot neste nivå (`HERO_FALL_LOSS`, aldri nivå eller talenter) og står ute til han gjenopplives i byggefasen for 5 + 2 gull per nivå (`HERO_REVIVE`; 7–25 gull, rekruttering 40). Knappen står på heltekortet. Boten og rivalen gjenoppliver når de har råd. Tre klasser holder for nå. Erfaringstapet gjorde spillet ca. 3 waves tyngre for boten (helten levler saktere), så wave 9–30 i `wave_factors.json` ble ganget med 0,96. 120 spill: median wave 15 (før 16), 5 av 120 når wave 30 (før 9).
 - Åpent spørsmål til Rune: hva neste (karavanen, relikvier, formenn, leiesoldater). Ikke start karavanen før han velger.
+
+## 10 Oct 2026 – version 27: mindre valgpanel, delvis oppgradering, heltens utstyr, mer jern
+
+Runes tilbakemelding på versjon 26:
+- **Valgpanelet** var for stort. Nå åpner det kompakt (lite bilde, navn, nivå, HP/skade/rustning med grønt for neste nivå); tabellen ligger bak «Tall». X i hjørnet og trykk utenfor lukker. «Avbryt» er skjult (X gjør det samme). `tools/ui_tidy.py`.
+- **Oppgrader** med mange valgt: oppgraderer så mange du har råd til, billigste først («Oppgrader 4 av 7»), ikke alt eller ingenting.
+- **Heltekortet** i Heltehallen ble presset til en smal kolonne (en `</div>` lukket kortet for tidlig). Fikset.
+- **Helten falt av for fort:** +8 % per nivå (var 6 %), og nytt utstyr i Heltehallen: Våpen, Rustning, Flammeamulett, 3 nivåer hver for gull + jern. Amulett nivå 3 = «Siste glød» (reiser seg én gang per wave med 40 % helse). Boten kjøper utstyr fra wave 8 når den har mye til overs.
+- **Jern for knapt:** jerngruva leverer hvert 12. s (var 14), første jernarbeider 10 gull (var 12), økning 5 (var 5, gratis-plasser 0). Tømmer og stein uendret (prøvde å senke dem, men da falt boten på wave 6 og 9). Innsamling avhenger ikke av avstanden mellom gruvene og husene; hver tur tar fast tid.
+- Wavene retunet fra wave 1 (`tune_waves.js 16 1`). 120 spill: median wave 18, 11 av 120 når wave 30 (versjon 26: 15 og 5). Tier-tidspunkt (bot) 7/11/20.

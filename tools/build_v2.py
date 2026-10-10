@@ -155,5 +155,7 @@ import biomes
 s = biomes.apply(s)
 import hero
 s = hero.apply(s)
+import ui_tidy
+s = ui_tidy.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))

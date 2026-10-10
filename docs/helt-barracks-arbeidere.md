@@ -29,7 +29,12 @@ Målet er at to spill aldri blir like: du tar valg som stenger andre veier, og n
 - **Faller han** (Runes valg 10. okt): han mister en fjerdedel av fremgangen mot neste nivå (aldri et nivå eller talenter), og han står ute av kampen til du **gjenoppliver** ham i byggefasen. Det koster 5 + 2 gull per nivå (7 gull på nivå 1, 25 på nivå 10), altså mye mindre enn å rekruttere (40). Knappen «Gjenopplive» står på heltekortet i Hær-fanen og i Heltehallen.
 - **Erfaring:** fiender han dreper gir like mye erfaring som gullet de gir; fiender som faller innen 10 m fra ham gir 40 % av det. +2 for hver wave han overlever. Nivå 1–10. Slik får også presten og skytteren erfaring, og det lønner seg å ha ham der kampen er.
 - **Tempo (målt med boten):** nivå 2–4 i de første wavene, nivå 5 rundt wave 7–8, nivå 10 rundt wave 27.
-- **Hvert nivå:** +6 % helse og skade, og du **trekker 3 tilfeldige talenter og velger 1**. Liker du ingen av dem, kan du trekke på nytt for gull (10, så 20, så 30 … for samme nivå).
+- **Hvert nivå:** +8 % helse og skade (var 6 %; Rune syntes helten falt av for fort), og du **trekker 3 tilfeldige talenter og velger 1**. Liker du ingen av dem, kan du trekke på nytt for gull (10, så 20, så 30 … for samme nivå).
+- **Utstyr i Heltehallen (versjon 27):** tre spor med tre nivåer hver, for gull og jern (25 g + 3 jern, 50 g + 8 jern, 90 g + 15 jern).
+  - **Våpen:** +15 % skade per nivå.
+  - **Rustning:** +15 % helse og +1 rustning per nivå.
+  - **Flammeamulett:** nivå 1 og 2 gror 0,4 % helse per sekund hver; nivå 3, «Siste glød», lar ham reise seg én gang per wave med 40 % helse.
+  Slik kan du gjøre helten sterkere med ressurser, ikke bare med erfaring.
 - **Nivå 5: veivalg.** Hver klasse har to retninger som endrer hvordan han spiller. Valget er for hele spillet.
 - Han kan ikke selges. Han er med i arenaen. Computeren i 1 mot 1 får også en helt.
 - Valgene kommer opp som et kort når waven er over. «Senere» lukker kortet; knappen «Velg» på heltekortet (Hær-fanen og Heltehallen) åpner det igjen.

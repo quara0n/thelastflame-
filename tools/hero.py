@@ -14,10 +14,17 @@ LOGIC = r"""
 // Helten er din egen kriger ved porten (Warden er lagets konge ved flammen). Han tar ingen plass i hæren.
 const HERO_COST = { gold: 40 };
 const HERO_XP = [12, 35, 70, 150, 225, 290, 370, 500, 680];   // total erfaring for nivå 2, 3, 4 … 10
-const HERO_GROWTH = 0.06;                                    // +6 % helse og skade per nivå
+const HERO_GROWTH = 0.08;                                    // +8 % helse og skade per nivå (var 6 %; Rune: helten falt av for fort)
 const HERO_PATH_LEVEL = 5;
 const HERO_REVIVE = { base: 5, perLevel: 2 };   // nivå 1: 7 gull, nivå 10: 25 gull (å rekruttere koster 40)
 const HERO_FALL_LOSS = 0.25;                      // andel av fremgangen mot neste nivå som går tapt
+// Heltens utstyr (versjon 27): tre spor à tre nivåer, kjøpes i Heltehallen for gull og jern. Gjør helten sterkere uavhengig av erfaring.
+const HERO_GEAR = {
+  vapen:    { name: 'Våpen', desc: '+15 % skade per nivå.', lv: [{ dmgMul: 1.15 }, { dmgMul: 1.15 }, { dmgMul: 1.15 }] },
+  rustning: { name: 'Rustning', desc: '+15 % helse og +1 rustning per nivå.', lv: [{ hpMul: 1.15, armor: 1 }, { hpMul: 1.15, armor: 1 }, { hpMul: 1.15, armor: 1 }] },
+  amulett:  { name: 'Flammeamulett', desc: 'Nivå 1 og 2: gror 0,4 % helse per sekund. Nivå 3, «Siste glød»: reiser seg én gang per wave med 40 % helse.', lv: [{ regenPct: 0.004 }, { regenPct: 0.004 }, { revive: 0.4 }] },
+};
+const HERO_GEAR_COST = [{ gold: 25, iron: 3 }, { gold: 50, iron: 8 }, { gold: 90, iron: 15 }];
 const HERO_CLASSES = {
   heroKnight: { name: 'Flammeridder', short: 'Nærkamp. Står foran og tåler mye.', paths: ['paladin', 'berserker'] },
   heroHunter: { name: 'Askejeger', short: 'Skytter med lang rekkevidde, god mot flyvere.', paths: ['falkoye', 'stormskytter'] },
@@ -100,6 +107,7 @@ function heroStats(T, h, lv) {
   if (T.bonus) out.bonus = Object.assign({}, T.bonus);
   const g = 1 + HERO_GROWTH * (lv - 1);
   out.hp = Math.round(out.hp * g); out.dmg = Math.round(out.dmg * g);
+  for (const k in HERO_GEAR) for (let i = 0; i < ((h.gear || {})[k] || 0); i++) heroMod(out, HERO_GEAR[k].lv[i]);
   for (const id of h.talents) heroMod(out, HERO_TALENTS[id].mod);
   if (h.path) heroMod(out, HERO_PATHS[h.path].mod);
   if (out.regenPct) out.regen = (out.regen || 0) + out.hp * out.regenPct;
@@ -147,6 +155,9 @@ Object.assign(Econ.prototype, {
     h.xp -= lost; h.fallen = true;
     return lost;
   },
+  heroGearLevel(k) { return this.hero && this.hero.gear ? this.hero.gear[k] || 0 : 0; },
+  heroGearCost(k) { return HERO_GEAR_COST[this.heroGearLevel(k)] || null; },
+  buyHeroGear(k) { const c = HERO_GEAR[k] && this.heroGearCost(k); if (!this.hero || !c || !this.pay(c)) return false; (this.hero.gear = this.hero.gear || {})[k] = this.heroGearLevel(k) + 1; return true; },
   heroRevive() { const h = this.hero; if (!h || !h.fallen || !this.pay(this.heroReviveCost())) return false; h.fallen = false; return true; },
   heroRerollCost() { return { gold: 10 * ((this.hero && this.hero.rerolls || 0) + 1) }; },
   heroReroll() { const h = this.hero; if (!h || h.kind !== 'talent' || !this.pay(this.heroRerollCost())) return false; h.rerolls++; this.heroDraw(); return true; },
@@ -228,6 +239,9 @@ function withHero(army, ec) {
 function heroBot(ec, w) {
   if (!ec.hero && w >= 2 && ec.res.gold >= HERO_COST.gold + 12) ec.recruitHero(anyOf(Object.keys(HERO_CLASSES)));
   if (ec.hero && ec.hero.fallen && ec.res.gold >= ec.heroReviveCost().gold + 10) ec.heroRevive();
+  // Utstyr: billigste spor først, bare når det er gull og jern til overs.
+  if (ec.hero && w >= 8) { const k = Object.keys(HERO_GEAR).sort((a, b) => ec.heroGearLevel(a) - ec.heroGearLevel(b))[0], c = ec.heroGearCost(k);
+    if (c && ec.res.gold >= c.gold + 80 && ec.res.iron >= c.iron + 25) ec.buyHeroGear(k); }
   heroAuto(ec);
 }
 """
@@ -259,6 +273,9 @@ CSS = r"""
 .chips { display: flex; flex-wrap: wrap; gap: 4px; }
 .chips span { font-size: 11px; border: 1px solid #5a4630; border-radius: 999px; padding: 1px 7px; color: #e6d2b0; }
 .chips span.path { border-color: var(--flame); color: var(--flame); }
+.hs-gear { flex: 1 1 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.hs-gear .buy, .hs-gear .maxed { align-items: center; padding: 4px; font-size: 11.5px; white-space: normal; text-align: center; }
+.hs-gear .buy small { color: var(--muted); font-weight: 400; }
 .hs-go { background: var(--flame); color: var(--flame-ink); border: 0; border-radius: 8px; padding: 8px 10px; font-weight: 700; flex: none; font: inherit; font-weight: 700; }
 """
 
@@ -351,6 +368,11 @@ UI = r"""
     const h = state.econ.hero; if (!h || !h.fallen || !sim) return;
     sim.units.forEach(u => { if (u.side === 'p' && u.type === h.type) { u.alive = false; u.hp = 0; const v = visuals.get(u.id); if (v) v.deadT = 3; } });
   }
+  function heroGearHtml() {
+    const ec = state.econ;
+    return `<div class="hs-gear">${Object.keys(HERO_GEAR).map(k => { const g = HERO_GEAR[k], l = ec.heroGearLevel(k), c = ec.heroGearCost(k);
+      return c ? buyBtn(`${g.name} <small>${l}/3</small>`, c, 'heroGear', `data-k="${k}" data-tip="${g.desc}"`) : `<span class="maxed" data-tip="${g.desc}">${g.name} 3/3</span>`; }).join('')}</div>`;
+  }
   function heroStripHtml() {
     const ec = state.econ, h = ec.hero;
     if (!h) return `<div class="herostrip"><img alt="" src="${portraits.heroKnight || ''}"><div class="hs-mid"><b>Helt</b><small>Din egen kriger. Tar ingen plass i hæren og blir sterkere for hver wave.</small></div><button type="button" class="hs-go" data-act="heroOpen">Velg helt</button></div>`;
@@ -361,7 +383,7 @@ UI = r"""
       <small>${heroStatLine(T)}</small>
       ${h.path || h.talents.length ? `<div class="chips">${h.path ? `<span class="path">${HERO_PATHS[h.path].name}</span>` : ''}${h.talents.map(id => `<span data-tip="${HERO_TALENTS[id].desc}">${HERO_TALENTS[id].name}</span>`).join('')}</div>` : ''}</div>
       ${h.fallen ? `<small style="color:#f0a59d">Falt i kamp. Gjenopplives for å kjempe igjen.</small>` : ''}</div>
-      ${h.fallen ? buyBtn('Gjenopplive', ec.heroReviveCost(), 'heroRevive') : pend > 0 ? `<button type="button" class="hs-go" data-act="heroChoice">Velg${pend > 1 ? ` (${pend})` : ''}</button>` : ''}</div>`;
+      ${h.fallen ? buyBtn('Gjenopplive', ec.heroReviveCost(), 'heroRevive') : pend > 0 ? `<button type="button" class="hs-go" data-act="heroChoice">Velg${pend > 1 ? ` (${pend})` : ''}</button>` : ''}${heroGearHtml()}</div>`;
   }
   function doctrineHtml() {
     const ec = state.econ, d = ec.docs || [];
@@ -429,7 +451,7 @@ def apply(s):
     s = sub(s, "nb.cost, 'barracks', nb.future ? 'data-lock=\"future\"' : '') })])}</div>`;", "nb.cost, 'barracks', nb.future ? 'data-lock=\"future\"' : '') })])}${doctrineHtml()}</div>`;")
     s = sub(s, "    $('#buildings').innerHTML = ['barracks', 'forge', 'workshop', 'gatehouse', 'sanctum'].map(k => BUILDING_HTML[k]()).join('');",
                "    $('#buildings').innerHTML = `<div class=\"card\"><h3>Heltehallen ${tipIcon('Din egen helt. Han tar ingen plass i hæren, kommer tilbake hver wave og får erfaring av fiender han dreper.')}</h3>${heroStripHtml()}</div>` + ['barracks', 'forge', 'workshop', 'gatehouse', 'sanctum'].map(k => BUILDING_HTML[k]()).join('');")
-    s = sub(s, "barracks: () => ec.buyBarracks(), wall:", "heroOpen: () => (openChoice('class'), false), heroRevive: () => { if (state.phase !== 'build') { toast('Helten kan gjenopplives i byggefasen.'); return false; } if (!ec.heroRevive()) return false; toast(`${HERO_CLASSES[ec.hero.type].name} er tilbake i hæren.`); return true; }, heroChoice: () => (openChoice('talent'), false), docChoice: () => (openChoice('doctrine'), false),\n      barracks: () => ec.buyBarracks(), wall:")
+    s = sub(s, "barracks: () => ec.buyBarracks(), wall:", "heroGear: () => { if (!ec.buyHeroGear(k)) return false; toast(`${HERO_CLASSES[ec.hero.type].name} fikk ${HERO_GEAR[k].name.toLowerCase()} nivå ${ec.heroGearLevel(k)}.`); return true; }, heroOpen: () => (openChoice('class'), false), heroRevive: () => { if (state.phase !== 'build') { toast('Helten kan gjenopplives i byggefasen.'); return false; } if (!ec.heroRevive()) return false; toast(`${HERO_CLASSES[ec.hero.type].name} er tilbake i hæren.`); return true; }, heroChoice: () => (openChoice('talent'), false), docChoice: () => (openChoice('doctrine'), false),\n      barracks: () => ec.buyBarracks(), wall:")
     s = sub(s, "      sfx('build');\n      // Oppgraderinger virker", "      sfx('build');\n      if (b.dataset.act === 'barracks' && ec.docOffer) setTimeout(() => openChoice('doctrine'), 60);\n      // Oppgraderinger virker")
     # Helten kan ikke selges eller byttes ut.
     s = sub(s, "    const ex = i >= 0 ? state.army[i] : null;\n    if (tool === 'remove' || (ex && ex.type === tool)) {",
