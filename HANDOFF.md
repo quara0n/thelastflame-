@@ -130,3 +130,10 @@ Rune (6. okt): flyvere angrep muren mens skytterne sto til høyre; altfor lett; 
 - Port til flamme er uendret (35 m), så balansen er uendret (Sim-koden er ikke rørt, bare `SIDES`/`sideToWorld` lagt til). Muren er nå et kvadrat på ca. 70 m; distriktene skrår inn mot citadellet; gamlebyen i hjørnene.
 - Rivalen flyttet til x = 140 (`tools/rival_view.py`); minikartet hopper over tomrommet.
 - Neste: spillere på sidene (2 mot 2 / 4 mot 4), waves der, hjelp via ringveien.
+
+## 10 Oct 2026 – version 24: hver side har sitt landskap
+
+- Rune: høyre side (øst) grønnere med trær, havet mot vest, det guddommelige og himmelske med hvite skyer mot sør. Nord beholder dagens utseende.
+- Bygget i `tools/biomes.py` (etter bastion.py). Navn: Øst Grønnlund, Sør Lysheim, Vest Havbryn (kan byttes). Vestbanneret er nå havblått, sør gull.
+- Bare utseende; kampen og balansen er uendret.
+- Neste mulig: la nordsiden følge verdenen også for de andre (eller gi sidene egne fiender), lyd per side (bølger, fuglesang, kor).

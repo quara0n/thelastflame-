@@ -129,7 +129,7 @@ Computeren velger det den sender ut fra hæren din, husker hva som virket, og sp
 Rune (10. okt): tre nye spillere i tillegg til nord: øst, sør og vest, hver med sin egen arbeiderlandsby, Barracks og resten. Ingen waves på de nye sidene ennå. Finn en skala for Bastion.
 
 - **Ett lag på fire rundt én flamme.** Dette er laget fra «2 lag à 4»: hver spiller holder én himmelretning. Nord er deg. Alle fire portene fører inn til samme citadell, og Warden er lagets konge der.
-- **Hver side har:** sin portal og slagmark rett ut fra byen, sin port med tårn, sitt distrikt (landsby med gruver, Longhouse, Barracks, Forge, Workshop) og egne bannerfarger (nord blå, øst grønn, sør gul, vest rød).
+- **Hver side har:** sin portal og slagmark rett ut fra byen, sin port med tårn, sitt distrikt (landsby med gruver, Longhouse, Barracks, Forge, Workshop) og egne bannerfarger (nord blå, øst grønn, sør gull, vest havblå).
 - **Skala:** avstanden port til flamme er den samme som før (ca. 35 m), og distriktet ditt er like bredt (35 m). Derfor er kampen og balansen helt uendret. Det som er større er muren: den går nå rundt hele byen som et kvadrat på ca. 70 × 70 m (før en stripe på 35 m). Med slagmarkene er kartet ca. 170 m fra portal til portal.
 - **Mellom distriktene:** innerst skrår distriktsmurene inn mot plassen rundt citadellet, så fire distrikter får plass uten å kollidere. I de fire hjørnene ligger gamlebyen (hus, plass til felles bygninger senere). Ringveien går rundt citadellet og binder distriktene sammen; det er veien hjelpere bruker når de går til Warden.
 - **Ledige plasser:** øst, sør og vest står klare med landsby slik den ser ut ved start (gull, tømmer og stein bygget). Skilt over porten: «Øst · ledig plass».
@@ -137,3 +137,14 @@ Rune (10. okt): tre nye spillere i tillegg til nord: øst, sør og vest, hver me
 - **Rivalen** (1 mot 1) har flyttet lenger ut (x = 140), så østsiden din får plass. Kartet i hjørnet ser likt ut som før.
 - **Kode:** `tools/bastion.py`. `SIDES` og `sideToWorld(side, x, z)` i logikken: hver spiller regnes i egne koordinater (portalen mot −z), og `sideToWorld` snur punktet rundt flammen. Det er det 2 mot 2 / 4 mot 4 skal bruke.
 - **Neste:** fylle sidene med spillere (lagkamerater online eller computer), deretter waves på alle fire sider og hjelp ved lekk via ringveien. Motstanderlaget får sin egen Bastion.
+
+## Hver side sitt landskap (10. okt 2026, version 24)
+
+Rune (10. okt): trærne på høyre side skal være grønnere, havet ligger mot vest, og sør er det guddommelige og himmelske med hvite skyer. Nord beholder dagens utseende.
+
+- **Nord (deg):** som før. Utseendet skifter med verdenen (Askemyr, Vrangheim, Urheim).
+- **Øst, Grønnlund:** gress, tett skog av furu og løvtrær, grønne åser der nord har svarte fjell, enger med blomster, et tjern med nøkkeroser og ildfluer som svever. Mosegrønne murer.
+- **Sør, Lysheim:** hvit marmor med gullinnlegg, hvite søyler med gullkapitel langs slagmarken og bak portalen, et hav av hvite skyer som driver sakte, svevende øyer med små gulltempler, lysstråler fra himmelen, en gullglorie over porten og en gyllen portal. Hvite murer med gullkant.
+- **Vest, Havbryn:** havet. Sandstrand innenfor muren, en landtunge ut til en klippeøy der portalen står, brygger, seilbåter som gynger, bølger som ruller inn og et fyrtårn med lys som sveiper over vannet. Blågrå murer.
+- Hver side har murer, distriktsgulv og hus i hjørnekvartalet i sine egne farger. Skiltene over portene viser navnet, f.eks. «Øst · Grønnlund · ledig plass».
+- Bare utseende: kampen og balansen er uendret. Kode: `tools/biomes.py`.
