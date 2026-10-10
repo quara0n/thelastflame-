@@ -16,6 +16,8 @@ const HERO_COST = { gold: 40 };
 const HERO_XP = [12, 35, 70, 150, 225, 290, 370, 500, 680];   // total erfaring for nivå 2, 3, 4 … 10
 const HERO_GROWTH = 0.06;                                    // +6 % helse og skade per nivå
 const HERO_PATH_LEVEL = 5;
+const HERO_REVIVE = { base: 5, perLevel: 2 };   // nivå 1: 7 gull, nivå 10: 25 gull (å rekruttere koster 40)
+const HERO_FALL_LOSS = 0.25;                      // andel av fremgangen mot neste nivå som går tapt
 const HERO_CLASSES = {
   heroKnight: { name: 'Flammeridder', short: 'Nærkamp. Står foran og tåler mye.', paths: ['paladin', 'berserker'] },
   heroHunter: { name: 'Askejeger', short: 'Skytter med lang rekkevidde, god mot flyvere.', paths: ['falkoye', 'stormskytter'] },
@@ -135,6 +137,17 @@ Object.assign(Econ.prototype, {
     h.picks++; h.rerolls = 0; this.heroDraw();
     return true;
   },
+  // Helten kan falle (Rune 10. okt): han mister halve fremgangen mot neste nivå (aldri et nivå eller talenter),
+  // og må gjenopplives for gull før han kan kjempe igjen. Det koster mindre enn å rekruttere ham.
+  heroReviveCost() { return { gold: HERO_REVIVE.base + HERO_REVIVE.perLevel * this.heroLevel() }; },
+  heroFall() {
+    const h = this.hero; if (!h || h.fallen) return 0;
+    const lv = this.heroLevel(), floor = HERO_XP[lv - 2] || 0, next = HERO_XP[lv - 1];
+    const lost = next ? Math.floor((h.xp - floor) * HERO_FALL_LOSS) : 0;
+    h.xp -= lost; h.fallen = true;
+    return lost;
+  },
+  heroRevive() { const h = this.hero; if (!h || !h.fallen || !this.pay(this.heroReviveCost())) return false; h.fallen = false; return true; },
   heroRerollCost() { return { gold: 10 * ((this.hero && this.hero.rerolls || 0) + 1) }; },
   heroReroll() { const h = this.hero; if (!h || h.kind !== 'talent' || !this.pay(this.heroRerollCost())) return false; h.rerolls++; this.heroDraw(); return true; },
   // Arbeiderfunn: en liten sjanse per leveranse.
@@ -191,11 +204,12 @@ Object.assign(Econ.prototype, {
 // Etter en wave: erfaring for drapene hans og +2 hvis han står. auto = boten velger talent og doktrine selv.
 function heroAfterWave(ec, sim, auto) {
   let res = null;
-  const hu = ec.hero && sim && sim.units.find(u => u.side === 'p' && u.T.hero);
+  const hu = ec.hero && !ec.hero.fallen && sim && sim.units.find(u => u.side === 'p' && u.T.hero);
   if (hu) {
     let xp = Math.round((sim.heroXp || 0) + (hu.alive ? 2 : 0));
     if (ec.has('akademi')) xp = Math.round(xp * 1.5);
     res = { xp, up: ec.heroGain(xp), alive: hu.alive };
+    if (!hu.alive) res.lost = ec.heroFall();
   }
   if (auto) heroAuto(ec);
   return res;
@@ -207,12 +221,13 @@ function heroAuto(ec) {
 // Boter: helten står i hæren uten å være i army-lista (så den aldri selges eller oppgraderes som en vanlig unit).
 function withHero(army, ec) {
   const h = ec && ec.hero;
-  if (!h || army.some(a => a.type === h.type)) return army;
+  if (!h || h.fallen || army.some(a => a.type === h.type)) return army;
   const r = TYPES[h.type].ranged;
   return army.concat([{ type: h.type, col: 7.5, row: r ? 3.5 : 1.5, order: r ? 'follow' : 'advance' }]);
 }
 function heroBot(ec, w) {
   if (!ec.hero && w >= 2 && ec.res.gold >= HERO_COST.gold + 12) ec.recruitHero(anyOf(Object.keys(HERO_CLASSES)));
+  if (ec.hero && ec.hero.fallen && ec.res.gold >= ec.heroReviveCost().gold + 10) ec.heroRevive();
   heroAuto(ec);
 }
 """
@@ -331,16 +346,22 @@ UI = r"""
     if (ec.docOffer) openChoice('doctrine');
     else if (ec.hero && ec.hero.offer) openChoice('talent');
   }
+  // En falt helt står igjen på rutenettet, men er borte fra slagmarken til han er gjenopplivet.
+  function markFallenHero() {
+    const h = state.econ.hero; if (!h || !h.fallen || !sim) return;
+    sim.units.forEach(u => { if (u.side === 'p' && u.type === h.type) { u.alive = false; u.hp = 0; const v = visuals.get(u.id); if (v) v.deadT = 3; } });
+  }
   function heroStripHtml() {
     const ec = state.econ, h = ec.hero;
     if (!h) return `<div class="herostrip"><img alt="" src="${portraits.heroKnight || ''}"><div class="hs-mid"><b>Helt</b><small>Din egen kriger. Tar ingen plass i hæren og blir sterkere for hver wave.</small></div><button type="button" class="hs-go" data-act="heroOpen">Velg helt</button></div>`;
     const lv = ec.heroLevel(), nx = ec.heroNext(), prev = HERO_XP[lv - 2] || 0, pct = nx ? (h.xp - prev) / (nx - prev) * 100 : 100, pend = ec.heroPending();
     const T = ec.types(TYPES)[h.type];
-    return `<div class="herostrip"><img alt="" src="${portraits[h.type] || ''}"><div class="hs-mid"><b>${HERO_CLASSES[h.type].name} · nivå ${lv}</b>
+    return `<div class="herostrip"><img alt="" src="${portraits[h.type] || ''}"${h.fallen ? ' style="filter:grayscale(1) brightness(.6)"' : ''}><div class="hs-mid"><b>${HERO_CLASSES[h.type].name} · nivå ${lv}${h.fallen ? ' · falt' : ''}</b>
       <div class="xpbar" data-tip="${nx ? `Erfaring ${h.xp} av ${nx} til nivå ${lv + 1}` : 'Høyeste nivå'}"><i style="width:${pct}%"></i><span>★ ${lv}</span></div>
       <small>${heroStatLine(T)}</small>
       ${h.path || h.talents.length ? `<div class="chips">${h.path ? `<span class="path">${HERO_PATHS[h.path].name}</span>` : ''}${h.talents.map(id => `<span data-tip="${HERO_TALENTS[id].desc}">${HERO_TALENTS[id].name}</span>`).join('')}</div>` : ''}</div>
-      ${pend > 0 ? `<button type="button" class="hs-go" data-act="heroChoice">Velg${pend > 1 ? ` (${pend})` : ''}</button>` : ''}</div>`;
+      ${h.fallen ? `<small style="color:#f0a59d">Falt i kamp. Gjenopplives for å kjempe igjen.</small>` : ''}</div>
+      ${h.fallen ? buyBtn('Gjenopplive', ec.heroReviveCost(), 'heroRevive') : pend > 0 ? `<button type="button" class="hs-go" data-act="heroChoice">Velg${pend > 1 ? ` (${pend})` : ''}</button>` : ''}</div>`;
   }
   function doctrineHtml() {
     const ec = state.econ, d = ec.docs || [];
@@ -408,7 +429,7 @@ def apply(s):
     s = sub(s, "nb.cost, 'barracks', nb.future ? 'data-lock=\"future\"' : '') })])}</div>`;", "nb.cost, 'barracks', nb.future ? 'data-lock=\"future\"' : '') })])}${doctrineHtml()}</div>`;")
     s = sub(s, "    $('#buildings').innerHTML = ['barracks', 'forge', 'workshop', 'gatehouse', 'sanctum'].map(k => BUILDING_HTML[k]()).join('');",
                "    $('#buildings').innerHTML = `<div class=\"card\"><h3>Heltehallen ${tipIcon('Din egen helt. Han tar ingen plass i hæren, kommer tilbake hver wave og får erfaring av fiender han dreper.')}</h3>${heroStripHtml()}</div>` + ['barracks', 'forge', 'workshop', 'gatehouse', 'sanctum'].map(k => BUILDING_HTML[k]()).join('');")
-    s = sub(s, "barracks: () => ec.buyBarracks(), wall:", "heroOpen: () => (openChoice('class'), false), heroChoice: () => (openChoice('talent'), false), docChoice: () => (openChoice('doctrine'), false),\n      barracks: () => ec.buyBarracks(), wall:")
+    s = sub(s, "barracks: () => ec.buyBarracks(), wall:", "heroOpen: () => (openChoice('class'), false), heroRevive: () => { if (state.phase !== 'build') { toast('Helten kan gjenopplives i byggefasen.'); return false; } if (!ec.heroRevive()) return false; toast(`${HERO_CLASSES[ec.hero.type].name} er tilbake i hæren.`); return true; }, heroChoice: () => (openChoice('talent'), false), docChoice: () => (openChoice('doctrine'), false),\n      barracks: () => ec.buyBarracks(), wall:")
     s = sub(s, "      sfx('build');\n      // Oppgraderinger virker", "      sfx('build');\n      if (b.dataset.act === 'barracks' && ec.docOffer) setTimeout(() => openChoice('doctrine'), 60);\n      // Oppgraderinger virker")
     # Helten kan ikke selges eller byttes ut.
     s = sub(s, "    const ex = i >= 0 ? state.army[i] : null;\n    if (tool === 'remove' || (ex && ex.type === tool)) {",
@@ -425,8 +446,11 @@ def apply(s):
     # Etter waven: erfaring, nivå og valg.
     s = sub(s, "    if (r.win) { report.bonus = waveBonus(W.n); ec.add({ gold: report.bonus }); popRes('gold', report.bonus); }\n    state.lastReport = report;",
                "    if (r.win) { report.bonus = waveBonus(W.n); ec.add({ gold: report.bonus }); popRes('gold', report.bonus); }\n    report.hero = heroAfterWave(ec, sim);\n"
+               "    if (report.hero && report.hero.lost != null) setTimeout(() => toast(`${HERO_CLASSES[ec.hero.type].name} falt${report.hero.lost ? ` og mistet ${report.hero.lost} erfaring` : ''}. Gjenopplive ham for ${ec.heroReviveCost().gold} gull (Hær-fanen eller Heltehallen).`), 600);\n"
                "    if (report.hero && report.hero.up) setTimeout(() => toast(`${HERO_CLASSES[ec.hero.type].name} nådde nivå ${ec.heroLevel()}! Velg ${ec.hero.kind === 'path' ? 'retning' : 'talent'}.`), 900);\n"
                "    setTimeout(maybeChoice, 1800);\n    state.lastReport = report;")
     s = sub(s, "      ec.deliveries.length = 0;\n    }\n", "      ec.deliveries.length = 0;\n    }\n    if (ec.finds && ec.finds.length) { const f = ec.finds.shift(); toast('⛏ ' + f.text); if (f.bag) Object.keys(f.bag).forEach(r => popRes(r, f.bag[r])); if (f.node && nodeVis[f.node]) nodeVis[f.node].pulse = 0.8; }\n")
     s = sub(s, "  function renderBuildings() {", UI + "  function renderBuildings() {")
+    s = sub(s, "    sim.units.forEach(u => visuals.set(u.id, buildUnit(u)));\n    clearShots();\n    buildPlan();",
+            "    sim.units.forEach(u => visuals.set(u.id, buildUnit(u)));\n    markFallenHero();\n    clearShots();\n    buildPlan();")
     return s

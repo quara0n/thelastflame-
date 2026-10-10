@@ -25,7 +25,8 @@ Målet er at to spill aldri blir like: du tar valg som stenger andre veier, og n
 
 **Slik virker det:**
 - Kjøpes i **Heltehallen** (Bygninger-fanen) for 40 gull. Du velger én av tre klasser. Han tar **ingen plass i hæren**.
-- Han settes på rutenettet som en vanlig soldat, og du kan flytte ham og gi ham ordre. Faller han, er han tilbake neste wave.
+- Han settes på rutenettet som en vanlig soldat, og du kan flytte ham og gi ham ordre.
+- **Faller han** (Runes valg 10. okt): han mister en fjerdedel av fremgangen mot neste nivå (aldri et nivå eller talenter), og han står ute av kampen til du **gjenoppliver** ham i byggefasen. Det koster 5 + 2 gull per nivå (7 gull på nivå 1, 25 på nivå 10), altså mye mindre enn å rekruttere (40). Knappen «Gjenopplive» står på heltekortet i Hær-fanen og i Heltehallen.
 - **Erfaring:** fiender han dreper gir like mye erfaring som gullet de gir; fiender som faller innen 10 m fra ham gir 40 % av det. +2 for hver wave han overlever. Nivå 1–10. Slik får også presten og skytteren erfaring, og det lønner seg å ha ham der kampen er.
 - **Tempo (målt med boten):** nivå 2–4 i de første wavene, nivå 5 rundt wave 7–8, nivå 10 rundt wave 27.
 - **Hvert nivå:** +6 % helse og skade, og du **trekker 3 tilfeldige talenter og velger 1**. Liker du ingen av dem, kan du trekke på nytt for gull (10, så 20, så 30 … for samme nivå).
@@ -121,5 +122,5 @@ Sjansen er ca. ett funn per 2–3 waves med en vanlig landsby, mer med flere arb
 
 ## Spørsmål til Rune
 
-1. **Skal helten kunne dø for godt?** a) Nei, han er tilbake neste wave (bygget nå). b) Faller han, mister han nivåets fremgang. c) Faller han, må han «gjenopplives» for gull.
+1. ~~Skal helten kunne dø?~~ Besvart: ja, billig gjenoppliving for gull og tap av litt erfaring (bygget).
 2. **Hva neste?** a) Karavanen (bruker tømmer og stein). b) Relikvier fra bosser og arena. c) Formenn per gruve. d) Leiesoldatleiren.

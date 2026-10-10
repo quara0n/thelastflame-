@@ -147,4 +147,5 @@ Rune (6. okt): flyvere angrep muren mens skytterne sto til høyre; altfor lett; 
   - **Arbeiderfunn:** 0,5 % sjanse per leveranse (gullåre, gammelt våpen = heltens erfaring, jernklump, glo = Warden-erfaring).
   - Boten og rivalen får helt fra wave 2 og velger tilfeldig. Rivalens helt står i hæren hans via `withHero` (ikke i army-lista).
 - Balanse: wavene retunet (`wave_factors.json`). `game_sim 30`: 1–3 av 30 når wave 30, median ca. 15–17 (som før).
-- Åpne spørsmål til Rune: kan helten dø for godt; hva neste (karavanen, relikvier, formenn, leiesoldater).
+- **Helten kan dø (Runes valg, samme dag):** faller han, mister han 25 % av fremgangen mot neste nivå (`HERO_FALL_LOSS`, aldri nivå eller talenter) og står ute til han gjenopplives i byggefasen for 5 + 2 gull per nivå (`HERO_REVIVE`; 7–25 gull, rekruttering 40). Knappen står på heltekortet. Boten og rivalen gjenoppliver når de har råd. Tre klasser holder for nå. Erfaringstapet gjorde spillet ca. 3 waves tyngre for boten (helten levler saktere), så wave 9–30 i `wave_factors.json` ble ganget med 0,96. 120 spill: median wave 15 (før 16), 5 av 120 når wave 30 (før 9).
+- Åpent spørsmål til Rune: hva neste (karavanen, relikvier, formenn, leiesoldater). Ikke start karavanen før han velger.

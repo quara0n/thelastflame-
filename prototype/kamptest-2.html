@@ -941,7 +941,7 @@ const WAVES = [
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.3, 0.663, 0.467, 0.396, 1.349, 0.93, 1.066, 0.899, 0.668, 0.826, 0.994, 0.458, 0.771, 0.367, 1.016, 0.351, 0.846, 0.36, 0.524, 0.299, 0.797, 0.413, 1.703, 0.676, 1.248, 0.264, 0.61, 0.342, 0.658, 0.556];
+const WAVE_FACTOR = [0.3, 0.663, 0.467, 0.396, 1.349, 0.93, 1.066, 0.899, 0.641, 0.793, 0.954, 0.44, 0.74, 0.352, 0.975, 0.337, 0.812, 0.346, 0.503, 0.287, 0.765, 0.396, 1.635, 0.649, 1.198, 0.253, 0.586, 0.328, 0.632, 0.534];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};
@@ -2137,6 +2137,8 @@ const HERO_COST = { gold: 40 };
 const HERO_XP = [12, 35, 70, 150, 225, 290, 370, 500, 680];   // total erfaring for nivå 2, 3, 4 … 10
 const HERO_GROWTH = 0.06;                                    // +6 % helse og skade per nivå
 const HERO_PATH_LEVEL = 5;
+const HERO_REVIVE = { base: 5, perLevel: 2 };   // nivå 1: 7 gull, nivå 10: 25 gull (å rekruttere koster 40)
+const HERO_FALL_LOSS = 0.25;                      // andel av fremgangen mot neste nivå som går tapt
 const HERO_CLASSES = {
   heroKnight: { name: 'Flammeridder', short: 'Nærkamp. Står foran og tåler mye.', paths: ['paladin', 'berserker'] },
   heroHunter: { name: 'Askejeger', short: 'Skytter med lang rekkevidde, god mot flyvere.', paths: ['falkoye', 'stormskytter'] },
@@ -2256,6 +2258,17 @@ Object.assign(Econ.prototype, {
     h.picks++; h.rerolls = 0; this.heroDraw();
     return true;
   },
+  // Helten kan falle (Rune 10. okt): han mister halve fremgangen mot neste nivå (aldri et nivå eller talenter),
+  // og må gjenopplives for gull før han kan kjempe igjen. Det koster mindre enn å rekruttere ham.
+  heroReviveCost() { return { gold: HERO_REVIVE.base + HERO_REVIVE.perLevel * this.heroLevel() }; },
+  heroFall() {
+    const h = this.hero; if (!h || h.fallen) return 0;
+    const lv = this.heroLevel(), floor = HERO_XP[lv - 2] || 0, next = HERO_XP[lv - 1];
+    const lost = next ? Math.floor((h.xp - floor) * HERO_FALL_LOSS) : 0;
+    h.xp -= lost; h.fallen = true;
+    return lost;
+  },
+  heroRevive() { const h = this.hero; if (!h || !h.fallen || !this.pay(this.heroReviveCost())) return false; h.fallen = false; return true; },
   heroRerollCost() { return { gold: 10 * ((this.hero && this.hero.rerolls || 0) + 1) }; },
   heroReroll() { const h = this.hero; if (!h || h.kind !== 'talent' || !this.pay(this.heroRerollCost())) return false; h.rerolls++; this.heroDraw(); return true; },
   // Arbeiderfunn: en liten sjanse per leveranse.
@@ -2312,11 +2325,12 @@ Object.assign(Econ.prototype, {
 // Etter en wave: erfaring for drapene hans og +2 hvis han står. auto = boten velger talent og doktrine selv.
 function heroAfterWave(ec, sim, auto) {
   let res = null;
-  const hu = ec.hero && sim && sim.units.find(u => u.side === 'p' && u.T.hero);
+  const hu = ec.hero && !ec.hero.fallen && sim && sim.units.find(u => u.side === 'p' && u.T.hero);
   if (hu) {
     let xp = Math.round((sim.heroXp || 0) + (hu.alive ? 2 : 0));
     if (ec.has('akademi')) xp = Math.round(xp * 1.5);
     res = { xp, up: ec.heroGain(xp), alive: hu.alive };
+    if (!hu.alive) res.lost = ec.heroFall();
   }
   if (auto) heroAuto(ec);
   return res;
@@ -2328,12 +2342,13 @@ function heroAuto(ec) {
 // Boter: helten står i hæren uten å være i army-lista (så den aldri selges eller oppgraderes som en vanlig unit).
 function withHero(army, ec) {
   const h = ec && ec.hero;
-  if (!h || army.some(a => a.type === h.type)) return army;
+  if (!h || h.fallen || army.some(a => a.type === h.type)) return army;
   const r = TYPES[h.type].ranged;
   return army.concat([{ type: h.type, col: 7.5, row: r ? 3.5 : 1.5, order: r ? 'follow' : 'advance' }]);
 }
 function heroBot(ec, w) {
   if (!ec.hero && w >= 2 && ec.res.gold >= HERO_COST.gold + 12) ec.recruitHero(anyOf(Object.keys(HERO_CLASSES)));
+  if (ec.hero && ec.hero.fallen && ec.res.gold >= ec.heroReviveCost().gold + 10) ec.heroRevive();
   heroAuto(ec);
 }
 
@@ -3985,6 +4000,7 @@ const Sound = (function () {
     styleWall();
     clearVisuals();
     sim.units.forEach(u => visuals.set(u.id, buildUnit(u)));
+    markFallenHero();
     clearShots();
     buildPlan();
     syncSelection();
@@ -4666,6 +4682,7 @@ const Sound = (function () {
     sim.units.forEach(u => { if (u.side === 'e' && !u.alive) report.bounty += BOUNTY[u.type] || 0; });
     if (r.win) { report.bonus = waveBonus(W.n); ec.add({ gold: report.bonus }); popRes('gold', report.bonus); }
     report.hero = heroAfterWave(ec, sim);
+    if (report.hero && report.hero.lost != null) setTimeout(() => toast(`${HERO_CLASSES[ec.hero.type].name} falt${report.hero.lost ? ` og mistet ${report.hero.lost} erfaring` : ''}. Gjenopplive ham for ${ec.heroReviveCost().gold} gull (Hær-fanen eller Heltehallen).`), 600);
     if (report.hero && report.hero.up) setTimeout(() => toast(`${HERO_CLASSES[ec.hero.type].name} nådde nivå ${ec.heroLevel()}! Velg ${ec.hero.kind === 'path' ? 'retning' : 'talent'}.`), 900);
     setTimeout(maybeChoice, 1800);
     state.lastReport = report;
@@ -5090,16 +5107,22 @@ Object.assign(UP_PIC, {
     if (ec.docOffer) openChoice('doctrine');
     else if (ec.hero && ec.hero.offer) openChoice('talent');
   }
+  // En falt helt står igjen på rutenettet, men er borte fra slagmarken til han er gjenopplivet.
+  function markFallenHero() {
+    const h = state.econ.hero; if (!h || !h.fallen || !sim) return;
+    sim.units.forEach(u => { if (u.side === 'p' && u.type === h.type) { u.alive = false; u.hp = 0; const v = visuals.get(u.id); if (v) v.deadT = 3; } });
+  }
   function heroStripHtml() {
     const ec = state.econ, h = ec.hero;
     if (!h) return `<div class="herostrip"><img alt="" src="${portraits.heroKnight || ''}"><div class="hs-mid"><b>Helt</b><small>Din egen kriger. Tar ingen plass i hæren og blir sterkere for hver wave.</small></div><button type="button" class="hs-go" data-act="heroOpen">Velg helt</button></div>`;
     const lv = ec.heroLevel(), nx = ec.heroNext(), prev = HERO_XP[lv - 2] || 0, pct = nx ? (h.xp - prev) / (nx - prev) * 100 : 100, pend = ec.heroPending();
     const T = ec.types(TYPES)[h.type];
-    return `<div class="herostrip"><img alt="" src="${portraits[h.type] || ''}"><div class="hs-mid"><b>${HERO_CLASSES[h.type].name} · nivå ${lv}</b>
+    return `<div class="herostrip"><img alt="" src="${portraits[h.type] || ''}"${h.fallen ? ' style="filter:grayscale(1) brightness(.6)"' : ''}><div class="hs-mid"><b>${HERO_CLASSES[h.type].name} · nivå ${lv}${h.fallen ? ' · falt' : ''}</b>
       <div class="xpbar" data-tip="${nx ? `Erfaring ${h.xp} av ${nx} til nivå ${lv + 1}` : 'Høyeste nivå'}"><i style="width:${pct}%"></i><span>★ ${lv}</span></div>
       <small>${heroStatLine(T)}</small>
       ${h.path || h.talents.length ? `<div class="chips">${h.path ? `<span class="path">${HERO_PATHS[h.path].name}</span>` : ''}${h.talents.map(id => `<span data-tip="${HERO_TALENTS[id].desc}">${HERO_TALENTS[id].name}</span>`).join('')}</div>` : ''}</div>
-      ${pend > 0 ? `<button type="button" class="hs-go" data-act="heroChoice">Velg${pend > 1 ? ` (${pend})` : ''}</button>` : ''}</div>`;
+      ${h.fallen ? `<small style="color:#f0a59d">Falt i kamp. Gjenopplives for å kjempe igjen.</small>` : ''}</div>
+      ${h.fallen ? buyBtn('Gjenopplive', ec.heroReviveCost(), 'heroRevive') : pend > 0 ? `<button type="button" class="hs-go" data-act="heroChoice">Velg${pend > 1 ? ` (${pend})` : ''}</button>` : ''}</div>`;
   }
   function doctrineHtml() {
     const ec = state.econ, d = ec.docs || [];
@@ -5866,7 +5889,7 @@ Object.assign(UP_PIC, {
     const acts = {
       'worker+': () => ec.addWorker(k), 'worker-': () => ec.removeWorker(k),
       unlock: () => ec.unlockNode(k), expand: () => ec.expandNode(k), deepen: () => ec.deepen(), tools: () => ec.buyTools(),
-      track: () => ec.buyTrack(k), wgear: () => ec.buyWardenGear(k), wtrain: () => ec.trainWarden(), wabil: () => ec.buyWardenAbility(k), wheal: () => ec.healWarden(), heroOpen: () => (openChoice('class'), false), heroChoice: () => (openChoice('talent'), false), docChoice: () => (openChoice('doctrine'), false),
+      track: () => ec.buyTrack(k), wgear: () => ec.buyWardenGear(k), wtrain: () => ec.trainWarden(), wabil: () => ec.buyWardenAbility(k), wheal: () => ec.healWarden(), heroOpen: () => (openChoice('class'), false), heroRevive: () => { if (state.phase !== 'build') { toast('Helten kan gjenopplives i byggefasen.'); return false; } if (!ec.heroRevive()) return false; toast(`${HERO_CLASSES[ec.hero.type].name} er tilbake i hæren.`); return true; }, heroChoice: () => (openChoice('talent'), false), docChoice: () => (openChoice('doctrine'), false),
       barracks: () => ec.buyBarracks(), wall: () => ec.buyWall(), archers: () => ec.buyArchers(), repair: () => ec.repair(),
     };
     if (acts[b.dataset.act] && acts[b.dataset.act]()) {
