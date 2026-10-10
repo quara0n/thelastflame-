@@ -123,3 +123,17 @@
 ## Smartere rival (4. okt, versjon 19)
 
 Computeren velger det den sender ut fra hæren din, husker hva som virket, og sparer opp til store angrep (porten din under 60 %, hæren krympet, ny verden neste wave, eller full sparegris). Samme gull gir ca. 75 % mer trøbbel enn tilfeldige valg. Spillet forteller hvorfor han valgte som han gjorde.
+
+## Bastion med fire sider (10. okt 2026, version 23)
+
+Rune (10. okt): tre nye spillere i tillegg til nord: øst, sør og vest, hver med sin egen arbeiderlandsby, Barracks og resten. Ingen waves på de nye sidene ennå. Finn en skala for Bastion.
+
+- **Ett lag på fire rundt én flamme.** Dette er laget fra «2 lag à 4»: hver spiller holder én himmelretning. Nord er deg. Alle fire portene fører inn til samme citadell, og Warden er lagets konge der.
+- **Hver side har:** sin portal og slagmark rett ut fra byen, sin port med tårn, sitt distrikt (landsby med gruver, Longhouse, Barracks, Forge, Workshop) og egne bannerfarger (nord blå, øst grønn, sør gul, vest rød).
+- **Skala:** avstanden port til flamme er den samme som før (ca. 35 m), og distriktet ditt er like bredt (35 m). Derfor er kampen og balansen helt uendret. Det som er større er muren: den går nå rundt hele byen som et kvadrat på ca. 70 × 70 m (før en stripe på 35 m). Med slagmarkene er kartet ca. 170 m fra portal til portal.
+- **Mellom distriktene:** innerst skrår distriktsmurene inn mot plassen rundt citadellet, så fire distrikter får plass uten å kollidere. I de fire hjørnene ligger gamlebyen (hus, plass til felles bygninger senere). Ringveien går rundt citadellet og binder distriktene sammen; det er veien hjelpere bruker når de går til Warden.
+- **Ledige plasser:** øst, sør og vest står klare med landsby slik den ser ut ved start (gull, tømmer og stein bygget). Skilt over porten: «Øst · ledig plass».
+- **Kamera:** ny knapp «Bastion» viser hele byen ovenfra (også på telefon). Man kan dra og zoome rundt hele byen.
+- **Rivalen** (1 mot 1) har flyttet lenger ut (x = 140), så østsiden din får plass. Kartet i hjørnet ser likt ut som før.
+- **Kode:** `tools/bastion.py`. `SIDES` og `sideToWorld(side, x, z)` i logikken: hver spiller regnes i egne koordinater (portalen mot −z), og `sideToWorld` snur punktet rundt flammen. Det er det 2 mot 2 / 4 mot 4 skal bruke.
+- **Neste:** fylle sidene med spillere (lagkamerater online eller computer), deretter waves på alle fire sider og hjelp ved lekk via ringveien. Motstanderlaget får sin egen Bastion.

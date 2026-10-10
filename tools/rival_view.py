@@ -13,7 +13,7 @@ CSS = """
 
 UI = r"""
   // ---------- Rivalens slagmark: samme oppsett som din, flyttet til siden ----------
-  const RIVAL_X = 90;
+  const RIVAL_X = 140;   // langt nok ut til at Bastionens østside (slagmarken til ca. x = 85) får plass imellom
   const rivalField = (() => {
     const g = new THREE.Group(); g.position.x = RIVAL_X; scene.add(g);
     const gr = mesh(new THREE.PlaneGeometry(70, 116), mats.ground, 0, 0, 12); gr.rotation.x = -Math.PI / 2; gr.receiveShadow = true; gr.castShadow = false; g.add(gr);
@@ -80,7 +80,9 @@ UI = r"""
   }
   // Kart nede i hjørnet: begge basene, alle units som prikker, og hvor kameraet er. Trykk for å flytte dit.
   const mm = document.createElement('canvas'); mm.id = 'minimap'; $('.stage').appendChild(mm);
-  const MM = { x0: -22, x1: RIVAL_X + 22, z0: -30, z1: 56 };
+  const MM = { x0: -22, x1: 112, z0: -30, z1: 56 };
+  // Kartet hopper over tomrommet mellom basene: rivalen tegnes som om han stod på x = 90.
+  const mmx = x => x > RIVAL_X / 2 ? x - RIVAL_X + 90 : x, mmBack = x => x > 45 ? x + RIVAL_X - 90 : x;
   const mmCtx = mm.getContext('2d');
   let mmT = 0;
   function drawMinimap(dt) {
@@ -91,7 +93,7 @@ UI = r"""
     if (mm.width !== W * dpr) { mm.width = W * dpr; mm.height = H * dpr; }
     const c = mmCtx; c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
     // Kartet ligger på siden: x mot høyre, z (fra portal til flamme) nedover.
-    const sx = x => (x - MM.x0) / (MM.x1 - MM.x0) * W, sz = z => (z - MM.z0) / (MM.z1 - MM.z0) * H;
+    const sx = x => (mmx(x) - MM.x0) / (MM.x1 - MM.x0) * W, sz = z => (z - MM.z0) / (MM.z1 - MM.z0) * H;
     const field = (ox, col, label) => {
       c.strokeStyle = col; c.lineWidth = 1; c.strokeRect(sx(ox - 15), sz(-28), sx(ox + 15) - sx(ox - 15), sz(54) - sz(-28));
       c.fillStyle = 'rgba(160,160,170,.5)'; c.fillRect(sx(ox - 15), sz(MAP.gateZ), sx(ox + 15) - sx(ox - 15), 1.5);
@@ -105,7 +107,7 @@ UI = r"""
     const half = cam.dist * 0.42;
     c.strokeStyle = 'rgba(255,255,255,.85)'; c.strokeRect(sx(cam.tx - half * 0.8), sz(cam.tz - half), sx(cam.tx + half * 0.8) - sx(cam.tx - half * 0.8), sz(cam.tz + half) - sz(cam.tz - half));
   }
-  const mmGo = e => { const r = mm.getBoundingClientRect(); const x = MM.x0 + (e.clientX - r.left) / r.width * (MM.x1 - MM.x0), z = MM.z0 + (e.clientY - r.top) / r.height * (MM.z1 - MM.z0); camAnim = null; cam.tx = clampN(x, -20, RIVAL_X + 20); cam.tz = clampN(z, -30, 55); };
+  const mmGo = e => { const r = mm.getBoundingClientRect(); const x = mmBack(MM.x0 + (e.clientX - r.left) / r.width * (MM.x1 - MM.x0)), z = MM.z0 + (e.clientY - r.top) / r.height * (MM.z1 - MM.z0); camAnim = null; cam.tx = clampN(x, -20, RIVAL_X + 20); cam.tz = clampN(z, -30, 55); };
   mm.addEventListener('pointerdown', e => { e.stopPropagation(); mm.setPointerCapture(e.pointerId); mmGo(e); mm._drag = true; });
   mm.addEventListener('pointermove', e => { if (mm._drag) mmGo(e); });
   mm.addEventListener('pointerup', () => { mm._drag = false; });
@@ -132,7 +134,7 @@ def apply(s):
     # Ser du på rivalen, viser linjen øverst hans tall (lilla).
     s = sub(s, "    $('#h-gatebox').classList.toggle('broken', gr <= 0);\n  }",
                "    $('#h-gatebox').classList.toggle('broken', gr <= 0);\n"
-               "    const rs = state.versus && cam.tx > RIVAL_X / 2 ? (state.rival.sim || state.rival.view) : null;\n"
+               "    const rs = state.versus && cam.tx > RIVAL_X - 40 ? (state.rival.sim || state.rival.view) : null;\n"
                "    document.querySelector('.hud-sub').classList.toggle('rivalhud', !!rs);\n"
                "    if (rs) {\n"
                "      $('#h-own').textContent = rs.units.filter(u => u.side === 'p' && u.alive && u.type !== 'warden').length;\n"

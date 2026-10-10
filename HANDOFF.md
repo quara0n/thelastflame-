@@ -123,3 +123,10 @@ Rune (6. okt): flyvere angrep muren mens skytterne sto til høyre; altfor lett; 
 - 1 mot 1 mot computeren: VERSUS.wave 0,47 → 0,5. Bot mot bot er alt-eller-ingenting der (0,55 og over: begge dør på wave 7), så det må prøves av Rune.
 - `game_sim 30` etter alt: 2 av 30 når wave 30; de fleste faller i wave 16–19 (World 1 er lett for boten, World 2 sent er veggen).
 
+
+## 10 Oct 2026 – version 23: Bastion med fire sider
+
+- Rune ba om tre nye sider (øst, sør, vest) med egen landsby og Barracks, uten waves ennå, og en skala for Bastion. Bygget i `tools/bastion.py` (siste steg i build_v2.py). Detaljer i `docs/design-flyvere-assets-flerspiller.md` → «Bastion med fire sider».
+- Port til flamme er uendret (35 m), så balansen er uendret (Sim-koden er ikke rørt, bare `SIDES`/`sideToWorld` lagt til). Muren er nå et kvadrat på ca. 70 m; distriktene skrår inn mot citadellet; gamlebyen i hjørnene.
+- Rivalen flyttet til x = 140 (`tools/rival_view.py`); minikartet hopper over tomrommet.
+- Neste: spillere på sidene (2 mot 2 / 4 mot 4), waves der, hjelp via ringveien.
