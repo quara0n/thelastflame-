@@ -211,3 +211,14 @@ Rune: «gå gjennom og se om det er for vanskelig eller for lett, heller mot van
 - Versjon 31: vanlig bot median wave 15, 7 % når wave 30. Sterk spiller median 19, men wave 9 (Kjemper) stoppet 24 % av dem uansett økonomi, fordi kjempene nå faktisk slår på porten (portfeilen fra versjon 28). Wave 5 (askekråker) stoppet 12 % av vanlige spillere.
 - Endring: wave 9 × 0,85 og wave 5 × 0,9 i `wave_factors.json`. Resten uendret (prøvde å gjøre wave 1–4 30 % tøffere, men da snøballet det: dobbelt så mange tapte på wave 5).
 - Nå: vanlig bot median 15, 7 % når wave 30; sterk spiller median 22, 64 % når wave 20, 10 % når wave 30. Tapene er spredt over wave 8, 15, 19, 22–25 i stedet for én vegg. Det er «vanskelig, men rettferdig».
+
+## 11 Oct 2026 – version 33: flammeskjoldet og Warden som går dit kampen er
+
+Rune: Warden skal gå til den siden der kampen er, og et skjold over flammen (som finnes på grunn av Warden) skal hindre at lekk på én side bare går rett til flammen mens Warden slåss på en annen side. Bygget i `tools/citadel.py` (siste steg i build_v2.py).
+- **Flammeskjoldet:** en gyllen kuppel over citadellet så lenge Warden lever. På sidene der Warden ikke står (og mens han går), stopper fienden ved skjoldet og slår på det; hvert slag tar like mye av Wardens helse, uansett hvor han er. Faller Warden, faller skjoldet. Der Warden står, stopper han dem selv som før (skjoldet holder der også de første 4 s etter at han kommer).
+- **Hvorfor ikke skjold på alle sider:** da ble spill alene mye lettere (boten median wave 19 i stedet for 15, uansett hvor mye slagene kostet Warden). Nå er spill alene som før (360 spill: median 15, snitt 16,9; samme bygg uten skjold: 15 og 16,7).
+- **Warden går selv (Auto)** langs ringveien til siden med verst trussel (fiender ved skjoldet teller 4, fiender innenfor muren 1–3 etter hvor nær flammen de er). Bytter bare når den andre siden er minst 1,6 × + 2 verre, og etter minst 2 s. Ca. 5 s til nabosiden, 10 s til motsatt side. Evneknappene virker der han står. Toasts: når han bytter side, første slag på skjoldet fra en side, når han faller.
+- **Lagkamerater (test):** Send-fanen → «Lagkamerater på øst, sør og vest (computer)», før wave 1. Computeren holder de tre andre sidene med samme waves og rivalboten (sender ingenting). Alle sidene kjøres i takt; waven er over når hele laget er ferdig; taper én side, taper laget. Rivalen kan være på samtidig.
+- **Målt** (`node tools/team_sim.js 60 …`, fire boter rundt én flamme): Warden som går + skjold: snitt wave 9,4 (median 8); Warden fast i nord med skjold: 6,5; slik det var (fast, uten skjold): 6,1. Lag på fire boter faller tidlig fordi én svak side er nok.
+- Ikke bygget: «Kall Warden»-knapp (en spiller ber ham komme), soldater som går til Warden når egen wave er ferdig (låst regel fra 3. okt), online lagspill.
+

@@ -163,5 +163,7 @@ import village
 s = village.apply(s)
 import hud
 s = hud.apply(s)
+import citadel
+s = citadel.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))
