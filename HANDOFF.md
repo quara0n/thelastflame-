@@ -195,3 +195,12 @@ Runes tilbakemelding etter å ha spilt versjon 27 (`tools/hardmode.py`, siste st
 - Senere samme dag: slagmarksbilder for øst, sør og vest (`docs/art/slagmark-*.png`), samme HUD som nord. Lagret som referanse, ikke bygget.
 - Ikke bygget ennå fra slagmarksbildet: snø i nord, unitkort-rad nede til venstre, mål-boks oppe til høyre. Mulig neste.
 
+## 11 Oct 2026 – version 31: skjermoppsett etter slagmarksbildene
+
+- Rune valgte skjermoppsettet først (før snø og slagmarksutseende). Bygget i `tools/hud.py` (siste steg i build_v2.py).
+- **Skjold** oppe til venstre ved ressursene, med sidens merke (hjort i nord).
+- **Målboks** oppe til høyre: «Forsvar Nord» (på de andre sidene landets navn), fase, wave, tid, forsvarere/fiender og porten. Samme tall som før, samlet i én boks.
+- **Unitkort** nede til venstre: ett kort per type i hæren med bilde, antall, høyeste nivå (▲) og samlet helse som synker i kampen (rød under 35 %). Trykk velger alle av typen. Telefon: inntil 5 kort, PC: 7; flere typer gir et «+N»-kort som åpner Hær-fanen. Kortene skjules når ordrelinjen er åpen; Warden-evnene ligger over kortene.
+- Bare skjerm; balansen er uendret.
+- Neste mulig: snø i nord og slagmarker som ligner bildene for øst, sør og vest.
+
