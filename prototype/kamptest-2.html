@@ -1027,7 +1027,7 @@ const WAVES = [
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.315, 0.557, 0.265, 0.133, 0.567, 0.352, 0.447, 0.519, 0.323, 0.5, 0.534, 0.222, 0.531, 0.189, 0.437, 0.226, 0.51, 0.242, 0.305, 0.112, 0.377, 0.293, 1.007, 0.408, 0.161, 0.159, 0.211, 0.147, 0.226, 0.209];
+const WAVE_FACTOR = [0.315, 0.557, 0.265, 0.133, 0.51, 0.352, 0.447, 0.519, 0.275, 0.5, 0.534, 0.222, 0.531, 0.189, 0.437, 0.226, 0.51, 0.242, 0.305, 0.112, 0.377, 0.293, 1.007, 0.408, 0.161, 0.159, 0.211, 0.147, 0.226, 0.209];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};

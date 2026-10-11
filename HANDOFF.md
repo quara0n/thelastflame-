@@ -204,3 +204,10 @@ Runes tilbakemelding etter å ha spilt versjon 27 (`tools/hardmode.py`, siste st
 - Bare skjerm; balansen er uendret.
 - Neste mulig: snø i nord og slagmarker som ligner bildene for øst, sør og vest.
 
+
+## 11 Oct 2026 – version 32: vanskelighetssjekk
+
+Rune: «gå gjennom og se om det er for vanskelig eller for lett, heller mot vanskelig». Målt med `game_sim.js` (160 spill) og en «sterk spiller» (samme bot med 25 % raskere innsamling, ekstra kode `Econ.prototype.rate × 1,25`).
+- Versjon 31: vanlig bot median wave 15, 7 % når wave 30. Sterk spiller median 19, men wave 9 (Kjemper) stoppet 24 % av dem uansett økonomi, fordi kjempene nå faktisk slår på porten (portfeilen fra versjon 28). Wave 5 (askekråker) stoppet 12 % av vanlige spillere.
+- Endring: wave 9 × 0,85 og wave 5 × 0,9 i `wave_factors.json`. Resten uendret (prøvde å gjøre wave 1–4 30 % tøffere, men da snøballet det: dobbelt så mange tapte på wave 5).
+- Nå: vanlig bot median 15, 7 % når wave 30; sterk spiller median 22, 64 % når wave 20, 10 % når wave 30. Tapene er spredt over wave 8, 15, 19, 22–25 i stedet for én vegg. Det er «vanskelig, men rettferdig».
