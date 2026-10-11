@@ -148,3 +148,25 @@ Rune (10. okt): trærne på høyre side skal være grønnere, havet ligger mot v
 - **Vest, Havbryn:** havet. Sandstrand innenfor muren, en landtunge ut til en klippeøy der portalen står, brygger, seilbåter som gynger, bølger som ruller inn og et fyrtårn med lys som sveiper over vannet. Blågrå murer.
 - Hver side har murer, distriktsgulv og hus i hjørnekvartalet i sine egne farger. Skiltene over portene viser navnet, f.eks. «Øst · Grønnlund · ledig plass».
 - Bare utseende: kampen og balansen er uendret. Kode: `tools/biomes.py`.
+
+## Landsbyen etter konseptbildet (11. okt 2026, version 29)
+
+Rune delte `docs/art/landsby-konsept.png` som retning for landsbyen. Oppsettet er låst slik:
+
+- Porten øverst, citadellet med flammen nederst, en lys steinvei med fakler og bannere mellom dem.
+- Venstre for veien: Longhouse (nær porten) og Barracks. Høyre: Forge (nær porten, høy pipe) og Workshop.
+- Langs kanten: gull og tømmer til venstre, jern, stein og kull til høyre (ovenfra og ned).
+- **Hver spiller ser sin egen side opp.** Står du på vest, snus kameraet slik at din port er øverst og alt ligger på samme plass som for nord.
+- De andre sidene følger samme prinsipp, men med eget utseende og egne navn:
+
+| Side | Longhouse | Barracks / Forge / Workshop | Merke | Utseende (Runes bilder) |
+| --- | --- | --- | --- | --- |
+| Nord (Askemyr) | Longhouse | samme navn | hjort | mørkt tre, mørkeblå bannere, snø og furu |
+| Øst Grønnlund | Roothall | samme navn | tre | røtter og grønne bladtak, mørkegrønne bannere, eføy på muren |
+| Sør Lysheim | Sanctum | samme navn | stjerne | hvit marmor med gull, mørkeblå tak, engler ved porten og citadellet |
+| Vest Havbryn | Tidehall | samme navn | anker | sjøbuer med blå tak, brygger og garn, mørkeblå bannere, måker |
+
+Bildene: `docs/art/landsby-konsept.png` (nord), `landsby-ost-gronnlund.png`, `landsby-sor-lysheim.png`, `landsby-vest-havbryn.png`, og slagmarkene: `slagmark-nord.png` (snø, furu, fakler og gjerder langs kantene), `slagmark-ost-gronnlund.png` (skoglysning med fosser og kjempetrær, port innfelt i røtter, «Defend the Grove»), `slagmark-sor-lysheim.png` (marmorplass med gullmønster blant skyslott og buebroer, engler ved porten, gullport) og `slagmark-vest-havbryn.png` (stormfull kyst med vrak, brygger og fyrtårn, «Defend the Coast»). Alle har samme oppsett: portalen øverst, port og tropp nederst, unitkort nede til venstre, minikart nede til høyre, målboks oppe til høyre («Defend the …»).
+
+Navnene kommer fra Runes bilder (11. okt). Senere: egne modeller per side (i dag samme modeller med sidens farger og merke).
+

@@ -174,3 +174,33 @@ Runes tilbakemelding etter å ha spilt versjon 27 (`tools/hardmode.py`, siste st
 - **Landsby:** Kullmile (6 tømmer → 1 kull hvert 15. s per nivå) og Smelteovn (5 stein → 1 jern). Overskuddet av tømmer og stein kan nå bli kull og jern.
 - **Waves:** `tune_waves.js` med lavere mål (se TARGET), deretter wave 1–10 × 1,05 og 11–30 × 1,12 fordi tuneren ga for lette sene waves (hærene i tuner-løpene krympet). 90 spill: median wave 15, 5 av 90 når wave 30 (versjon 27: 18 og 11 av 120). Tier 2 rundt wave 7.
 - Neste: Rune skal spille. Ideer for muren som ikke er bygget: brannpiler, trebuchet, pigger foran porten (i designnotatet).
+
+## 11 Oct 2026 – version 29: landsbyen etter konseptbildet, hver side ser sin egen landsby opp
+
+- Rune delte et konseptbilde av landsbyen (`docs/art/landsby-konsept.png`) og vil ha det som retning: porten øverst, lys steinvei med fakler og blå bannere ned mot citadellet, Longhouse og Barracks til venstre, Forge og Workshop til høyre, gull og tømmer langs venstre kant, jern, stein og kull langs høyre.
+- Bygget i `tools/village.py` (siste steg i build_v2.py): hus med gavltak, dør og lyse vinduer; gruver med kran, vogner, skinner og stokker; belagte plasser; bannere på muren; glødepanner ved porten; røyk fra smia; vannhjul ved Workshop. Jern og stein har byttet plass. Nord har mørkeblå bannere og varm jord.
+- **Hver side ser sin landsby opp:** kameraet snur seg etter siden (`MY_SIDE`, i dag alltid nord). Porten er alltid øverst og alt ligger likt. «Se landsbyen fra» Nord/Øst/Sør/Vest i Landsby-fanen viser hvordan det ser ut for spilleren på den siden.
+- **Samme oppsett, eget utseende og egne navn per side** (navnene kan byttes): Øst Grønnlund – Tinghall, Jegerleir, Rotsmie, Treverksted (mosegrønne tak, grønne bannere). Sør Lysheim – Lystempel, Lysgarde, Solsmie, Stjerneverksted (hvit marmor, gulltak). Vest Havbryn – Havhall, Sjøgarde, Ankersmie, Verft (grå tre, skiferblå tak, havblå bannere).
+- Navneskiltene er større, med ikon, og holdes innenfor skjermen på telefon (låste gruver viser 🔒 på telefon).
+- Bare utseende og kamera; kampen og balansen er uendret. Tegnekall: Bastion-oversikten ca. 950 (før 777), landsbyen ca. 310 (før 145), slagmarken 250 (før 225).
+- Neste mulig: egne modeller per side (ikke bare farger), at også slagmarken snus når flerspiller gir deg en annen side enn nord.
+
+## 11 Oct 2026 – version 30: Runes bilder for hver side og slagmarken
+
+- Rune sendte referansebilder: vest Havbryn (`docs/art/landsby-vest-havbryn.png`, ankerbannere, Tidehall), øst Grønnlund (`landsby-ost-gronnlund.png`, trebannere, Roothall), sør Lysheim (`landsby-sor-lysheim.png`, hvit marmor, gull, engler, Sanctum) og slagmarken i nord (`slagmark-nord.png`: portalen øverst, porten med troppen nederst, unitkort nede til venstre, minikart nede til høyre, mål oppe til høyre).
+- **Navn fra bildene:** Longhouse heter Roothall (øst), Sanctum (sør) og Tidehall (vest). Barracks, Forge og Workshop heter det samme på alle sider. Forslagene fra versjon 29 (Tinghall, Jegerleir osv.) er droppet.
+- **Merker på bannerne:** hjort i nord, tre i øst, stjerne i sør, anker i vest. Mørkeblå bannere i nord, sør og vest, mørkegrønne i øst. Sør har mørkeblå tak og gullmerker (før gulltak); vest har varmt tre og blå tak.
+- Bannere med merke på porttårnene (begge sider), glødepanner på muren, fakler med gjerde langs kantene av slagmarken, engler på porttårnene og ved enden av veien i Lysheim.
+- Bare utseende; balansen er uendret.
+- Senere samme dag: slagmarksbilder for øst, sør og vest (`docs/art/slagmark-*.png`), samme HUD som nord. Lagret som referanse, ikke bygget.
+- Ikke bygget ennå fra slagmarksbildet: snø i nord, unitkort-rad nede til venstre, mål-boks oppe til høyre. Mulig neste.
+
+## 11 Oct 2026 – version 31: skjermoppsett etter slagmarksbildene
+
+- Rune valgte skjermoppsettet først (før snø og slagmarksutseende). Bygget i `tools/hud.py` (siste steg i build_v2.py).
+- **Skjold** oppe til venstre ved ressursene, med sidens merke (hjort i nord).
+- **Målboks** oppe til høyre: «Forsvar Nord» (på de andre sidene landets navn), fase, wave, tid, forsvarere/fiender og porten. Samme tall som før, samlet i én boks.
+- **Unitkort** nede til venstre: ett kort per type i hæren med bilde, antall, høyeste nivå (▲) og samlet helse som synker i kampen (rød under 35 %). Trykk velger alle av typen. Telefon: inntil 5 kort, PC: 7; flere typer gir et «+N»-kort som åpner Hær-fanen. Kortene skjules når ordrelinjen er åpen; Warden-evnene ligger over kortene.
+- Bare skjerm; balansen er uendret.
+- Neste mulig: snø i nord og slagmarker som ligner bildene for øst, sør og vest.
+

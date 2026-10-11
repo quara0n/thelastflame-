@@ -343,6 +343,14 @@ td:first-child { font-family: var(--body); }
 .unit.locked .u-add { color: var(--muted); }
 .toast { position: absolute; left: 50%; top: 118px; transform: translateX(-50%); background: rgba(18, 23, 32, .95); border: 1px solid var(--flame); color: var(--fg); padding: 7px 14px; border-radius: 8px; font-size: 13px; z-index: 6; max-width: calc(100% - 24px); text-align: center; }
 .labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.lbl.vl { display: flex; align-items: center; gap: 5px; font-size: 13px; padding: 3px 9px 3px 6px; background: rgba(18, 14, 10, .86); border: 1px solid rgba(226, 181, 74, .55); border-radius: 6px; box-shadow: 0 2px 6px rgba(0, 0, 0, .45); }
+.lbl.vl i { font-style: normal; font-size: 14px; line-height: 1; }
+.lbl.vl small { font-size: 11px; font-weight: 500; opacity: .75; margin-left: 2px; }
+@media (max-width: 600px) { .lbl.vl { font-size: 12px; padding: 2px 7px 2px 5px; gap: 4px; } .lbl.vl i { font-size: 12px; } }
+.vside { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 12px; }
+.vside > span { font-size: 12px; opacity: .75; margin-right: 2px; }
+.vside button { min-height: 34px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--fg); font: inherit; font-size: 13px; cursor: pointer; }
+.vside button.on { border-color: #e2b54a; color: #e2b54a; }
 .lbl { position: absolute; left: 0; top: 0; font-size: 11px; font-weight: 600; white-space: nowrap; background: rgba(11, 14, 20, .72); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; color: var(--fg); }
 .bpop { position: absolute; right: 12px; top: 128px; width: min(320px, calc(100% - 24px)); max-height: calc(100% - 200px); overflow-y: auto; background: rgba(18, 23, 32, .97); border: 1px solid var(--line); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 12px 32px rgba(0, 0, 0, .5); z-index: 5; }
 .bpop .card { background: transparent; border: 0; padding: 0; }
@@ -549,6 +557,49 @@ button.tier-h:hover b { text-decoration: underline; }
   .bpop { top: 96px; max-height: calc(100% - 110px); }
 }
 
+/* Skjermoppsett etter slagmarksbildene (hud.py): skjold, målboks, unitkort. */
+.hud { justify-content: flex-start; }
+.hud-r { margin-left: auto; }
+.crest { flex: none; width: 42px; height: 50px; filter: drop-shadow(0 3px 6px rgba(0, 0, 0, .55)); pointer-events: none; }
+.goalbox { background: rgba(16, 13, 10, .86); border: 1px solid rgba(226, 181, 74, .5); border-radius: 9px; padding: 7px 11px 8px; display: flex; flex-direction: column; gap: 3px; min-width: 210px; box-shadow: 0 6px 18px rgba(0, 0, 0, .45); backdrop-filter: blur(4px); }
+.goal-h { display: flex; align-items: center; gap: 7px; font-family: var(--display); font-size: 15px; letter-spacing: .03em; color: #ecc970; border-bottom: 1px solid rgba(226, 181, 74, .25); padding-bottom: 4px; margin-bottom: 2px; }
+.goal-h i { font-style: normal; font-size: 12px; }
+.goalbox .hud-main, .goalbox .hud-sub { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 3px; }
+.goalbox .pill, .goalbox .pill.big { background: none; border: 0; border-radius: 0; padding: 0; backdrop-filter: none; font-size: 12.5px; gap: 7px; justify-content: flex-start; }
+.goalbox .pill::before { content: '◇'; color: #e2b54a; font-size: 10px; }
+.goalbox .pill.phase { font-size: 10.5px; }
+.goalbox .pill.phase::before { content: none; }
+.goalbox .pill.big b { font-size: 13px; }
+.goalbox .gatebar { flex: 1; min-width: 50px; }
+.goalbox #h-gatebox.broken::before { color: var(--enemy); }
+.ucards { position: absolute; left: 12px; bottom: 12px; display: flex; gap: 6px; z-index: 5; }
+.ordermenu:not([hidden]) ~ .ucards { display: none; }
+.ucd { position: relative; width: 62px; padding: 0; border: 1px solid #5a4630; border-radius: 7px; background: #120f0c; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0, 0, 0, .5); }
+.ucd img { width: 100%; height: 62px; object-fit: cover; object-position: 50% 28%; background: radial-gradient(circle at 50% 35%, #2c3646, #12161e); display: block; }
+.ucd .ucn { position: absolute; top: 2px; right: 3px; font: 600 11px var(--mono); color: #fff; text-shadow: 0 1px 2px #000; }
+.ucd .ucl { position: absolute; left: 3px; top: 44px; font-size: 9px; color: #ffd76a; letter-spacing: -1px; text-shadow: 0 1px 2px #000; }
+.ucd .uchp { display: block; height: 6px; background: #1d1a16; }
+.ucd .uchp b { display: block; height: 100%; background: linear-gradient(90deg, #3e9a3a, #8fd16a); transition: width .2s; }
+.ucd.low .uchp b { background: linear-gradient(90deg, #a8321f, #e0724a); }
+.ucd.sel { border-color: #f4efe6; box-shadow: 0 0 0 1px #f4efe6, 0 4px 12px rgba(0, 0, 0, .5); }
+.ucd.more { justify-content: center; align-items: center; color: var(--muted); font: 600 13px var(--mono); min-height: 68px; }
+.stage.has-cards .hint { display: none; }
+.stage.has-cards .abilbar { bottom: 90px; }
+@media (max-width: 600px) {
+  .crest { width: 30px; height: 36px; }
+  .goalbox { min-width: 0; padding: 4px 8px 5px; gap: 1px; }
+  .goal-h { font-size: 12px; padding-bottom: 2px; }
+  .goalbox .pill, .goalbox .pill.big { font-size: 11px; gap: 5px; }
+  .goalbox .pill.big b { font-size: 11.5px; }
+  .goalbox .pill.phase { font-size: 9.5px; }
+  .ucards { left: 6px; bottom: 6px; gap: 4px; }
+  .ucd { width: 46px; }
+  .ucd img { height: 46px; }
+  .ucd .ucl { top: 32px; }
+  .ucd .uchp { height: 5px; }
+  .ucd.more { min-height: 51px; }
+  .stage.has-cards .abilbar { bottom: 66px; }
+}
 </style>
 
 <div class="app">
@@ -589,6 +640,7 @@ button.tier-h:hover b { text-decoration: underline; }
     </div>
 
     <div class="tabpane" id="pane-village" hidden>
+      <div class="vside" id="vside"><span>Se landsbyen fra</span><button type="button" data-vs="0" class="on">Nord</button><button type="button" data-vs="1">Øst</button><button type="button" data-vs="2">Sør</button><button type="button" data-vs="3">Vest</button></div>
       <div id="longhouse"></div>
       <div class="nodes" id="nodes"></div>
     </div>
@@ -616,11 +668,14 @@ button.tier-h:hover b { text-decoration: underline; }
   <main class="stage">
     <div id="view"></div>
     <div class="hud">
+      <span id="crest"></span>
       <div class="hud-l" aria-label="Ressurser">
         <div class="res-grid" id="resgrid"></div>
         <div class="res-foot" id="resfoot"></div>
       </div>
       <div class="hud-r">
+        <div class="goalbox">
+        <div class="goal-h"><i>◇</i><b id="goal-title">Forsvar Nord</b></div>
         <div class="hud-main">
           <div class="pill phase" id="phase">Byggefase</div>
           <div class="pill big">Wave <b id="h-wave">1/10</b></div>
@@ -629,6 +684,7 @@ button.tier-h:hover b { text-decoration: underline; }
         <div class="hud-sub">
           <div class="pill"><span class="own">Forsvarere <b id="h-own">0</b></span><span class="foe-c">Fiender <b id="h-foe">0</b></span></div>
           <div class="pill" id="h-gatebox"><span id="h-gate">Port 600</span><span class="gatebar"><i id="h-gatefill"></i></span></div>
+        </div>
         </div>
         <div class="camjump">
       <button type="button" id="cam-field">Slagmark</button><button type="button" id="cam-rival">Rival</button><button type="button" id="cam-bastion">Bastion</button><button type="button" id="cam-village">Landsby</button><button type="button" id="cam-flame">Flammen</button><button type="button" id="snd-music" title="Slå musikken av eller på (M)">♪ Musikk på</button><button type="button" id="snd-sfx" title="Slå lydeffektene av eller på">🔊 Lyd på</button>
@@ -3054,31 +3110,148 @@ const Sound = (function () {
   const STORES = { L: { x: -6.2, z: 18.6 }, R: { x: 6.2, z: 18.6 } };
   const NODE_POS = {
     gold:   { x: -13.4, z: 19.8, store: 'L' }, timber: { x: -13, z: 27, store: 'L' },
-    stone:  { x: 13.4, z: 19.8, store: 'R' }, iron: { x: 13, z: 27, store: 'R' }, coal: { x: 13.4, z: 33.2, store: 'R' },
+    iron:   { x: 13.4, z: 19.8, store: 'R' }, stone: { x: 13, z: 27, store: 'R' }, coal: { x: 13.4, z: 33.2, store: 'R' },
   };
   // Alt som kan klikkes i landsbyen.
   const pickRoots = [];
   function pickable(obj, key) { obj.userData.bkey = key; pickRoots.push(obj); return obj; }
   gateTowers.forEach(t => pickable(t, 'gatehouse')); pickable(gate, 'gatehouse');
   citadelParts.forEach(o => pickable(o, 'sanctum'));
+  // Materialer som får sidens farge i kopiene (village.py): vkey sier hvilken rolle de har.
+  const vtag = (m, k) => { m.userData.vkey = k; return m; };
+  vtag(vm.plank, 'plank'); vtag(vm.roof, 'roof'); vtag(vm.banner, 'banner'); vtag(vm.leaf, 'leaf'); vtag(vm.timber, 'wood');
+  vm.banner.color.setHex(0x22325a);   // Nord: mørkeblå bannere som på bildet
+  const VD = {
+    pave: vtag(M(0x887f70, { roughness: 0.95 }), 'pave'), seam: vtag(M(0x5e574d, { roughness: 1 }), 'seam'),
+    wood: vtag(M(0x5e4430, { roughness: 0.9 }), 'wood'), woodDark: vtag(M(0x3a291c), 'wood'),
+    emblem: vtag(M(0xd9c79a, { roughness: 0.6, emissive: 0x2a2010 }), 'emblem'),
+    fire: vtag(new THREE.MeshBasicMaterial({ color: 0xffa23a }), 'fire'), fireCore: new THREE.MeshBasicMaterial({ color: 0xfff0c0 }),
+    glow: vtag(new THREE.MeshBasicMaterial({ color: 0xff9a3a, transparent: true, opacity: 0.16, depthWrite: false, blending: THREE.AdditiveBlending }), 'fire'),
+    window: vtag(M(0x2a1606, { emissive: 0xffa94a, emissiveIntensity: 1.3 }), 'window'), dark: M(0x0b0908, { roughness: 1 }),
+    tarp: vtag(M(0x2e4c78, { side: THREE.DoubleSide }), 'tarp'), canvas: vtag(M(0xd8d0bc, { side: THREE.DoubleSide }), 'canvas'),
+    smoke: new THREE.MeshBasicMaterial({ color: 0x8e8c88, transparent: true, opacity: 0.32, depthWrite: false }),
+    rail: M(0x3a3a3e, { metalness: 0.5, roughness: 0.5 }), block: vtag(M(0xc9c6bf, { roughness: 0.85 }), 'block'),
+    ore: vtag(M(0x5d6470, { roughness: 0.8 }), 'ore'), oreDark: M(0x3c4049, { roughness: 0.8 }), chimney: vtag(M(0x5a5650, { roughness: 0.95 }), 'stone'),
+  };
+  // Mange små deler slås sammen til én mesh per materiale, så telefonen holder følge (færre tegnekall).
+  // Det som beveger seg (røyk, hjul, bannere) holdes utenfor.
+  function mergeGroup(root) {
+    root.updateMatrixWorld(true);
+    const inv = new THREE.Matrix4().copy(root.matrixWorld).invert(), buckets = new Map(), used = [];
+    root.traverse(o => {
+      if (!o.isMesh || o.isInstancedMesh) return;
+      for (let p = o; p && p !== root; p = p.parent) if (p.userData.smoke != null || p.userData.spin || p.userData.wave) return;
+      const key = o.material.uuid + (o.castShadow ? '+' : '-');
+      if (!buckets.has(key)) buckets.set(key, { mat: o.material, cast: o.castShadow, list: [] });
+      buckets.get(key).list.push(o); used.push(o);
+    });
+    const mtx = new THREE.Matrix4();
+    buckets.forEach(b => {
+      if (b.list.length < 2) return;
+      const pos = [], nor = [];
+      b.list.forEach(o => {
+        const geo = (o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone());
+        geo.applyMatrix4(mtx.multiplyMatrices(inv, o.matrixWorld));
+        pos.push(geo.attributes.position.array); nor.push(geo.attributes.normal.array);
+        o.parent.remove(o);
+      });
+      const cat = arrs => { const n = arrs.reduce((a, x) => a + x.length, 0), out = new Float32Array(n); let k = 0; arrs.forEach(x => { out.set(x, k); k += x.length; }); return out; };
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(cat(pos), 3)); geo.setAttribute('normal', new THREE.BufferAttribute(cat(nor), 3));
+      const m = new THREE.Mesh(geo, b.mat); m.castShadow = b.cast; m.receiveShadow = true; root.add(m);
+    });
+    return root;
+  }
+  // Gavltak: en trekant i x-retning, strukket langs z.
+  function gable(span, h, len, mat) {
+    const sh = new THREE.Shape(); sh.moveTo(-span / 2, 0); sh.lineTo(span / 2, 0); sh.lineTo(0, h); sh.lineTo(-span / 2, 0);
+    const geo = new THREE.ExtrudeGeometry(sh, { depth: len, bevelEnabled: false }); geo.translate(0, 0, -len / 2);
+    return mesh(geo, mat);
+  }
+  // Hus som på bildet: gavltak med utstikk langs den lengste siden, dør og lyse vinduer mot kameraet (+z).
   function house(x, z, w, d, h, roofMat, bodyMat) {
-    const g = new THREE.Group();
+    const g = new THREE.Group(), long = d > w;
     g.add(mesh(new THREE.BoxGeometry(w, h, d), bodyMat || vm.plank, 0, h / 2, 0));
-    const roof = mesh(new THREE.ConeGeometry(Math.max(w, d) * 0.75, h * 0.8, 4), roofMat || vm.roof, 0, h + h * 0.4, 0);
-    roof.rotation.y = Math.PI / 4; roof.scale.set(w / Math.max(w, d), 1, d / Math.max(w, d));
-    g.add(roof); g.position.set(x, 0, z);
+    const roof = gable((long ? w : d) + 0.5, h * 0.8, (long ? d : w) + 0.4, roofMat || vm.roof);
+    roof.position.y = h; if (!long) roof.rotation.y = Math.PI / 2; g.add(roof);
+    g.add(mesh(new THREE.BoxGeometry(w + 0.08, 0.14, d + 0.08), VD.woodDark, 0, 0.07, 0));
+    g.add(mesh(new THREE.BoxGeometry(Math.min(0.7, w * 0.22), h * 0.62, 0.06), VD.woodDark, 0, h * 0.31, d / 2 + 0.03));
+    [-1, 1].forEach(sd => g.add(mesh(new THREE.BoxGeometry(0.34, 0.3, 0.05), VD.window, sd * w * 0.3, h * 0.58, d / 2 + 0.03)));
+    g.position.set(x, 0, z);
     return g;
   }
   Object.values(STORES).forEach(p => village.add(pickable(house(p.x, p.z, 3, 2.2, 1.4), 'longhouse')));
   village.add(pickable(house(-5.2, 23.4, 2.4, 3.8, 1.7), 'longhouse'));   // Longhouse
+  // Ressursene som på bildet: gullhaug med kran, tømmerleir med stokker og telt, jerngruve og kullgruve
+  // med inngang, skinner og vogner, steinbrudd med blokker og løftekran. Gjerde mot veien.
   function nodeModel(k) {
-    const g = new THREE.Group();
-    if (k === 'gold') { g.add(mesh(new THREE.DodecahedronGeometry(1.4), mats.rock, 0, 0.8, 0)); for (let i = 0; i < 5; i++) g.add(mesh(new THREE.OctahedronGeometry(0.28), vm.gold, Math.cos(i * 1.3) * 0.9, 0.6 + (i % 2) * 0.5, Math.sin(i * 1.3) * 0.9)); }
-    if (k === 'timber') { for (let i = 0; i < 5; i++) { const t = new THREE.Group(); t.add(mesh(new THREE.CylinderGeometry(0.12, 0.16, 1.2, 6), vm.timber, 0, 0.6, 0), mesh(new THREE.ConeGeometry(0.7, 1.9, 7), vm.leaf, 0, 1.9, 0)); t.position.set(Math.cos(i * 1.7) * 1.4, 0, Math.sin(i * 1.7) * 1.1); g.add(t); } }
-    if (k === 'stone') { for (let i = 0; i < 6; i++) g.add(mesh(new THREE.BoxGeometry(0.8, 0.5 + (i % 3) * 0.3, 0.8), vm.stoneB, (i % 3 - 1) * 0.9, 0.3, Math.floor(i / 3) * 0.9 - 0.4)); }
-    if (k === 'iron') { g.add(mesh(new THREE.DodecahedronGeometry(1.2), vm.ironOre, 0, 0.7, 0)); g.add(mesh(new THREE.BoxGeometry(1.2, 1.1, 0.2), vm.plank, 0, 0.55, 1.05)); }
-    if (k === 'coal') { g.add(mesh(new THREE.ConeGeometry(1.3, 1.1, 8), vm.coalHeap, 0, 0.55, 0)); g.add(mesh(new THREE.ConeGeometry(0.8, 0.8, 7), vm.coalHeap, 1.1, 0.4, 0.5)); }
-    return g;
+    const g = new THREE.Group(), add = (geo, mat, x, y, z) => { const m = mesh(geo, mat, x, y, z); g.add(m); return m; };
+    const fence = (x0, z0, x1, z1) => {
+      const len = Math.hypot(x1 - x0, z1 - z0), a = Math.atan2(x1 - x0, z1 - z0), n = Math.max(2, Math.round(len / 1.1));
+      for (let i = 0; i <= n; i++) add(new THREE.BoxGeometry(0.1, 0.6, 0.1), VD.wood, x0 + (x1 - x0) * i / n, 0.3, z0 + (z1 - z0) * i / n);
+      [0.22, 0.46].forEach(y => { const r = add(new THREE.BoxGeometry(0.05, 0.06, len), VD.wood, (x0 + x1) / 2, y, (z0 + z1) / 2); r.rotation.y = a; });
+    };
+    const mine = (x, z) => {   // gruveinngang: to stolper, overligger og mørk åpning, skinner ut
+      add(new THREE.BoxGeometry(1.1, 1.0, 0.3), VD.dark, x, 0.5, z);
+      [-1, 1].forEach(sd => add(new THREE.BoxGeometry(0.16, 1.2, 0.16), VD.wood, x + sd * 0.62, 0.6, z + 0.12));
+      add(new THREE.BoxGeometry(1.5, 0.18, 0.2), VD.wood, x, 1.24, z + 0.12);
+      [-1, 1].forEach(sd => add(new THREE.BoxGeometry(0.05, 0.04, 2.2), VD.rail, x + sd * 0.3, 0.03, z + 1.3));
+    };
+    const cart = (x, z, mat) => {
+      add(new THREE.BoxGeometry(0.7, 0.4, 0.9), VD.woodDark, x, 0.36, z);
+      add(new THREE.DodecahedronGeometry(0.3), mat, x, 0.6, z).scale.set(1, 0.6, 1.2);
+      [-1, 1].forEach(sd => add(new THREE.CylinderGeometry(0.13, 0.13, 0.06, 8), VD.rail, x + sd * 0.36, 0.14, z).rotation.z = Math.PI / 2);
+    };
+    if (k === 'gold') {
+      add(new THREE.DodecahedronGeometry(1.3), mats.rock, 0.2, 0.6, -0.4).scale.set(1.3, 0.85, 1);
+      for (let i = 0; i < 7; i++) add(new THREE.OctahedronGeometry(0.22 + (i % 3) * 0.08), vm.gold, Math.cos(i * 1.1) * 1.0, 0.75 + (i % 2) * 0.45, -0.3 + Math.sin(i * 1.1) * 0.6);
+      add(new THREE.ConeGeometry(0.8, 0.5, 9), vm.gold, 0.9, 0.25, 0.9);
+      // Løftekran av tre.
+      [-1, 1].forEach(sd => add(new THREE.BoxGeometry(0.12, 2.6, 0.12), VD.wood, -1.5 + sd * 0.4, 1.25, -0.6).rotation.z = sd * 0.16);
+      add(new THREE.BoxGeometry(0.12, 0.12, 2.2), VD.wood, -1.5, 2.45, 0.1);
+      add(new THREE.BoxGeometry(0.03, 1.2, 0.03), VD.rail, -1.5, 1.8, 1.1);
+      add(new THREE.BoxGeometry(0.4, 0.3, 0.4), VD.woodDark, -1.5, 1.1, 1.1);
+      add(new THREE.BoxGeometry(0.5, 0.4, 0.5), vm.crate, -0.6, 0.2, 1.3);
+      fence(-2.2, 2.0, 1.8, 2.0);
+    }
+    if (k === 'timber') {
+      for (let i = 0; i < 5; i++) {
+        const t = new THREE.Group(), s = 0.85 + (i % 3) * 0.2;
+        t.add(mesh(new THREE.CylinderGeometry(0.12, 0.17, 1.0, 6), vm.timber, 0, 0.5, 0), mesh(new THREE.ConeGeometry(0.85, 1.6, 7), vm.leaf, 0, 1.6, 0), mesh(new THREE.ConeGeometry(0.62, 1.3, 7), vm.leaf, 0, 2.4, 0));
+        t.scale.setScalar(s); t.position.set(-1.6 + Math.cos(i * 1.9) * 1.1, 0, -1.0 + Math.sin(i * 1.9) * 0.9); g.add(t);
+      }
+      // Stokker i en stabel, et telt og en kubbe med øks.
+      for (let i = 0; i < 6; i++) { const r = i < 3 ? 0 : i < 5 ? 1 : 2, c = i < 3 ? i : i < 5 ? i - 3 : 0; add(new THREE.CylinderGeometry(0.17, 0.17, 1.8, 7), vm.timber, 1.0, 0.18 + r * 0.31, 0.7 + (c - (r === 0 ? 1 : r === 1 ? 0.5 : 0)) * 0.36).rotation.z = Math.PI / 2; }
+      const tent = gable(1.4, 0.95, 1.3, VD.canvas); tent.position.set(-0.4, 0, 1.4); g.add(tent);
+      add(new THREE.CylinderGeometry(0.24, 0.26, 0.4, 8), vm.timber, 1.9, 0.2, -0.6);
+      fence(-2.0, 2.3, 2.0, 2.3);
+    }
+    if (k === 'iron') {
+      add(new THREE.DodecahedronGeometry(1.4), VD.ore, 0, 0.75, -0.9).scale.set(1.35, 0.95, 1);
+      add(new THREE.DodecahedronGeometry(0.8), VD.oreDark, 1.3, 0.45, -0.3);
+      mine(-0.3, 0.2);
+      cart(-0.3, 1.8, VD.oreDark);
+      for (let i = 0; i < 4; i++) add(new THREE.DodecahedronGeometry(0.22), VD.oreDark, 1.1 + (i % 2) * 0.35, 0.18, 1.0 + Math.floor(i / 2) * 0.35);
+      fence(1.6, 2.4, 1.6, -0.4);
+    }
+    if (k === 'stone') {
+      for (let i = 0; i < 9; i++) { const h = 0.5 + (i % 3) * 0.28; add(new THREE.BoxGeometry(0.75, h, 0.75), VD.block, (i % 3 - 1) * 0.85 - 0.3, h / 2, Math.floor(i / 3) * 0.85 - 1.0).rotation.y = (i % 2) * 0.12; }
+      add(new THREE.BoxGeometry(0.7, 0.55, 0.7), VD.block, -0.1, 1.05, -0.6);
+      // Løftekran: stolpe, bom og tau.
+      add(new THREE.BoxGeometry(0.16, 2.8, 0.16), VD.wood, 1.5, 1.4, 0.6);
+      const boom = add(new THREE.BoxGeometry(0.1, 0.1, 2.4), VD.wood, 1.5, 2.5, -0.2); boom.rotation.x = 0.35;
+      add(new THREE.BoxGeometry(0.03, 1.4, 0.03), VD.rail, 1.5, 2.0, -1.1);
+      add(new THREE.BoxGeometry(0.5, 0.35, 0.5), VD.block, 1.5, 1.2, -1.1);
+      fence(-2.0, 1.7, 2.0, 1.7);
+    }
+    if (k === 'coal') {
+      add(new THREE.ConeGeometry(1.4, 1.2, 9), vm.coalHeap, 0.4, 0.6, -0.8);
+      add(new THREE.ConeGeometry(0.85, 0.8, 8), vm.coalHeap, 1.6, 0.4, 0.3);
+      mine(-0.7, -0.2);
+      cart(-0.7, 1.4, vm.coalHeap); cart(0.6, 1.6, vm.coalHeap);
+      fence(1.9, 2.4, 1.9, -1.2);
+    }
+    return mergeGroup(g);
   }
   const nodeVis = {};
   Object.keys(NODE_POS).forEach(k => {
@@ -3117,6 +3290,128 @@ const Sound = (function () {
   const cog = mesh(new THREE.TorusGeometry(0.5, 0.14, 6, 10), mats.brass, 6.4, 2.9, 29.7); village.add(cog);
 
 
+  // ---------- Landsbyen etter konseptbildet (village.py) ----------
+  // EMB: steder for sidens merke på bannerne [x, y, z, rotasjon y, størrelse]. Merket bygges per side i sideExtras.
+  const EMB = [];
+  // Lys steinvei med kantstein fra porten til citadellet, fakler med bannere, belagte plasser under
+  // bygningene, bannere på muren, glødepanner ved porten, røyk fra smia og småting rundt husene.
+  // Alt havner i `village`, så sideKit kopierer det til de andre sidene.
+  {
+    const V = new THREE.Group(), add = (geo, mat, x, y, z) => { const m = mesh(geo, mat, x, y, z); V.add(m); return m; };
+    const flatV = (w, d, mat, x, z, y) => { const m = mesh(new THREE.PlaneGeometry(w, d), mat, x, y, z); m.rotation.x = -Math.PI / 2; m.castShadow = false; m.receiveShadow = true; V.add(m); return m; };
+    const z0 = MAP.gateZ + 1.3, z1 = MAP.roadEnd, roadW = 5;
+    flatV(roadW, z1 - z0, VD.pave, 0, (z0 + z1) / 2, 0.026);
+    [-1, 1].forEach(sd => add(new THREE.BoxGeometry(0.28, 0.1, z1 - z0), VD.seam, sd * (roadW / 2 + 0.1), 0.05, (z0 + z1) / 2).castShadow = false);
+    // Fuger i veien (én InstancedMesh).
+    const seams = [];
+    for (let z = z0 + 0.6; z < z1; z += 1.05) seams.push([0, 0.03, z]);
+    for (let z = z0 + 1.1; z < z1; z += 2.1) [-1.25, 0, 1.25].forEach(x => seams.push([x + (Math.round(z) % 2) * 0.6, 0.031, z, 1]));
+    const sGeo = new THREE.PlaneGeometry(1, 1); sGeo.rotateX(-Math.PI / 2);
+    const sIm = new THREE.InstancedMesh(sGeo, VD.seam, seams.length), o3 = new THREE.Object3D();
+    seams.forEach((p, i) => { o3.position.set(p[0], p[1], p[2]); o3.scale.set(p[3] ? 0.05 : roadW, 1, p[3] ? 1.0 : 0.05); o3.updateMatrix(); sIm.setMatrixAt(i, o3.matrix); });
+    sIm.receiveShadow = true; V.add(sIm);
+    // Belagte plasser under bygningene.
+    [[-6, 21, 7, 7.6], [-6.2, 32.2, 7.6, 6.4], [6, 21.6, 7, 8.6], [6.6, 31.4, 7, 5.6]].forEach(([x, z, w, d]) => {
+      flatV(w + 0.4, d + 0.4, VD.seam, x, z, 0.018); flatV(w, d, VD.pave, x, z, 0.022);
+    });
+    // Fakler langs veien: stolpe, glødepanne med ild, og et banner med sidens merke.
+    const torch = (x, z, flag) => {
+      add(new THREE.CylinderGeometry(0.08, 0.11, 2.3, 6), mats.iron, x, 1.15, z);
+      add(new THREE.CylinderGeometry(0.3, 0.16, 0.26, 10), mats.brass, x, 2.4, z);
+      const f = add(new THREE.ConeGeometry(0.2, 0.55, 8), VD.fire, x, 2.75, z); f.castShadow = false; f.userData.flick = 1;
+      add(new THREE.ConeGeometry(0.1, 0.3, 6), VD.fireCore, x, 2.66, z).castShadow = false;
+      const gl = add(new THREE.SphereGeometry(0.3, 10, 8), VD.glow, x, 2.7, z); gl.castShadow = false;
+      if (flag) {
+        const sd = Math.sign(x);
+        add(new THREE.BoxGeometry(0.5, 0.05, 0.05), mats.iron, x - sd * 0.25, 2.0, z);
+        add(new THREE.BoxGeometry(0.04, 1.0, 0.46), vm.banner, x - sd * 0.45, 1.45, z);
+        [-1, 1].forEach(f => EMB.push([x - sd * 0.45 + f * 0.03, 1.55, z, f * Math.PI / 2, 0.36]));
+      }
+    };
+    [18.6, 23.8, 29, 34.2].forEach((z, i) => [-1, 1].forEach(sd => torch(sd * 3.0, z, i % 2 === 0)));
+    // Glødepanner ved porten og bannere på innsiden av muren.
+    [-1, 1].forEach(sd => {
+      add(new THREE.CylinderGeometry(0.14, 0.2, 1.1, 8), mats.iron, sd * 3.0, 0.55, 16.4);
+      add(new THREE.CylinderGeometry(0.5, 0.28, 0.4, 12), mats.brass, sd * 3.0, 1.25, 16.4);
+      const f = add(new THREE.ConeGeometry(0.36, 0.8, 9), VD.fire, sd * 3.0, 1.75, 16.4); f.castShadow = false; f.userData.flick = 1;
+      add(new THREE.SphereGeometry(0.65, 10, 8), VD.glow, sd * 3.0, 1.7, 16.4).castShadow = false;
+      [7.5, 13].forEach(x => {
+        add(new THREE.BoxGeometry(1.3, 2.1, 0.05), vm.banner, sd * x, 2.0, MAP.gateZ + 1.33);
+        EMB.push([sd * x, 2.2, MAP.gateZ + 1.38, 0, 0.8]);
+        add(new THREE.BoxGeometry(1.45, 0.1, 0.1), mats.brass, sd * x, 3.08, MAP.gateZ + 1.35);
+      });
+    });
+    // Longhouse: banner over døra, benk og tønner.
+    add(new THREE.BoxGeometry(0.08, 2.6, 0.08), mats.iron, -3.6, 1.3, 25.4);
+    add(new THREE.BoxGeometry(0.6, 0.9, 0.04), vm.banner, -3.25, 2.1, 25.4); EMB.push([-3.25, 2.15, 25.43, 0, 0.42]);
+    const barrel = (x, z) => add(new THREE.CylinderGeometry(0.26, 0.26, 0.6, 10), VD.wood, x, 0.3, z);
+    barrel(-3.4, 22.2); barrel(-3.5, 21.6); barrel(8.2, 22.6); barrel(-8.9, 26.3);
+    const crate = (x, z, s) => add(new THREE.BoxGeometry(s, s, s), vm.crate, x, s / 2, z);
+    crate(-8.6, 18.0, 0.55); crate(8.7, 18.4, 0.5); crate(4.0, 33.6, 0.45); crate(-3.4, 18.4, 0.4);
+    // Barracks: våpenstativ, telt og øvingsdukke.
+    add(new THREE.BoxGeometry(1.6, 0.08, 0.08), VD.wood, -9.4, 1.0, 29.2);
+    [-1, 1].forEach(sd => add(new THREE.BoxGeometry(0.08, 1.1, 0.08), VD.wood, -9.4 + sd * 0.75, 0.55, 29.2));
+    for (let i = 0; i < 4; i++) add(new THREE.CylinderGeometry(0.025, 0.025, 1.8, 5), mats.steel, -9.95 + i * 0.36, 0.9, 29.3).rotation.z = 0.08;
+    const tentB = gable(1.6, 1.1, 1.5, VD.canvas); tentB.position.set(-2.7, 0, 33.6); V.add(tentB);
+    add(new THREE.CylinderGeometry(0.06, 0.06, 1.3, 6), VD.wood, -3.4, 0.65, 28.8);
+    add(new THREE.BoxGeometry(0.6, 0.08, 0.08), VD.wood, -3.4, 1.0, 28.8);
+    add(new THREE.SphereGeometry(0.18, 8, 6), VD.canvas, -3.4, 1.45, 28.8);
+    // Forge: høy pipe med røyk, ambolt på kubbe.
+    add(new THREE.BoxGeometry(0.95, 4.6, 0.95), VD.chimney, 7.4, 2.3, 24.0);
+    add(new THREE.BoxGeometry(1.15, 0.25, 1.15), VD.chimney, 7.4, 4.65, 24.0);
+    for (let i = 0; i < 5; i++) { const p = add(new THREE.SphereGeometry(0.4 + i * 0.12, 8, 6), VD.smoke, 7.4, 5.2 + i * 0.8, 24.0); p.castShadow = false; p.userData.smoke = i / 5; }
+    add(new THREE.CylinderGeometry(0.28, 0.3, 0.5, 8), vm.timber, 3.3, 0.25, 26.5);
+    add(new THREE.BoxGeometry(0.55, 0.22, 0.26), mats.iron, 3.3, 0.6, 26.5);
+    // Workshop: blå presenning over arbeidsbenken og et vannhjul med eiker.
+    const tarp = mesh(new THREE.PlaneGeometry(2.4, 1.8), VD.tarp, 3.5, 1.7, 31.8); tarp.rotation.set(-Math.PI / 2 + 0.35, 0, 0); V.add(tarp);
+    [-1, 1].forEach(sd => [31.0, 32.6].forEach(z => add(new THREE.BoxGeometry(0.08, z < 32 ? 2.0 : 1.4, 0.08), VD.wood, 3.5 + sd * 1.1, z < 32 ? 1.0 : 0.7, z)));
+    add(new THREE.BoxGeometry(1.6, 0.1, 0.7), VD.wood, 3.5, 0.75, 31.9);
+    const wheel = new THREE.Group(); wheel.position.set(8.55, 1.0, 32.0); wheel.rotation.y = Math.PI / 2; wheel.userData.spin = 1; V.add(wheel);
+    wheel.add(mesh(new THREE.TorusGeometry(0.85, 0.08, 6, 16), VD.wood));
+    for (let i = 0; i < 4; i++) { const sp = mesh(new THREE.BoxGeometry(1.7, 0.08, 0.08), VD.wood); sp.rotation.z = i * Math.PI / 4; wheel.add(sp); }
+    // Furu langs kanten bak tømmerleiren, som på bildet.
+    for (let i = 0; i < 7; i++) {
+      const t = new THREE.Group(), x = -15.6 + (i % 2) * 1.1, z = 29.5 + i * 1.1;
+      t.add(mesh(new THREE.CylinderGeometry(0.12, 0.17, 1.0, 6), vm.timber, 0, 0.5, 0), mesh(new THREE.ConeGeometry(0.9, 1.8, 7), vm.leaf, 0, 1.7, 0), mesh(new THREE.ConeGeometry(0.65, 1.4, 7), vm.leaf, 0, 2.6, 0));
+      t.scale.setScalar(0.9 + (i % 3) * 0.15); t.position.set(x, 0, z); V.add(t);
+    }
+    village.add(mergeGroup(V));
+  }
+  // Sidens farger på kopiene av landsbyen (øst, sør, vest). Nord beholder verdenens utseende.
+  const VSTYLE = [null,
+    { plank: 0x5c4630, roof: 0x3f5e2c, banner: 0x1f4a2a, leaf: 0x3d7a30, pave: 0x8a8a70, seam: 0x4a5040, wood: 0x5a4028, tarp: 0x3f6a34, canvas: 0xcfd6b4, stone: 0x5e6656, block: 0xb9bfa8, emblem: 0xe4d9a0 },
+    { plank: 0xe4ddcc, roof: 0x2a3f7a, banner: 0x24346a, leaf: 0x9fae70, pave: 0xd9d1bd, seam: 0xa89a74, wood: 0xc4ac78, tarp: 0xf3ead2, canvas: 0xfff6e0, stone: 0xdcd6c8, block: 0xf0ece2, emblem: 0xe2b54a, fire: 0xffe9b0, window: 0xfff0c0 },
+    { plank: 0x6a4a30, roof: 0x2b4470, banner: 0x22325a, leaf: 0x3a5a48, pave: 0xa49a84, seam: 0x5a5448, wood: 0x6a5a48, tarp: 0x2b4470, canvas: 0xe6e2d8, stone: 0x5a6670, block: 0xb4b8bc, emblem: 0xe8e2d0 },
+  ];
+  const vstyleCache = new Map();
+  function restyleVillage(root, si) {
+    const st = VSTYLE[si]; if (!st) return;
+    root.traverse(o => {
+      if (!o.isMesh || !o.material || !o.material.userData) return;
+      const k = o.material.userData.vkey; if (!k || st[k] == null) return;
+      const ck = si + ':' + o.material.uuid;
+      if (!vstyleCache.has(ck)) {
+        const m = o.material.clone();
+        if (k === 'window') m.emissive.setHex(st[k]); else m.color.setHex(st[k]);
+        if (si === 2 && k === 'emblem') { m.metalness = 0.6; m.roughness = 0.35; m.emissive = new THREE.Color(0x3a2a08); }
+        vstyleCache.set(ck, m);
+      }
+      o.material = vstyleCache.get(ck);
+    });
+  }
+  // Det som beveger seg i alle landsbyene: røyk, vannhjul, bannere. Samles når sidene er bygget.
+  let villageMovers = null;
+  function animateVillageDecor(t) {
+    if (reduceMotion) return;
+    if (!villageMovers) { villageMovers = []; scene.traverse(o => { if (o.userData.smoke != null || o.userData.spin || o.userData.wave) villageMovers.push(o); }); }
+    VD.glow.opacity = 0.15 + Math.sin(t * 11) * 0.03 + Math.sin(t * 7.3) * 0.02;
+    villageMovers.forEach((o, i) => {
+      if (o.userData.smoke != null) { const k = (t * 0.18 + o.userData.smoke) % 1; o.position.y = 5.1 + k * 4.2; o.position.x = 7.4 + Math.sin(k * 3 + i) * 0.3 + k * 0.9; o.scale.setScalar(0.6 + k * 1.2); }
+      else if (o.userData.spin) o.rotation.z = t * 0.8;
+      else if (o.userData.wave) o.rotation.y = Math.sin(t * 1.8 + i) * 0.12;
+    });
+  }
+
   // ---------- Bastion: fire sider rundt flammen ----------
   // Hver side bygges i sine egne koordinater og snus rundt flammen. Nord har allerede portal, slagmark,
   // port og landsby fra koden over; her får den distriktet, muren ut til hjørnene og hjørnekvartalet.
@@ -3134,7 +3429,7 @@ const Sound = (function () {
   const BM = (c, e, o) => M(c, Object.assign({ roughness: 0.9, emissive: e || 0x000000 }, o || {}));
   const glowMat = (c, op) => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: op, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
   const SIDE_LOOK = [
-    {},
+    { floor: BM(0x4a3f31, 0, { roughness: 1 }) },
     { wall: BM(0x3c4838), wallTop: BM(0x4b5a45), floor: BM(0x34392c, 0, { roughness: 1 }), house: BM(0x4a3e2e), roof: BM(0x2f4a2a) },
     { wall: BM(0xcfc9ba, 0x2a2720), wallTop: BM(0xc9a24e, 0x3a2a08, { metalness: 0.6, roughness: 0.4 }), floor: BM(0x8c887a, 0x1c1a14, { roughness: 1 }),
       house: BM(0xd8d2c2, 0x24221c), roof: BM(0xc9a24e, 0x2a1e06, { metalness: 0.5, roughness: 0.45 }),
@@ -3371,7 +3666,7 @@ const Sound = (function () {
       add(new THREE.BoxGeometry(MAP.gateHalf * 2, 3.1, 0.5), mats.gate, 0, 1.55, wallZ2);
       [0.7, 1.6, 2.5].forEach(y => add(new THREE.BoxGeometry(MAP.gateHalf * 2 + 0.05, 0.16, 0.56), mats.gateBand, 0, y, wallZ2));
       // Landsbyen slik den står ved start: gull, tømmer og stein bygget, Barracks I.
-      const copy = village.clone(); g.add(copy);
+      const copy = village.clone(); g.add(copy); restyleVillage(copy, si);
       const twin = o => copy.children[village.children.indexOf(o)];
       Object.keys(nodeVis).forEach(k => {
         const v = nodeVis[k], open = e0.nodes[k].unlocked;
@@ -3401,7 +3696,7 @@ const Sound = (function () {
       .forEach(([x, z], i) => i ? sh.lineTo(x, -z) : sh.moveTo(x, -z));
     flatIn(g, new THREE.ShapeGeometry(sh), LOOK.floor || distFloor, 0, 0.012, 0);
     flatIn(g, new THREE.PlaneGeometry(3.4, MAP.roadEnd - distZ1), roadMat2, 0, 0.02, (distZ1 + MAP.roadEnd) / 2);
-    for (let z = distZ1 + 4; z < MAP.roadEnd; z += 7) [-1, 1].forEach(sd => {
+    for (let z = MAP.roadEnd; z < MAP.roadEnd; z += 7) [-1, 1].forEach(sd => {   // fakler fra village.py i stedet
       add(new THREE.CylinderGeometry(0.07, 0.09, 1.6, 6), mats.iron, sd * 2.2, 0.8, z);
       add(new THREE.BoxGeometry(0.3, 0.3, 0.3), lampMat2, sd * 2.2, 1.7, z);
     });
@@ -3422,39 +3717,121 @@ const Sound = (function () {
       add(new THREE.BoxGeometry(w, h, 2.2), LOOK.house || oldWall, x, h / 2, MAP.flameZ - d);
       const rf = add(new THREE.ConeGeometry(w * 0.8, 1.2, 4), LOOK.roof || oldRoof, x, h + 0.6, MAP.flameZ - d); rf.rotation.y = Math.PI / 4;
     }
+    sideExtras(si, g);
     return pivot;
   }
   const sideKits = SIDES.map((sd, i) => sideKit(i));
   // Ringveien rundt citadellet binder de fire distriktene sammen.
   { const rr = mesh(new THREE.RingGeometry(MAP.flameReach + 1.6, MAP.flameReach + 4.2, 48), roadMat2, 0, 0.022, MAP.flameZ); rr.rotation.x = -Math.PI / 2; rr.castShadow = false; rr.receiveShadow = true; scene.add(rr); }
 
+  // Longhouse heter noe eget på hver side (Runes bilder 11. okt): Roothall, Sanctum, Tidehall. Resten heter det samme.
+  const SIDE_NAMES = [
+    { longhouse: 'Longhouse', barracks: 'Barracks', forge: 'Forge', workshop: 'Workshop' },
+    { longhouse: 'Roothall', barracks: 'Barracks', forge: 'Forge', workshop: 'Workshop' },
+    { longhouse: 'Sanctum', barracks: 'Barracks', forge: 'Forge', workshop: 'Workshop' },
+    { longhouse: 'Tidehall', barracks: 'Barracks', forge: 'Forge', workshop: 'Workshop' },
+  ];
+  const VBUILD = [
+    { key: 'longhouse', icon: '🏠', x: -5.2, y: 4.4, z: 23.4 }, { key: 'barracks', icon: '⚔️', x: -6, y: 4.4, z: 31 },
+    { key: 'forge', icon: '⚒️', x: 5.6, y: 4.6, z: 24.6 }, { key: 'workshop', icon: '⚙️', x: 6.4, y: 4.2, z: 31 },
+  ];
+  const NODE_ICON = { gold: '🪙', timber: '🌲', stone: '🧱', iron: '⛏️', coal: '⚫' };
+  // Hvilken side kameraet ser på nå (nærmeste distrikt).
+  function camSide() {
+    let best = 0, bd = 1e9;
+    SIDES.forEach((sd, i) => { const p = sideToWorld(i, 0, 26); const d = Math.hypot(p.x - cam.tx, p.z - cam.tz); if (d < bd) { bd = d; best = i; } });
+    return best;
+  }
+  // Sidens merke, fakler og statuer (Runes referansebilder 11. okt): hjort i nord, tre i øst, stjerne i sør, anker i vest.
+  // Hvert merke er noen flate deler i xy-planet, ca. 1 x 1 stort; [geometri, x, y, rotasjon z, rotasjon x].
+  function sideExtras(si, g) {
+    const EMBLEM = [
+      () => [[new THREE.BoxGeometry(0.2, 0.3, 0.05), 0, -0.2], [new THREE.BoxGeometry(0.12, 0.16, 0.05), 0, -0.4],
+        ...[-1, 1].flatMap(s => [[new THREE.BoxGeometry(0.06, 0.5, 0.05), s * 0.2, 0.12, -s * 0.5], [new THREE.BoxGeometry(0.05, 0.24, 0.05), s * 0.13, 0.22, s * 0.3],
+          [new THREE.BoxGeometry(0.05, 0.24, 0.05), s * 0.36, 0.34, -s * 1.0], [new THREE.BoxGeometry(0.05, 0.2, 0.05), s * 0.3, 0.42, -s * 0.1], [new THREE.BoxGeometry(0.14, 0.06, 0.05), s * 0.15, -0.08, 0]])],
+      () => [[new THREE.BoxGeometry(0.08, 0.42, 0.05), 0, -0.24], [new THREE.CylinderGeometry(0.3, 0.3, 0.05, 18), 0, 0.14, 0, Math.PI / 2],
+        ...[-1, 1].map(s => [new THREE.BoxGeometry(0.05, 0.24, 0.05), s * 0.1, -0.4, s * 0.7])],
+      () => [[new THREE.BoxGeometry(0.09, 0.9, 0.05), 0, 0], [new THREE.BoxGeometry(0.9, 0.09, 0.05), 0, 0], [new THREE.BoxGeometry(0.06, 0.5, 0.05), 0, 0, Math.PI / 4],
+        [new THREE.BoxGeometry(0.06, 0.5, 0.05), 0, 0, -Math.PI / 4], [new THREE.TorusGeometry(0.2, 0.03, 6, 20), 0, 0]],
+      () => [[new THREE.BoxGeometry(0.07, 0.62, 0.05), 0, -0.02], [new THREE.BoxGeometry(0.36, 0.06, 0.05), 0, 0.18], [new THREE.TorusGeometry(0.07, 0.025, 6, 12), 0, 0.36],
+        [new THREE.TorusGeometry(0.24, 0.035, 6, 16, Math.PI), 0, -0.1, Math.PI], ...[-1, 1].map(s => [new THREE.BoxGeometry(0.1, 0.05, 0.05), s * 0.25, -0.06, -s * 0.7])],
+    ];
+    const G = new THREE.Group(), add = (geo, mat, x, y, z) => { const m = mesh(geo, mat, x, y, z); G.add(m); return m; };
+    const putEmblem = (x, y, z, ry, size) => {
+      const e = new THREE.Group(); e.position.set(x, y, z); e.rotation.y = ry; e.scale.setScalar(size); G.add(e);
+      EMBLEM[si]().forEach(([geo, ex, ey, rz, rx]) => { const m = mesh(geo, VD.emblem, ex, ey, 0.02); m.rotation.set(rx || 0, 0, rz || 0); m.castShadow = false; e.add(m); });
+    };
+    EMB.forEach(p => putEmblem(...p));
+    const wz = MAP.gateZ + 0.6, tx = MAP.gateHalf + 0.9;
+    const fire = (x, y, z, r) => {
+      add(new THREE.CylinderGeometry(r, r * 0.55, r * 0.8, 10), mats.brass, x, y, z);
+      add(new THREE.ConeGeometry(r * 0.7, r * 1.7, 8), VD.fire, x, y + r * 1.1, z).castShadow = false;
+      add(new THREE.SphereGeometry(r * 1.3, 8, 6), VD.glow, x, y + r, z).castShadow = false;
+    };
+    // Porttårnene: banner med merket mot slagmarken og mot landsbyen, glødepanner på muren.
+    [-1, 1].forEach(sd => {
+      [-1, 1].forEach(f => {
+        add(new THREE.BoxGeometry(1.0, 2.2, 0.05), vm.banner, sd * tx, 3.0, wz + f * 1.42);
+        putEmblem(sd * tx, 3.1, wz + f * 1.46, f > 0 ? 0 : Math.PI, 0.7);
+      });
+      [5.6, 15.5].forEach(x => fire(sd * x, 3.9, wz, 0.42));
+    });
+    // Fakler med gjerde langs kantene av slagmarken, som på bildet av nord.
+    [-26, -16, -6, 4].forEach(z => [-1, 1].forEach(sd => {
+      const x = sd * 15.2;
+      add(new THREE.CylinderGeometry(0.1, 0.13, 1.5, 6), mats.iron, x, 0.75, z);
+      fire(x, 1.6, z, 0.32);
+      add(new THREE.BoxGeometry(0.06, 0.06, 2.4), VD.wood, x + sd * 0.3, 0.55, z + 2.2);
+      add(new THREE.BoxGeometry(0.06, 0.06, 2.4), VD.wood, x + sd * 0.3, 0.25, z + 2.2);
+      [1.0, 3.4].forEach(dz => add(new THREE.BoxGeometry(0.1, 0.7, 0.1), VD.wood, x + sd * 0.3, 0.35, z + dz));
+    }));
+    // Lysheim: engler på porttårnene og ved enden av veien mot citadellet.
+    if (si === 2) {
+      const marble = M(0xeeeae0, { roughness: 0.5, emissive: 0x2a2820 });
+      const angel = (x, y, z, s, ry) => {
+        const a = new THREE.Group(); a.position.set(x, y, z); a.scale.setScalar(s); a.rotation.y = ry; G.add(a);
+        a.add(mesh(new THREE.BoxGeometry(0.9, 0.4, 0.9), marble, 0, 0.2, 0), mesh(new THREE.ConeGeometry(0.42, 1.7, 10), marble, 0, 1.25, 0), mesh(new THREE.SphereGeometry(0.2, 10, 8), marble, 0, 2.25, 0));
+        const halo = mesh(new THREE.TorusGeometry(0.22, 0.03, 6, 18), vm.gold, 0, 2.6, -0.05); a.add(halo);
+        [-1, 1].forEach(sd => { const w = mesh(new THREE.BoxGeometry(0.08, 1.4, 0.55), vm.gold, sd * 0.36, 1.8, -0.25); w.rotation.set(-0.3, 0, -sd * 0.35); a.add(w); });
+        a.add(mesh(new THREE.CylinderGeometry(0.03, 0.03, 2.4, 6), vm.gold, 0.4, 1.4, 0.2));
+      };
+      [-1, 1].forEach(sd => angel(sd * tx, 5.6, wz, 0.9, Math.PI));
+      [-1, 1].forEach(sd => angel(sd * 3.4, 0, MAP.roadEnd - 0.3, 1.1, 0));
+    }
+    restyleVillage(G, si);
+    g.add(mergeGroup(G));
+  }
   // Navneskilt i landsbyen, vises når kameraet er der.
   const LABELS = [
-    { text: 'Longhouse', x: -5.2, y: 3.6, z: 23.4 },
-    ...Object.keys(NODE_POS).map(k => ({ node: k, text: NODES[k].name, x: NODE_POS[k].x, y: 2.8, z: NODE_POS[k].z })),
-    { text: 'Barracks', x: -6, y: 4, z: 31 }, { text: 'Forge', x: 5.6, y: 4.2, z: 24.6 }, { text: 'Workshop', x: 6.4, y: 4, z: 31 },
+    // Landsbyskilt for alle fire sider, med sidens egne navn på bygningene (village.py).
+    ...SIDES.flatMap((sd, si) => [
+      ...VBUILD.map(b => Object.assign({ vl: true, si, icon: b.icon, text: SIDE_NAMES[si][b.key], y: b.y }, sideToWorld(si, b.x, b.z))),
+      ...Object.keys(NODE_POS).map(k => Object.assign({ vl: true, si, node: si ? null : k, icon: NODE_ICON[k], text: NODES[k].name, y: 3.0 }, sideToWorld(si, NODE_POS[k].x, NODE_POS[k].z))),
+    ]),
     ...SIDES.map((sd, i) => Object.assign({ side: true, far: !i, text: i ? `${sd.name} · ${sd.land} · ledig plass` : `${sd.name} · deg`, y: 8 }, sideToWorld(i, 0, MAP.gateZ + 0.6))),
     { text: 'Gatehouse', x: 0, y: 6.2, z: MAP.gateZ + 0.6 }, { text: 'The Last Flame · Warden\'s Sanctum', x: 0, y: 9.5, z: MAP.flameZ + 1 },
   ];
   const labelLayer = document.createElement('div');
   labelLayer.className = 'labels';
   $('.stage').appendChild(labelLayer);
-  LABELS.forEach(L => { L.el = document.createElement('span'); L.el.className = 'lbl'; labelLayer.appendChild(L.el); });
+  LABELS.forEach(L => { L.el = document.createElement('span'); L.el.className = L.vl ? 'lbl vl' : 'lbl'; labelLayer.appendChild(L.el); });
   const lv = new THREE.Vector3();
   function placeLabels() {
     const show = cam.tz > 10 || cam.dist > 100 || Math.abs(cam.tx) > 25;
     labelLayer.hidden = !show;
     if (!show) return;
-    const rect = canvas.getBoundingClientRect(), ec = state.econ;
+    const rect = canvas.getBoundingClientRect(), ec = state.econ, cs = camSide();
     LABELS.forEach(L => {
-      let t = L.text;
-      if (L.node) { const n = ec.nodes[L.node]; t += n.unlocked ? ` · ${n.workers}/${ec.cap(L.node)}` : ' · ikke bygget'; }
-      if (L.el.textContent !== t) L.el.textContent = t;
+      let t = L.text, small = '';
+      if (L.node) { const n = ec.nodes[L.node]; small = n.unlocked ? `${n.workers}/${ec.cap(L.node)}` : PHONE ? '🔒' : 'ikke bygget'; }
+      const key = t + '|' + small;
+      if (L.key !== key) { L.key = key; if (L.vl) L.el.innerHTML = `<i>${L.icon}</i><b>${t}</b>${small ? `<small>${small}</small>` : ''}`; else L.el.textContent = t; }
+      if (L.vl && L.si !== cs) { L.el.style.display = 'none'; return; }
       lv.set(L.x, L.y, L.z).project(camera);
       const vis = lv.z < 1 && Math.abs(lv.x) < 1.1 && Math.abs(lv.y) < 1.1 && (L.side ? !L.far || cam.dist > 100 : cam.dist < 100);
       L.el.style.display = vis ? '' : 'none';
       let px = (lv.x + 1) / 2 * rect.width;
-      if (vis && L.side) { const hw = L.el.offsetWidth / 2 + 4; px = Math.max(hw, Math.min(rect.width - hw, px)); }
+      if (vis && (L.side || L.vl)) { const hw = L.el.offsetWidth / 2 + 4; px = Math.max(hw, Math.min(rect.width - hw, px)); }
       if (vis) L.el.style.transform = `translate(${px}px, ${(1 - lv.y) / 2 * rect.height}px) translate(-50%, -100%)`;
     });
   }
@@ -6144,11 +6521,24 @@ Object.assign(UP_PIC, {
   $('#snd-sfx').onclick = () => { Sound.init(); Sound.toggleSfx(); syncSoundBtns(); };
   $('#cam-field').onclick = () => camGoto(0, FIELD_TZ, FIELD_DIST, 0.8);
   $('#cam-rival').onclick = () => camGoto(RIVAL_X, FIELD_TZ, FIELD_DIST, 0.8);
-  $('#cam-village').onclick = () => camGoto(0, 25.5, 46, 0.95);
+  $('#cam-village').onclick = () => viewVillage(MY_SIDE);
   $('#cam-flame').onclick = () => camGoto(0, 42, 52, 0.62);
   $('#cam-bastion').onclick = () => camGoto(0, MAP.flameZ, PHONE ? 205 : 165, 1.2);
   let camAnim = null;
-  function camGoto(tx, tz, dist, pitch) { camAnim = { tx, tz, dist, pitch }; }
+  // Din side (0 = nord). Kameraet snur seg så din port alltid er øverst, uansett side.
+  let MY_SIDE = 0;
+  function camGoto(tx, tz, dist, pitch, yaw) { camAnim = { tx, tz, dist, pitch, yaw: yaw == null ? SIDES[MY_SIDE].rot : yaw }; }
+  // Landsbyen sett fra en side: porten øverst, citadellet nederst, hele distriktet i bildet også på telefon.
+  function villageDist() {
+    const a = Math.max(0.3, camera.aspect || 1), fit = 19 / (Math.tan(camera.fov * Math.PI / 360) * a);
+    return Math.max(46, Math.min(95, fit * 0.98));
+  }
+  function viewVillage(si) {
+    const p = sideToWorld(si, 0, PHONE ? 23.5 : 26.5);
+    camGoto(p.x, p.z, villageDist(), PHONE ? 1.18 : 0.98, SIDES[si].rot);
+    document.querySelectorAll('#vside button').forEach(b => b.classList.toggle('on', +b.dataset.vs === si));
+  }
+  document.querySelectorAll('#vside button').forEach(b => b.onclick = () => viewVillage(+b.dataset.vs));
 
   // ---------- HUD ----------
   let hudT = 0;
@@ -6161,8 +6551,55 @@ Object.assign(UP_PIC, {
     el.querySelector('i').style.width = Math.max(0, b.hp / b.maxHp * 100) + '%';
     el.querySelector('em').textContent = `${Math.ceil(Math.max(0, b.hp))} / ${b.maxHp}`;
   }
+
+  // ---------- Skjermoppsett etter slagmarksbildene (hud.py) ----------
+  const CREST_MARK = [
+    '<path d="M20 30 l-2 -6 h4 z M20 25 q-1 -4 -6 -8 l-3 -5 M14 17 l-4 1 M12 13 l1 -4 M20 25 q1 -4 6 -8 l3 -5 M26 17 l4 1 M28 13 l-1 -4" fill="none" stroke-width="2" stroke-linecap="round"/><ellipse cx="20" cy="28" rx="3" ry="4"/>',
+    '<path d="M20 34 v-12 M20 30 l-4 4 M20 30 l4 4" fill="none" stroke-width="2.2" stroke-linecap="round"/><circle cx="20" cy="17" r="8"/>',
+    '<path d="M20 8 l2.5 9.5 l9.5 2.5 l-9.5 2.5 l-2.5 9.5 l-2.5 -9.5 l-9.5 -2.5 l9.5 -2.5 z"/><circle cx="20" cy="20" r="6" fill="none" stroke-width="1.5"/>',
+    '<path d="M20 12 v20 M14 16 h12 M11 25 q2 8 9 8 q7 0 9 -8 M11 25 l-1 3 M29 25 l1 3" fill="none" stroke-width="2.2" stroke-linecap="round"/><circle cx="20" cy="10" r="2.6" fill="none" stroke-width="1.8"/>',
+  ];
+  const CREST_COL = [['#22325a', '#d9c79a'], ['#1f4a2a', '#d8c27a'], ['#24346a', '#e2b54a'], ['#22325a', '#e8e2d0']];
+  function crestSvg(si) {
+    const [bg, fg] = CREST_COL[si];
+    return `<svg class="crest" viewBox="0 0 40 48" aria-hidden="true"><path d="M3 3 h34 v22 q0 14 -17 21 q-17 -7 -17 -21 z" fill="${bg}" stroke="#b88b45" stroke-width="2"/>`
+      + `<g fill="${fg}" stroke="${fg}">${CREST_MARK[si]}</g></svg>`;
+  }
+  function syncGoalBox() {
+    const sd = SIDES[MY_SIDE];
+    $('#goal-title').textContent = `Forsvar ${MY_SIDE ? sd.land : sd.name}`;
+    const c = $('#crest'); if (c.dataset.si !== String(MY_SIDE)) { c.dataset.si = MY_SIDE; c.innerHTML = crestSvg(MY_SIDE); }
+  }
+  // Unitkort nede til venstre: ett per type i hæren, med antall, nivå og samlet helse. Trykk velger typen.
+  let ucBox = null, ucSig = '';
+  function syncUnitCards() {
+    if (!ucBox) {
+      ucBox = document.createElement('div'); ucBox.className = 'ucards'; $('.stage').appendChild(ucBox);
+      ucBox.addEventListener('click', e => { const b = e.target.closest('[data-uc]'); if (b) toggleType(b.dataset.uc); else if (e.target.closest('.more')) $('#tab-army').click(); });
+    }
+    const groups = {};
+    state.army.forEach((a, i) => { const g = groups[a.type] || (groups[a.type] = { n: 0, lv: 0, sel: 0 }); g.n++; g.lv = Math.max(g.lv, a.level || 0); if (state.selection.has(i)) g.sel++; });
+    const types = Object.keys(groups).sort((a, b) => (TYPES[b].hero ? 1 : 0) - (TYPES[a].hero ? 1 : 0) || groups[b].n - groups[a].n);
+    const max = PHONE ? 5 : 7, shown = types.length > max ? types.slice(0, max - 1) : types, rest = types.length - shown.length;
+    const sig = shown.map(t => `${t}:${groups[t].n}:${groups[t].lv}:${groups[t].sel === groups[t].n}`).join('|') + '|' + rest;
+    if (sig !== ucSig) {
+      ucSig = sig;
+      ucBox.innerHTML = shown.map(t => { const g = groups[t];
+        return `<button type="button" class="ucd${g.sel === g.n ? ' sel' : ''}" data-uc="${t}" title="${TYPES[t].name}"><img alt="" src="${portraits[t] || ''}"><span class="ucn">×${g.n}</span><span class="ucl">${'▲'.repeat(g.lv)}</span><i class="uchp"><b></b></i></button>`;
+      }).join('') + (rest > 0 ? `<button type="button" class="ucd more">+${rest}</button>` : '');
+      $('.stage').classList.toggle('has-cards', shown.length > 0);
+    }
+    // Helse: alle av typen i slaget nå (døde teller som 0).
+    const hp = {}, mx = {};
+    if (sim) sim.units.forEach(u => { if (u.side !== 'p' || !groups[u.type]) return; hp[u.type] = (hp[u.type] || 0) + (u.alive ? Math.max(0, u.hp) : 0); mx[u.type] = (mx[u.type] || 0) + u.maxHp; });
+    ucBox.querySelectorAll('[data-uc]').forEach(b => {
+      const t = b.dataset.uc, r = mx[t] ? hp[t] / mx[t] : 1;
+      b.querySelector('.uchp b').style.width = `${Math.round(r * 100)}%`;
+      b.classList.toggle('low', r < 0.35);
+    });
+  }
   function updateHud() {
-    updateBoss();
+    updateBoss(); syncGoalBox(); syncUnitCards();
     const p = sim.units.filter(u => u.side === 'p' && u.alive && u.type !== 'warden').length, e = sim.units.filter(u => u.side === 'e' && u.alive).length;
     $('#h-wave').textContent = `${curWave().n}/${WAVES.length}`;
     if (state.phase === 'build') {
@@ -6200,7 +6637,8 @@ Object.assign(UP_PIC, {
     if (camAnim) {
       const k = Math.min(1, dt * 5);
       ['tx', 'tz', 'dist', 'pitch'].forEach(p => cam[p] += (camAnim[p] - cam[p]) * k);
-      if (Math.abs(cam.tz - camAnim.tz) < 0.05 && Math.abs(cam.dist - camAnim.dist) < 0.05) camAnim = null;
+      const dy = Math.atan2(Math.sin(camAnim.yaw - cam.yaw), Math.cos(camAnim.yaw - cam.yaw)); cam.yaw += dy * k;
+      if (Math.abs(cam.tz - camAnim.tz) < 0.05 && Math.abs(cam.tx - camAnim.tx) < 0.05 && Math.abs(cam.dist - camAnim.dist) < 0.05 && Math.abs(dy) < 0.003) { cam.yaw = camAnim.yaw; camAnim = null; }
     }
     updateCamera();
     scene.fog.near = 60 + Math.max(0, cam.dist - 72); scene.fog.far = 120 + Math.max(0, cam.dist - 72) * 1.8;
@@ -6232,6 +6670,7 @@ Object.assign(UP_PIC, {
     if (ec.finds && ec.finds.length) { const f = ec.finds.shift(); toast('⛏ ' + f.text); if (f.bag) Object.keys(f.bag).forEach(r => popRes(r, f.bag[r])); if (f.node && nodeVis[f.node]) nodeVis[f.node].pulse = 0.8; }
     animateVillage(now / 1000, dt);
     animateBiomes(now / 1000, dt);
+    animateVillageDecor(now / 1000);
     placeLabels();
     updateInspect();
     updateCoins(dt);
