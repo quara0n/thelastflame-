@@ -166,7 +166,7 @@ Rune delte `docs/art/landsby-konsept.png` som retning for landsbyen. Oppsettet e
 | Sør Lysheim | Sanctum | samme navn | stjerne | hvit marmor med gull, mørkeblå tak, engler ved porten og citadellet |
 | Vest Havbryn | Tidehall | samme navn | anker | sjøbuer med blå tak, brygger og garn, mørkeblå bannere, måker |
 
-Bildene: `docs/art/landsby-konsept.png` (nord), `landsby-ost-gronnlund.png`, `landsby-sor-lysheim.png`, `landsby-vest-havbryn.png`, og `slagmark-nord.png` for slagmarken (portal øverst, port og tropp nederst, unitkort nede til venstre, minikart nede til høyre, mål oppe til høyre).
+Bildene: `docs/art/landsby-konsept.png` (nord), `landsby-ost-gronnlund.png`, `landsby-sor-lysheim.png`, `landsby-vest-havbryn.png`, og slagmarkene: `slagmark-nord.png` (snø, furu, fakler og gjerder langs kantene), `slagmark-ost-gronnlund.png` (skoglysning med fosser og kjempetrær, port innfelt i røtter, «Defend the Grove»), `slagmark-sor-lysheim.png` (marmorplass med gullmønster blant skyslott og buebroer, engler ved porten, gullport) og `slagmark-vest-havbryn.png` (stormfull kyst med vrak, brygger og fyrtårn, «Defend the Coast»). Alle har samme oppsett: portalen øverst, port og tropp nederst, unitkort nede til venstre, minikart nede til høyre, målboks oppe til høyre («Defend the …»).
 
 Navnene kommer fra Runes bilder (11. okt). Senere: egne modeller per side (i dag samme modeller med sidens farger og merke).
 

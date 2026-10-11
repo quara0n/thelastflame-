@@ -192,5 +192,6 @@ Runes tilbakemelding etter å ha spilt versjon 27 (`tools/hardmode.py`, siste st
 - **Merker på bannerne:** hjort i nord, tre i øst, stjerne i sør, anker i vest. Mørkeblå bannere i nord, sør og vest, mørkegrønne i øst. Sør har mørkeblå tak og gullmerker (før gulltak); vest har varmt tre og blå tak.
 - Bannere med merke på porttårnene (begge sider), glødepanner på muren, fakler med gjerde langs kantene av slagmarken, engler på porttårnene og ved enden av veien i Lysheim.
 - Bare utseende; balansen er uendret.
+- Senere samme dag: slagmarksbilder for øst, sør og vest (`docs/art/slagmark-*.png`), samme HUD som nord. Lagret som referanse, ikke bygget.
 - Ikke bygget ennå fra slagmarksbildet: snø i nord, unitkort-rad nede til venstre, mål-boks oppe til høyre. Mulig neste.
 
