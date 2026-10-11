@@ -8,10 +8,10 @@ const fs = require('fs');
 const L = load();
 const R = +(process.argv[2] || 40), FROM = +(process.argv[3] || 1);
 // Share of the players who start a wave that should come through it (the flame not reached).
-const TARGET = w => w <= 5 ? 0.99 : w <= 9 ? 0.96 : w === 10 ? 0.93 : w <= 19 ? 0.97 : w === 20 ? 0.92 : w <= 22 ? 0.95 : w <= 29 ? 0.72 : 0.6;
+// Version 34: Rune wants waves 1–5 hard too (hard early choices between workers, army and the gate).
+const TARGET = w => w <= 2 ? 0.99 : w === 3 ? 0.97 : w === 4 ? 0.96 : w === 5 ? 0.95 : w <= 9 ? 0.96 : w === 10 ? 0.93 : w <= 19 ? 0.97 : w === 20 ? 0.92 : w <= 22 ? 0.95 : w <= 29 ? 0.72 : 0.6;
 const GRID = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.35, 1.5, 1.7, 2, 2.4, 3];
-// Waves 1–5 should stay gentle for new players, so they are never made more than 20 % harder than now.
-const CAP = w => w <= 5 ? 1.2 : Infinity;
+const CAP = () => Infinity;   // version 33 capped waves 1–5 at ×1.2; Rune found them far too easy
 const LOST = 'Fienden nådde flammen';
 const clone = st => ({ ec: Object.assign(Object.create(Object.getPrototypeOf(st.ec)), JSON.parse(JSON.stringify(st.ec))), army: JSON.parse(JSON.stringify(st.army)), t: st.t });
 const runWave = (st, wi, k) => {

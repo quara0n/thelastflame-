@@ -1027,7 +1027,7 @@ const WAVES = [
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.315, 0.557, 0.265, 0.133, 0.459, 0.475, 0.492, 0.467, 0.242, 0.48, 0.587, 0.239, 0.526, 0.255, 0.481, 0.223, 0.551, 0.29, 0.288, 0.136, 0.543, 0.29, 1.33, 0.606, 0.463, 0.323, 0.717, 0.337, 0.588, 0.46];
+const WAVE_FACTOR = [0.643, 1.225, 0.636, 0.351, 0.858, 0.574, 0.59, 0.462, 0.218, 0.432, 0.528, 0.237, 0.521, 0.255, 0.424, 0.223, 0.595, 0.314, 0.285, 0.122, 0.522, 0.255, 1.33, 0.6, 0.687, 0.32, 0.71, 0.333, 0.588, 0.46];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};
@@ -2057,8 +2057,20 @@ function rivalBot(L, ec, army, waveIdx) {
   const afford = c => Object.keys(c || {}).every(r => (ec.res[r] || 0) - keep(r) >= c[r]);
   // Version 24: a random hero at wave 2; talents and doctrines picked at random.
   L.heroBot(ec, w);
+  // Army: keep roughly half melee, half ranged; buy the best tier that is open.
+  const buyArmy = () => {
+    const nMel = army.filter(melee).length, wantRanged = nMel > army.length - nMel;
+    for (let tier = ec.barracks + 1; tier >= 1; tier--) {
+      const opts = unitsOf(tier).filter(t => !!T[t].ranged === wantRanged);
+      if (buy(opts[(army.length + w) % opts.length])) return true;
+    }
+    return false;
+  };
+  // Version 34: the early waves are hard, so a minimum army comes before workers (6 + 2 per wave, up to the army space).
+  const armyNeed = Math.min(ec.supplyCap(), L.armyNeed ? L.armyNeed(w) : 6 + 2 * w);
   for (let guard = 0; guard < 80; guard++) {
     let did = false;
+    if (sup() < armyNeed) did = buyArmy();
     // Economy (version 22): fill each mine while the next worker is cheap compared to how far the game has come.
     // Workers get dearer one by one, so a sensible player stops when the price outruns the payback.
     if (!did && w >= 3 && !ec.nodes.iron.unlocked && ec.can(L.NODES.iron.unlock)) did = ec.unlockNode('iron');
@@ -2081,14 +2093,7 @@ function rivalBot(L, ec, army, waveIdx) {
     if (!did && ec.gateHp < ec.gateMax() * 0.7) did = ec.repair();
     if (!did && w >= 3 && ec.archers === 0) did = ec.buyArchers();
     // Army: keep roughly half melee, half ranged; buy the best tier that is open.
-    if (!did && sup() < ec.supplyCap()) {
-      const nMel = army.filter(melee).length, wantRanged = nMel > army.length - nMel;
-      for (let tier = ec.barracks + 1; tier >= 1 && !did; tier--) {
-        const opts = unitsOf(tier).filter(t => !!T[t].ranged === wantRanged);
-        const pick = opts[(army.length + w) % opts.length];
-        did = buy(pick);
-      }
-    }
+    if (!did && sup() < ec.supplyCap()) did = buyArmy();
     // Upgrades: cheapest-level units of the highest tier first.
     if (!did) {
       const cand = army.filter(a => (a.level || 0) < L.MAX_LEVEL).sort((a, b) => (T[b.type].tier || 1) - (T[a.type].tier || 1) || (a.level || 0) - (b.level || 0));

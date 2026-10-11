@@ -236,3 +236,14 @@ Rune: Warden skal gå til den siden der kampen er, og et skjold over flammen (so
 - **Funn: lag på fire faller på wave 6 (Skall).** Alene vinner boten wave 6 hver gang, men bare fordi Warden dreper restene etter at hæren er slått. I lag har bare én side Warden; de tre andre lekker samtidig, skjoldet tømmer Warden, og laget taper. Balansen i dag forutsetter én Warden per spiller. Før ekte lagspill må det velges: svakere waves i lagspill, en egen vokter per side, eller hjelpere som går til Warden (låst regel fra 3. okt).
 - Ikke bygget: «Kall Warden»-knapp (en spiller ber ham komme), soldater som går til Warden når egen wave er ferdig (låst regel fra 3. okt), online lagspill.
 
+
+
+## 11 Oct 2026 – version 35: harde første waves
+
+Rune: «1–5 er altfor lett fortsatt … harde valg i begynnelsen om hvor en plasserer penger: produksjon, hæren, porten». Det erstatter målet om snille wave 1–5.
+- `tune_targets.js` stilte wave 1–4 omtrent dobbelt så sterke (mål: 99 % holder wave 1–2, 97 % wave 3, 96 % wave 4, 95 % wave 5; ingen tak lenger). Wave 1 ble så tatt ned 15 % for hånd, så ingen taper før de har fått gjort et valg.
+- Testspilleren kjøper nå en minstehær før arbeidere (6 + 2 per wave). Før brukte den alt på arbeidere, og med de nye wavene falt den på wave 1–4 (en «sterk» spiller med mer gull falt oftere enn en vanlig).
+- Porten brytes i de fleste av de første wavene; reparasjon (stein) er en del av hver runde.
+- **Åpninger (`node tools/openers.js 24`):** grådig på arbeidere: alle 24 falt før wave 5. Aldri reparere porten: alle falt før wave 5. Bare hær de første wavene: like bra som balansert. Balansert: rundt 1 av 10 faller før wave 5.
+- **Resultat:** vanlig spiller median wave 25, 15 % vinner; sterk median 25, 30 % vinner; slurvete median 10. Spillestilene (hær, økonomi, Warden, forsvar) havner på 22–25; helt-satsing 16; én-triks og bare Tier 1–2 faller tidligere.
+- **Åpent:** grådig arbeider-åpning taper alltid; et mellomting (litt flere arbeidere, litt mindre hær) er ikke testet. Portreparasjon koster bare 6–12 stein; kan gjøres dyrere om porten skal være et ekte valg.

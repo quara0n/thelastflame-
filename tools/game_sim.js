@@ -5,7 +5,7 @@ function load(extra) {
   const html = fs.readFileSync(__dirname + '/../prototype/kamptest-2.html', 'utf8');
   const a = html.indexOf('// ===== The Last Flame — kampsimulering'), b = html.indexOf('// ===== The Last Flame — musikk');
   const code = html.slice(a, b).replace(/if \(typeof module !== 'undefined'\) module.exports/g, '//') + (extra || '');
-  return new Function(code + ';return { Sim, Econ, TYPES, WAVES, BARRACKS, NODES, TRACKS, BOUNTY, waveBonus, UPGRADES, MAX_LEVEL, supplyOf, ARCHERS, buildWave, upgradeSpent, REFUND, WALLS, Rival: typeof Rival !== "undefined" ? Rival : null, sendable: typeof sendable !== "undefined" ? sendable : null, arenaSim: typeof arenaSim !== "undefined" ? arenaSim : null, arenaOutcome: typeof arenaOutcome !== "undefined" ? arenaOutcome : null, heroBot: typeof heroBot !== "undefined" ? heroBot : () => {}, withHero: typeof withHero !== "undefined" ? withHero : a => a, workerCap: typeof BOT_WORKER_CAP !== "undefined" ? BOT_WORKER_CAP : null, botSpend: typeof botSpend !== "undefined" ? botSpend : null, heroAfterWave: typeof heroAfterWave !== "undefined" ? heroAfterWave : () => null };')();
+  return new Function(code + ';return { Sim, Econ, TYPES, WAVES, BARRACKS, NODES, TRACKS, BOUNTY, waveBonus, UPGRADES, MAX_LEVEL, supplyOf, ARCHERS, buildWave, upgradeSpent, REFUND, WALLS, Rival: typeof Rival !== "undefined" ? Rival : null, sendable: typeof sendable !== "undefined" ? sendable : null, arenaSim: typeof arenaSim !== "undefined" ? arenaSim : null, arenaOutcome: typeof arenaOutcome !== "undefined" ? arenaOutcome : null, heroBot: typeof heroBot !== "undefined" ? heroBot : () => {}, withHero: typeof withHero !== "undefined" ? withHero : a => a, armyNeed: typeof BOT_ARMY_NEED !== "undefined" ? BOT_ARMY_NEED : null, workerCap: typeof BOT_WORKER_CAP !== "undefined" ? BOT_WORKER_CAP : null, botSpend: typeof botSpend !== "undefined" ? botSpend : null, heroAfterWave: typeof heroAfterWave !== "undefined" ? heroAfterWave : () => null };')();
 }
 
 function bot(L, ec, army, waveIdx) {
@@ -37,8 +37,20 @@ function bot(L, ec, army, waveIdx) {
   const afford = c => Object.keys(c || {}).every(r => (ec.res[r] || 0) - keep(r) >= c[r]);
   // Version 24: a random hero at wave 2; talents and doctrines picked at random.
   L.heroBot(ec, w);
+  // Army: keep roughly half melee, half ranged; buy the best tier that is open.
+  const buyArmy = () => {
+    const nMel = army.filter(melee).length, wantRanged = nMel > army.length - nMel;
+    for (let tier = ec.barracks + 1; tier >= 1; tier--) {
+      const opts = unitsOf(tier).filter(t => !!T[t].ranged === wantRanged);
+      if (buy(opts[(army.length + w) % opts.length])) return true;
+    }
+    return false;
+  };
+  // Version 34: the early waves are hard, so a minimum army comes before workers (6 + 2 per wave, up to the army space).
+  const armyNeed = Math.min(ec.supplyCap(), L.armyNeed ? L.armyNeed(w) : 6 + 2 * w);
   for (let guard = 0; guard < 80; guard++) {
     let did = false;
+    if (sup() < armyNeed) did = buyArmy();
     // Economy (version 22): fill each mine while the next worker is cheap compared to how far the game has come.
     // Workers get dearer one by one, so a sensible player stops when the price outruns the payback.
     if (!did && w >= 3 && !ec.nodes.iron.unlocked && ec.can(L.NODES.iron.unlock)) did = ec.unlockNode('iron');
@@ -61,14 +73,7 @@ function bot(L, ec, army, waveIdx) {
     if (!did && ec.gateHp < ec.gateMax() * 0.7) did = ec.repair();
     if (!did && w >= 3 && ec.archers === 0) did = ec.buyArchers();
     // Army: keep roughly half melee, half ranged; buy the best tier that is open.
-    if (!did && sup() < ec.supplyCap()) {
-      const nMel = army.filter(melee).length, wantRanged = nMel > army.length - nMel;
-      for (let tier = ec.barracks + 1; tier >= 1 && !did; tier--) {
-        const opts = unitsOf(tier).filter(t => !!T[t].ranged === wantRanged);
-        const pick = opts[(army.length + w) % opts.length];
-        did = buy(pick);
-      }
-    }
+    if (!did && sup() < ec.supplyCap()) did = buyArmy();
     // Upgrades: cheapest-level units of the highest tier first.
     if (!did) {
       const cand = army.filter(a => (a.level || 0) < L.MAX_LEVEL).sort((a, b) => (T[b.type].tier || 1) - (T[a.type].tier || 1) || (a.level || 0) - (b.level || 0));
