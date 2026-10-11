@@ -123,3 +123,65 @@ Rune (6. okt): flyvere angrep muren mens skytterne sto til høyre; altfor lett; 
 - 1 mot 1 mot computeren: VERSUS.wave 0,47 → 0,5. Bot mot bot er alt-eller-ingenting der (0,55 og over: begge dør på wave 7), så det må prøves av Rune.
 - `game_sim 30` etter alt: 2 av 30 når wave 30; de fleste faller i wave 16–19 (World 1 er lett for boten, World 2 sent er veggen).
 
+
+## 10 Oct 2026 – version 23: Bastion med fire sider
+
+- Rune ba om tre nye sider (øst, sør, vest) med egen landsby og Barracks, uten waves ennå, og en skala for Bastion. Bygget i `tools/bastion.py` (siste steg i build_v2.py). Detaljer i `docs/design-flyvere-assets-flerspiller.md` → «Bastion med fire sider».
+- Port til flamme er uendret (35 m), så balansen er uendret (Sim-koden er ikke rørt, bare `SIDES`/`sideToWorld` lagt til). Muren er nå et kvadrat på ca. 70 m; distriktene skrår inn mot citadellet; gamlebyen i hjørnene.
+- Rivalen flyttet til x = 140 (`tools/rival_view.py`); minikartet hopper over tomrommet.
+- Neste: spillere på sidene (2 mot 2 / 4 mot 4), waves der, hjelp via ringveien.
+
+## 10 Oct 2026 – version 24: hver side har sitt landskap
+
+- Rune: høyre side (øst) grønnere med trær, havet mot vest, det guddommelige og himmelske med hvite skyer mot sør. Nord beholder dagens utseende.
+- Bygget i `tools/biomes.py` (etter bastion.py). Navn: Øst Grønnlund, Sør Lysheim, Vest Havbryn (kan byttes). Vestbanneret er nå havblått, sør gull.
+- Bare utseende; kampen og balansen er uendret.
+- Neste mulig: la nordsiden følge verdenen også for de andre (eller gi sidene egne fiender), lyd per side (bølger, fuglesang, kor).
+
+## 10 Oct 2026 – version 25: helt, Barracks-doktriner og arbeiderfunn
+
+- Rune ba om flere ting i Barracks og for arbeiderne, og en helt man lager og levler opp, med ulike veier og mindre forutsigbart. Forslag og alt som er bygget: `docs/helt-barracks-arbeidere.md` (også i prosjektets `design/`).
+- Bygget i `tools/hero.py` (siste steg i build_v2.py, etter biomes.py):
+  - **Helten:** Heltehallen (Bygninger) eller «Velg helt» i Hær-fanen, 40 gull. Flammeridder, Askejeger eller Glødeprest. Tar ingen plass, kan ikke selges. Erfaring fra drap (bounty) og 40 % av det som faller innen 10 m, +2 per wave han står. Hvert nivå +6 % og 1 av 3 tilfeldige talenter (trekk på nytt 10/20/30 gull); nivå 5 velger retning (to per klasse).
+  - **Doktriner:** hvert nytt Barracks-nivå trekker 3 av 9; du velger 1 for resten av spillet.
+  - **Arbeiderfunn:** 0,5 % sjanse per leveranse (gullåre, gammelt våpen = heltens erfaring, jernklump, glo = Warden-erfaring).
+  - Boten og rivalen får helt fra wave 2 og velger tilfeldig. Rivalens helt står i hæren hans via `withHero` (ikke i army-lista).
+- Balanse: wavene retunet (`wave_factors.json`). `game_sim 30`: 1–3 av 30 når wave 30, median ca. 15–17 (som før).
+- **Helten kan dø (Runes valg, samme dag):** faller han, mister han 25 % av fremgangen mot neste nivå (`HERO_FALL_LOSS`, aldri nivå eller talenter) og står ute til han gjenopplives i byggefasen for 5 + 2 gull per nivå (`HERO_REVIVE`; 7–25 gull, rekruttering 40). Knappen står på heltekortet. Boten og rivalen gjenoppliver når de har råd. Tre klasser holder for nå. Erfaringstapet gjorde spillet ca. 3 waves tyngre for boten (helten levler saktere), så wave 9–30 i `wave_factors.json` ble ganget med 0,96. 120 spill: median wave 15 (før 16), 5 av 120 når wave 30 (før 9).
+- Åpent spørsmål til Rune: hva neste (karavanen, relikvier, formenn, leiesoldater). Ikke start karavanen før han velger.
+
+## 10 Oct 2026 – version 27: mindre valgpanel, delvis oppgradering, heltens utstyr, mer jern
+
+Runes tilbakemelding på versjon 26:
+- **Valgpanelet** var for stort. Nå åpner det kompakt (lite bilde, navn, nivå, HP/skade/rustning med grønt for neste nivå); tabellen ligger bak «Tall». X i hjørnet og trykk utenfor lukker. «Avbryt» er skjult (X gjør det samme). `tools/ui_tidy.py`.
+- **Oppgrader** med mange valgt: oppgraderer så mange du har råd til, billigste først («Oppgrader 4 av 7»), ikke alt eller ingenting.
+- **Heltekortet** i Heltehallen ble presset til en smal kolonne (en `</div>` lukket kortet for tidlig). Fikset.
+- **Helten falt av for fort:** +8 % per nivå (var 6 %), og nytt utstyr i Heltehallen: Våpen, Rustning, Flammeamulett, 3 nivåer hver for gull + jern. Amulett nivå 3 = «Siste glød» (reiser seg én gang per wave med 40 % helse). Boten kjøper utstyr fra wave 8 når den har mye til overs.
+- **Jern for knapt:** jerngruva leverer hvert 12. s (var 14), første jernarbeider 10 gull (var 12), økning 5 (var 5, gratis-plasser 0). Tømmer og stein uendret (prøvde å senke dem, men da falt boten på wave 6 og 9). Innsamling avhenger ikke av avstanden mellom gruvene og husene; hver tur tar fast tid.
+- Wavene retunet fra wave 1 (`tune_waves.js 16 1`). 120 spill: median wave 18, 11 av 120 når wave 30 (versjon 26: 15 og 5). Tier-tidspunkt (bot) 7/11/20.
+
+## 11 Oct 2026 – version 28: tyngre spill, knappere økonomi, portfeil, murforsvar, kullmile og smelteovn
+
+Runes tilbakemelding etter å ha spilt versjon 27 (`tools/hardmode.py`, siste steg i build_v2.py):
+- **Portfeil:** store skapninger (Colossus, Treant, Hornback, Clubtail, Tyrant, Earthshaker, Tyrantkongen) stoppet like før porten på grunn av størrelsen og slo aldri på den. Derfor «gjorde wavene ingenting mot porten» sent i spillet når bare kjempene var igjen. Nå teller kroppen, ikke midtpunktet.
+- **Arbeidere er en investering:** gull 14 + 4 per arbeider på gruva, tømmer/stein 10 + 3, jern 18 + 5, kull 24 + 6 (`economy.json` → `scarce.worker`). Boten godtar dyrere arbeidere etter hvert (`pr <= 16 + 3w` i game_sim.js; rivalen bruker samme bot).
+- **Mindre gull:** wave-bonusen er 4 + 1,5 per wave (opp til 10), deretter + 0,5 (før 6 + 2 …). Heltens utstyr koster det dobbelte.
+- **Kull:** Barracks IV 105 → 42 kull, V 174 → 70. Tier 3/4-units og oppgraderinger bruker halvparten så mye kull.
+- **Helten faller:** går ned ett nivå og mister valget fra det nivået (talentet, eller retningen på nivå 5). Gjenopplive koster 15 + 6 gull per nivå.
+- **Rekkevidde:** alt over 6 m kortes med 40 % (Longfang 12 → 9,6, Skyspear 14 → 10,8, Askejeger 11 → 9), rekkevidde-oppgraderinger +1 m.
+- **40 skapninger per wave** (var 30). De ti ekstra er wavens egen art; kjempe-waves får 3 kjemper til og 7 i følget, boss-waves 10 i følget.
+- **Muren:** Ballista (1–3 stk, tunge bolter mot den største fienden, +60 % mot kjemper) og Kokende olje (3 nivåer, brenner alle ved porten hvert 5. s, kull).
+- **Landsby:** Kullmile (6 tømmer → 1 kull hvert 15. s per nivå) og Smelteovn (5 stein → 1 jern). Overskuddet av tømmer og stein kan nå bli kull og jern.
+- **Waves:** `tune_waves.js` med lavere mål (se TARGET), deretter wave 1–10 × 1,05 og 11–30 × 1,12 fordi tuneren ga for lette sene waves (hærene i tuner-løpene krympet). 90 spill: median wave 15, 5 av 90 når wave 30 (versjon 27: 18 og 11 av 120). Tier 2 rundt wave 7.
+- Neste: Rune skal spille. Ideer for muren som ikke er bygget: brannpiler, trebuchet, pigger foran porten (i designnotatet).
+
+## 11 Oct 2026 – version 29: landsbyen etter konseptbildet, hver side ser sin egen landsby opp
+
+- Rune delte et konseptbilde av landsbyen (`docs/art/landsby-konsept.png`) og vil ha det som retning: porten øverst, lys steinvei med fakler og blå bannere ned mot citadellet, Longhouse og Barracks til venstre, Forge og Workshop til høyre, gull og tømmer langs venstre kant, jern, stein og kull langs høyre.
+- Bygget i `tools/village.py` (siste steg i build_v2.py): hus med gavltak, dør og lyse vinduer; gruver med kran, vogner, skinner og stokker; belagte plasser; bannere på muren; glødepanner ved porten; røyk fra smia; vannhjul ved Workshop. Jern og stein har byttet plass. Nord har mørkeblå bannere og varm jord.
+- **Hver side ser sin landsby opp:** kameraet snur seg etter siden (`MY_SIDE`, i dag alltid nord). Porten er alltid øverst og alt ligger likt. «Se landsbyen fra» Nord/Øst/Sør/Vest i Landsby-fanen viser hvordan det ser ut for spilleren på den siden.
+- **Samme oppsett, eget utseende og egne navn per side** (navnene kan byttes): Øst Grønnlund – Tinghall, Jegerleir, Rotsmie, Treverksted (mosegrønne tak, grønne bannere). Sør Lysheim – Lystempel, Lysgarde, Solsmie, Stjerneverksted (hvit marmor, gulltak). Vest Havbryn – Havhall, Sjøgarde, Ankersmie, Verft (grå tre, skiferblå tak, havblå bannere).
+- Navneskiltene er større, med ikon, og holdes innenfor skjermen på telefon (låste gruver viser 🔒 på telefon).
+- Bare utseende og kamera; kampen og balansen er uendret. Tegnekall: Bastion-oversikten ca. 950 (før 777), landsbyen ca. 310 (før 145), slagmarken 250 (før 225).
+- Neste mulig: egne modeller per side (ikke bare farger), at også slagmarken snus når flerspiller gir deg en annen side enn nord.
+

@@ -40,8 +40,18 @@ W = [
   ("Gjengangere", [("revenant", 20, "front"), ("frillspitter", 6, "back"), ("raptor", 4, "flank")], {"world": 3}),
   ("Boss",       [("tyrantKing", 1, "boss"), ("revenant", 12, "front"), ("raptor", 10, "flank"), ("frillspitter", 7, "back")], {"world": 3, "boss": True}),
 ]
+# Versjon 28 (Rune): flere skapninger, 40 per wave. Den nye arten får de ti ekstra; er den en kjempe, får den 3 og
+# følget de 7 andre. Bosswaves: følget får alle ti.
+GIANTS = {'colossus', 'treant', 'urdragon', 'tyrant', 'earthshaker', 'broodmother'}
+def _grow(g, ex):
+    g = [list(x) for x in g]
+    if ex.get('boss'): g[1][1] += 10
+    elif g[0][0] in GIANTS: g[0][1] += 3; g[1][1] += 7
+    else: g[0][1] += 10
+    return [tuple(x) for x in g]
+W = [(st, _grow(g, ex), ex) for st, g, ex in W]
 for st, g, ex in W:
-    assert sum(n for _, n, _ in g) == 30, st
+    assert sum(n for _, n, _ in g) == 40, st
 
 def js(st, g, ex):
     groups = ", ".join(f"['{t}', {n}, '{r}']" for t, n, r in g)
@@ -53,5 +63,5 @@ def apply(s):
     b = s.index("].map((w, i) => Object.assign(w, { n: i + 1", a)
     old = s[a:b]
     assert old.count("style:") == 30, old.count("style:")
-    s = s[:a] + "  // 30 skapninger per wave; den nye arten er flertallet (kjemper teller tyngre). 4. okt 2026.\n" + "\n".join(js(*w) for w in W) + "\n" + s[b:]
+    s = s[:a] + "  // 40 skapninger per wave (versjon 28); den nye arten er flertallet (kjemper teller tyngre).\n" + "\n".join(js(*w) for w in W) + "\n" + s[b:]
     return s

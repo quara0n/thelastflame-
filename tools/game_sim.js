@@ -5,7 +5,7 @@ function load(extra) {
   const html = fs.readFileSync(__dirname + '/../prototype/kamptest-2.html', 'utf8');
   const a = html.indexOf('// ===== The Last Flame — kampsimulering'), b = html.indexOf('// ===== The Last Flame — musikk');
   const code = html.slice(a, b).replace(/if \(typeof module !== 'undefined'\) module.exports/g, '//') + (extra || '');
-  return new Function(code + ';return { Sim, Econ, TYPES, WAVES, BARRACKS, NODES, TRACKS, BOUNTY, waveBonus, UPGRADES, MAX_LEVEL, supplyOf, ARCHERS, buildWave, upgradeSpent, REFUND, WALLS, Rival: typeof Rival !== "undefined" ? Rival : null, sendable: typeof sendable !== "undefined" ? sendable : null, arenaSim: typeof arenaSim !== "undefined" ? arenaSim : null, arenaOutcome: typeof arenaOutcome !== "undefined" ? arenaOutcome : null };')();
+  return new Function(code + ';return { Sim, Econ, TYPES, WAVES, BARRACKS, NODES, TRACKS, BOUNTY, waveBonus, UPGRADES, MAX_LEVEL, supplyOf, ARCHERS, buildWave, upgradeSpent, REFUND, WALLS, Rival: typeof Rival !== "undefined" ? Rival : null, sendable: typeof sendable !== "undefined" ? sendable : null, arenaSim: typeof arenaSim !== "undefined" ? arenaSim : null, arenaOutcome: typeof arenaOutcome !== "undefined" ? arenaOutcome : null, heroBot: typeof heroBot !== "undefined" ? heroBot : () => {}, withHero: typeof withHero !== "undefined" ? withHero : a => a, heroAfterWave: typeof heroAfterWave !== "undefined" ? heroAfterWave : () => null };')();
 }
 
 function bot(L, ec, army, waveIdx) {
@@ -30,6 +30,8 @@ function bot(L, ec, army, waveIdx) {
     if (!ec.can(c)) return false; ec.pay(c); a.level = (a.level || 0) + 1; return true;
   };
   const w = waveIdx + 1;
+  // Version 24: a random hero at wave 2; talents and doctrines picked at random.
+  L.heroBot(ec, w);
   for (let guard = 0; guard < 80; guard++) {
     let did = false;
     // Economy (version 22): fill each mine while the next worker is cheap compared to how far the game has come.
@@ -42,7 +44,8 @@ function bot(L, ec, army, waveIdx) {
       const n = ec.nodes[k];
       if (!n.unlocked || n.workers >= ec.cap(k) || n.workers >= wantW[k]) continue;
       const pr = ec.workerPrice(k);
-      if (pr <= 10 + 2.5 * w && ec.res.gold >= pr + (w <= 4 ? 8 : 18)) did = ec.addWorker(k);
+      // Version 28: workers cost more (a real investment), so the bot accepts a higher price as the game goes on.
+      if (pr <= 16 + 3 * w && ec.res.gold >= pr + (w <= 4 ? 8 : 18)) did = ec.addWorker(k);
     }
     // A full mine gets more places as soon as the Barracks allows it.
     for (const k of ['gold', 'iron', 'timber', 'stone', 'coal']) if (!did && ec.nodes[k].unlocked && !ec.nodes[k].expanded && ec.nodes[k].workers >= ec.cap(k)) did = ec.expandNode(k);
@@ -102,15 +105,16 @@ function playGame(L, opts) {
     ec.tick(t);
     bot(L, ec, army, wi);
     const W = L.WAVES[wi];
-    const sim = new L.Sim(army, { types: ec.types(L.TYPES, W.scale), enemies: L.buildWave(W), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: L.ARCHERS[ec.archers].count });
+    const sim = new L.Sim(L.withHero(army, ec), { types: ec.types(L.TYPES, W.scale), enemies: L.buildWave(W), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: L.ARCHERS[ec.archers].count, wallgear: ec.wallgear });
     while (!sim.result) sim.step(1 / 15);
     ec.tick(sim.t);
     ec.gateHp = sim.gateHp;
     let bounty = 0; sim.units.forEach(u => { if (u.side === 'e' && !u.alive) bounty += L.BOUNTY[u.type] || 0; });
     ec.add({ gold: bounty });
     if (sim.result.win) ec.add({ gold: L.waveBonus(W.n) });
+    L.heroAfterWave(ec, sim, true);
     const value = army.reduce((s, a) => s + (L.TYPES[a.type].cost || 0) + (L.upgradeSpent(a.type, a.level).gold || 0), 0);
-    log.push({ w: W.n, win: sim.result.win, flame: sim.result.reason === 'Fienden nådde flammen', gate: Math.round(sim.gateHp), army: army.length, value, lv: +(army.reduce((s, a) => s + (a.level || 0), 0) / Math.max(1, army.length)).toFixed(1), tiers: [1, 2, 3].map(k => army.filter(a => (L.TYPES[a.type].tier || 1) === k).length).join('/'), gold: Math.round(ec.res.gold) });
+    log.push({ w: W.n, win: sim.result.win, flame: sim.result.reason === 'Fienden nådde flammen', gate: Math.round(sim.gateHp), army: army.length, value, lv: +(army.reduce((s, a) => s + (a.level || 0), 0) / Math.max(1, army.length)).toFixed(1), tiers: [1, 2, 3].map(k => army.filter(a => (L.TYPES[a.type].tier || 1) === k).length).join('/'), gold: Math.round(ec.res.gold), hero: ec.hero ? ec.heroLevel() : 0 });
     if (sim.result.reason === 'Fienden nådde flammen') break;
     t = 55;
   }

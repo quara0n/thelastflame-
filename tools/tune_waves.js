@@ -6,7 +6,8 @@ const L = load();
 const R = +(process.argv[2] || 16);
 // 4. okt (2): World 1 litt tøffere (spilleren syntes 1–10 ble for lett). World 2 og 3 som før.
 // Version 22: lower targets (harder waves). The bot plays a weaker game than Rune, so waves tuned for it felt too easy.
-const TARGET = w => w <= 4 ? 0.85 : w <= 9 ? 0.75 : w === 10 ? 0.6 : w <= 19 ? 0.7 : w === 20 ? 0.5 : w <= 29 ? 0.62 : 0.4;
+// Version 28: lower again (Rune: waves too easy, everything maxed too early).
+const TARGET = w => w <= 4 ? 0.8 : w <= 9 ? 0.68 : w === 10 ? 0.55 : w <= 19 ? 0.62 : w === 20 ? 0.45 : w <= 29 ? 0.55 : 0.35;
 // Waves before FROM keep the factor already built into the prototype; only later waves are searched.
 const FROM = +(process.argv[3] || 1);
 const GRID = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.25, 1.4, 1.6];
@@ -19,7 +20,7 @@ const cloneEcon = ec => { const c = Object.assign(Object.create(Object.getProtot
 const runWave = (st, wi, k) => {
   const W = L.WAVES[wi], ec = st.ec;
   const scale = { hp: W.scale.hp * k, dmg: W.scale.dmg * Math.sqrt(k) };
-  const sim = new L.Sim(st.army, { types: ec.types(L.TYPES, scale), enemies: L.buildWave(W), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: L.ARCHERS[ec.archers].count });
+  const sim = new L.Sim(L.withHero(st.army, ec), { types: ec.types(L.TYPES, scale), enemies: L.buildWave(W), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: L.ARCHERS[ec.archers].count, wallgear: ec.wallgear });
   while (!sim.result) sim.step(1 / 15);
   return sim;
 };
@@ -41,6 +42,7 @@ for (let wi = 0; wi < L.WAVES.length; wi++) {
     ec.tick(sim.t); ec.gateHp = sim.gateHp;
     let bounty = 0; sim.units.forEach(u => { if (u.side === 'e' && !u.alive) bounty += L.BOUNTY[u.type] || 0; });
     ec.add({ gold: bounty }); if (sim.result.win) ec.add({ gold: L.waveBonus(wi + 1) });
+    L.heroAfterWave(ec, sim, true);
     if (ec.gateHp <= 0) ec.gateHp = ec.gateMax() * 0.5;   // in the real game the player repairs; keep runs alive
     st.t = 55;
   });

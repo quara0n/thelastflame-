@@ -3,11 +3,11 @@
   "gold": 12,
   "timber": 10,
   "stone": 10,
-  "iron": 14,
+  "iron": 12,
   "coal": 22
  },
  "worker": {
-  "base": 5,
+  "base": 10,
   "free": 6,
   "step": 4
  },
@@ -28,28 +28,28 @@
   },
   "worker": {
    "gold": [
-    5,
+    14,
     4,
-    3
+    0
    ],
    "timber": [
-    5,
-    4,
-    2
+    10,
+    3,
+    0
    ],
    "stone": [
-    5,
-    4,
-    2
+    10,
+    3,
+    0
    ],
    "iron": [
-    12,
+    18,
     5,
     0
    ],
    "coal": [
-    16,
-    7,
+    24,
+    6,
     0
    ]
   },
@@ -105,11 +105,11 @@
    "3": 1
   },
   "unitCoal": {
-   "3": 2,
-   "4": 3
+   "3": 1,
+   "4": 2
   },
   "upgradeIron": 2,
-  "upgradeCoal": 2,
+  "upgradeCoal": 1,
   "barracksWood": {
    "3": 0.55,
    "4": 0.55

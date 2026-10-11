@@ -149,5 +149,17 @@ import online
 s = online.apply(s)
 import scarcity
 s = scarcity.apply(s)
+import bastion
+s = bastion.apply(s)
+import biomes
+s = biomes.apply(s)
+import hero
+s = hero.apply(s)
+import ui_tidy
+s = ui_tidy.apply(s)
+import hardmode
+s = hardmode.apply(s)
+import village
+s = village.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))
