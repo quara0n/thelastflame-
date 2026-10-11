@@ -4,7 +4,7 @@ const ec = new L.Econ(), army = []; let t = 45;
 for (let wi = 0; wi < 30; wi++) {
   ec.tick(t); G.bot(L, ec, army, wi);
   const W = L.WAVES[wi];
-  const sim = new L.Sim(army, { types: ec.types(L.TYPES, W.scale), enemies: L.buildWave(W), gateHp: 1e5, gateMax: 1e5, archers: L.ARCHERS[ec.archers].count });
+  const sim = new L.Sim(army, { types: ec.types(L.TYPES, W.scale), enemies: L.buildWave(W), gateHp: 1e5, gateMax: 1e5, archers: L.ARCHERS[ec.archers].count, wallgear: ec.wallgear });
   while (!sim.result) sim.step(1 / 15);
   ec.tick(sim.t); let b = 0; sim.units.forEach(u => { if (u.side === 'e' && !u.alive) b += L.BOUNTY[u.type] || 0; }); ec.add({ gold: b + (sim.result.win ? L.waveBonus(W.n) : 0) });
   const nw = ['gold', 'timber', 'stone', 'iron', 'coal'].map(k => ec.nodes[k].workers + '/' + ec.cap(k)).join(' ');

@@ -44,7 +44,8 @@ function bot(L, ec, army, waveIdx) {
       const n = ec.nodes[k];
       if (!n.unlocked || n.workers >= ec.cap(k) || n.workers >= wantW[k]) continue;
       const pr = ec.workerPrice(k);
-      if (pr <= 10 + 2.5 * w && ec.res.gold >= pr + (w <= 4 ? 8 : 18)) did = ec.addWorker(k);
+      // Version 28: workers cost more (a real investment), so the bot accepts a higher price as the game goes on.
+      if (pr <= 16 + 3 * w && ec.res.gold >= pr + (w <= 4 ? 8 : 18)) did = ec.addWorker(k);
     }
     // A full mine gets more places as soon as the Barracks allows it.
     for (const k of ['gold', 'iron', 'timber', 'stone', 'coal']) if (!did && ec.nodes[k].unlocked && !ec.nodes[k].expanded && ec.nodes[k].workers >= ec.cap(k)) did = ec.expandNode(k);
@@ -104,7 +105,7 @@ function playGame(L, opts) {
     ec.tick(t);
     bot(L, ec, army, wi);
     const W = L.WAVES[wi];
-    const sim = new L.Sim(L.withHero(army, ec), { types: ec.types(L.TYPES, W.scale), enemies: L.buildWave(W), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: L.ARCHERS[ec.archers].count });
+    const sim = new L.Sim(L.withHero(army, ec), { types: ec.types(L.TYPES, W.scale), enemies: L.buildWave(W), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: L.ARCHERS[ec.archers].count, wallgear: ec.wallgear });
     while (!sim.result) sim.step(1 / 15);
     ec.tick(sim.t);
     ec.gateHp = sim.gateHp;

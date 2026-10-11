@@ -159,3 +159,18 @@ Runes tilbakemelding på versjon 26:
 - **Helten falt av for fort:** +8 % per nivå (var 6 %), og nytt utstyr i Heltehallen: Våpen, Rustning, Flammeamulett, 3 nivåer hver for gull + jern. Amulett nivå 3 = «Siste glød» (reiser seg én gang per wave med 40 % helse). Boten kjøper utstyr fra wave 8 når den har mye til overs.
 - **Jern for knapt:** jerngruva leverer hvert 12. s (var 14), første jernarbeider 10 gull (var 12), økning 5 (var 5, gratis-plasser 0). Tømmer og stein uendret (prøvde å senke dem, men da falt boten på wave 6 og 9). Innsamling avhenger ikke av avstanden mellom gruvene og husene; hver tur tar fast tid.
 - Wavene retunet fra wave 1 (`tune_waves.js 16 1`). 120 spill: median wave 18, 11 av 120 når wave 30 (versjon 26: 15 og 5). Tier-tidspunkt (bot) 7/11/20.
+
+## 11 Oct 2026 – version 28: tyngre spill, knappere økonomi, portfeil, murforsvar, kullmile og smelteovn
+
+Runes tilbakemelding etter å ha spilt versjon 27 (`tools/hardmode.py`, siste steg i build_v2.py):
+- **Portfeil:** store skapninger (Colossus, Treant, Hornback, Clubtail, Tyrant, Earthshaker, Tyrantkongen) stoppet like før porten på grunn av størrelsen og slo aldri på den. Derfor «gjorde wavene ingenting mot porten» sent i spillet når bare kjempene var igjen. Nå teller kroppen, ikke midtpunktet.
+- **Arbeidere er en investering:** gull 14 + 4 per arbeider på gruva, tømmer/stein 10 + 3, jern 18 + 5, kull 24 + 6 (`economy.json` → `scarce.worker`). Boten godtar dyrere arbeidere etter hvert (`pr <= 16 + 3w` i game_sim.js; rivalen bruker samme bot).
+- **Mindre gull:** wave-bonusen er 4 + 1,5 per wave (opp til 10), deretter + 0,5 (før 6 + 2 …). Heltens utstyr koster det dobbelte.
+- **Kull:** Barracks IV 105 → 42 kull, V 174 → 70. Tier 3/4-units og oppgraderinger bruker halvparten så mye kull.
+- **Helten faller:** går ned ett nivå og mister valget fra det nivået (talentet, eller retningen på nivå 5). Gjenopplive koster 15 + 6 gull per nivå.
+- **Rekkevidde:** alt over 6 m kortes med 40 % (Longfang 12 → 9,6, Skyspear 14 → 10,8, Askejeger 11 → 9), rekkevidde-oppgraderinger +1 m.
+- **40 skapninger per wave** (var 30). De ti ekstra er wavens egen art; kjempe-waves får 3 kjemper til og 7 i følget, boss-waves 10 i følget.
+- **Muren:** Ballista (1–3 stk, tunge bolter mot den største fienden, +60 % mot kjemper) og Kokende olje (3 nivåer, brenner alle ved porten hvert 5. s, kull).
+- **Landsby:** Kullmile (6 tømmer → 1 kull hvert 15. s per nivå) og Smelteovn (5 stein → 1 jern). Overskuddet av tømmer og stein kan nå bli kull og jern.
+- **Waves:** `tune_waves.js` med lavere mål (se TARGET), deretter wave 1–10 × 1,05 og 11–30 × 1,12 fordi tuneren ga for lette sene waves (hærene i tuner-løpene krympet). 90 spill: median wave 15, 5 av 90 når wave 30 (versjon 27: 18 og 11 av 120). Tier 2 rundt wave 7.
+- Neste: Rune skal spille. Ideer for muren som ikke er bygget: brannpiler, trebuchet, pigger foran porten (i designnotatet).

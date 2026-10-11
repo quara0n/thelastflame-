@@ -26,11 +26,11 @@ Målet er at to spill aldri blir like: du tar valg som stenger andre veier, og n
 **Slik virker det:**
 - Kjøpes i **Heltehallen** (Bygninger-fanen) for 40 gull. Du velger én av tre klasser. Han tar **ingen plass i hæren**.
 - Han settes på rutenettet som en vanlig soldat, og du kan flytte ham og gi ham ordre.
-- **Faller han** (Runes valg 10. okt): han mister en fjerdedel av fremgangen mot neste nivå (aldri et nivå eller talenter), og han står ute av kampen til du **gjenoppliver** ham i byggefasen. Det koster 5 + 2 gull per nivå (7 gull på nivå 1, 25 på nivå 10), altså mye mindre enn å rekruttere (40). Knappen «Gjenopplive» står på heltekortet i Hær-fanen og i Heltehallen.
+- **Faller han** (Rune 10. og 11. okt): han går **ned ett nivå** og mister valget han tok på det nivået (talentet, eller retningen på nivå 5). Han står ute av kampen til du **gjenoppliver** ham i byggefasen for 15 + 6 gull per nivå (21 på nivå 1, 45 på nivå 5, 75 på nivå 10). Knappen «Gjenopplive» står på heltekortet i Hær-fanen og i Heltehallen.
 - **Erfaring:** fiender han dreper gir like mye erfaring som gullet de gir; fiender som faller innen 10 m fra ham gir 40 % av det. +2 for hver wave han overlever. Nivå 1–10. Slik får også presten og skytteren erfaring, og det lønner seg å ha ham der kampen er.
 - **Tempo (målt med boten):** nivå 2–4 i de første wavene, nivå 5 rundt wave 7–8, nivå 10 rundt wave 27.
 - **Hvert nivå:** +8 % helse og skade (var 6 %; Rune syntes helten falt av for fort), og du **trekker 3 tilfeldige talenter og velger 1**. Liker du ingen av dem, kan du trekke på nytt for gull (10, så 20, så 30 … for samme nivå).
-- **Utstyr i Heltehallen (versjon 27):** tre spor med tre nivåer hver, for gull og jern (25 g + 3 jern, 50 g + 8 jern, 90 g + 15 jern).
+- **Utstyr i Heltehallen (versjon 27):** tre spor med tre nivåer hver, for gull og jern (50 g + 6 jern, 100 g + 14 jern, 180 g + 26 jern; doblet i versjon 28).
   - **Våpen:** +15 % skade per nivå.
   - **Rustning:** +15 % helse og +1 rustning per nivå.
   - **Flammeamulett:** nivå 1 og 2 gror 0,4 % helse per sekund hver; nivå 3, «Siste glød», lar ham reise seg én gang per wave med 40 % helse.
@@ -111,7 +111,20 @@ Sjansen er ca. ett funn per 2–3 waves med en vanlig landsby, mer med flere arb
 
 ---
 
-## 4. Større veivalg (ikke bygget)
+## 4. Muren og knappe ressurser (bygget i versjon 28)
+
+- **Ballista** på muren (Gatehouse, 3 nivåer = 1–3 stk): tunge bolter mot den største fienden innen 17 m, 90 skade, går gjennom 12 rustning, 60 % mer mot kjemper. Tømmer og jern, fra nivå 2 litt kull.
+- **Kokende olje** (Gatehouse, 3 nivåer): hvert 5. sekund heller muren olje over alle fiender ved porten, 35 / 70 / 120 skade gjennom all rustning. Kull og jern. Det er her kullet får et eget bruk.
+- **Kullmile** (Landsby): gjør 6 tømmer om til 1 kull hvert 15. sekund per nivå (+4 kull/min per nivå).
+- **Smelteovn** (Landsby): gjør 5 stein om til 1 jern hvert 15. sekund per nivå (+4 jern/min per nivå).
+- Tømmer og stein hopet seg opp mens jern og kull var knappe; nå kan overskuddet brukes på det som mangler.
+
+### Flere ideer for muren (ikke bygget)
+- **Brannpiler:** bueskytterne brenner fiender (kull per wave).
+- **Kastemaskin (trebuchet):** skyter langt ut på slagmarken mot fiender som samler seg.
+- **Pigger foran porten:** de første som når porten tar skade og bremses.
+
+## 5. Større veivalg (ikke bygget)
 
 - **Velsignelse per verden:** når en ny verden starter, velg 1 av 3 tilfeldige velsignelser fra flammen (f.eks. «Askeskjold»: porten +30 %; «Glødende piler»: bueskytterne brenner).
 - **Utfordringer:** før en wave kan du godta en tilfeldig ulempe («fiendene løper 20 % raskere») for en belønning (et relikvie eller ekstra kull). Frivillig risiko.

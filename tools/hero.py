@@ -16,15 +16,14 @@ const HERO_COST = { gold: 40 };
 const HERO_XP = [12, 35, 70, 150, 225, 290, 370, 500, 680];   // total erfaring for nivå 2, 3, 4 … 10
 const HERO_GROWTH = 0.08;                                    // +8 % helse og skade per nivå (var 6 %; Rune: helten falt av for fort)
 const HERO_PATH_LEVEL = 5;
-const HERO_REVIVE = { base: 5, perLevel: 2 };   // nivå 1: 7 gull, nivå 10: 25 gull (å rekruttere koster 40)
-const HERO_FALL_LOSS = 0.25;                      // andel av fremgangen mot neste nivå som går tapt
+const HERO_REVIVE = { base: 15, perLevel: 6 };   // nivå 1: 21 gull, nivå 5: 45, nivå 10: 75 (versjon 28: Rune ville ha det dyrere)
 // Heltens utstyr (versjon 27): tre spor à tre nivåer, kjøpes i Heltehallen for gull og jern. Gjør helten sterkere uavhengig av erfaring.
 const HERO_GEAR = {
   vapen:    { name: 'Våpen', desc: '+15 % skade per nivå.', lv: [{ dmgMul: 1.15 }, { dmgMul: 1.15 }, { dmgMul: 1.15 }] },
   rustning: { name: 'Rustning', desc: '+15 % helse og +1 rustning per nivå.', lv: [{ hpMul: 1.15, armor: 1 }, { hpMul: 1.15, armor: 1 }, { hpMul: 1.15, armor: 1 }] },
   amulett:  { name: 'Flammeamulett', desc: 'Nivå 1 og 2: gror 0,4 % helse per sekund. Nivå 3, «Siste glød»: reiser seg én gang per wave med 40 % helse.', lv: [{ regenPct: 0.004 }, { regenPct: 0.004 }, { revive: 0.4 }] },
 };
-const HERO_GEAR_COST = [{ gold: 25, iron: 3 }, { gold: 50, iron: 8 }, { gold: 90, iron: 15 }];
+const HERO_GEAR_COST = [{ gold: 50, iron: 6 }, { gold: 100, iron: 14 }, { gold: 180, iron: 26 }];   // versjon 28: dobbelt så dyrt
 const HERO_CLASSES = {
   heroKnight: { name: 'Flammeridder', short: 'Nærkamp. Står foran og tåler mye.', paths: ['paladin', 'berserker'] },
   heroHunter: { name: 'Askejeger', short: 'Skytter med lang rekkevidde, god mot flyvere.', paths: ['falkoye', 'stormskytter'] },
@@ -148,12 +147,20 @@ Object.assign(Econ.prototype, {
   // Helten kan falle (Rune 10. okt): han mister halve fremgangen mot neste nivå (aldri et nivå eller talenter),
   // og må gjenopplives for gull før han kan kjempe igjen. Det koster mindre enn å rekruttere ham.
   heroReviveCost() { return { gold: HERO_REVIVE.base + HERO_REVIVE.perLevel * this.heroLevel() }; },
+  // Versjon 28 (Rune): faller han, går han ned ett nivå og mister valget han tok på det nivået (talentet, eller retningen på nivå 5).
   heroFall() {
-    const h = this.hero; if (!h || h.fallen) return 0;
-    const lv = this.heroLevel(), floor = HERO_XP[lv - 2] || 0, next = HERO_XP[lv - 1];
-    const lost = next ? Math.floor((h.xp - floor) * HERO_FALL_LOSS) : 0;
-    h.xp -= lost; h.fallen = true;
-    return lost;
+    const h = this.hero; if (!h || h.fallen) return null;
+    const lv = this.heroLevel(), out = { level: lv, perk: null };
+    h.fallen = true;
+    if (lv <= 1) { h.xp = 0; return out; }
+    h.xp = HERO_XP[lv - 3] || 0;   // starten av nivået under
+    if (h.picks >= lv - 1) {
+      if (lv === HERO_PATH_LEVEL && h.path) { out.perk = HERO_PATHS[h.path].name; h.path = null; }
+      else if (h.talents.length) { const id = h.talents.pop(); out.perk = HERO_TALENTS[id].name; }
+      h.picks = lv - 2;
+    }
+    h.rerolls = 0; this.heroDraw();
+    return out;
   },
   heroGearLevel(k) { return this.hero && this.hero.gear ? this.hero.gear[k] || 0 : 0; },
   heroGearCost(k) { return HERO_GEAR_COST[this.heroGearLevel(k)] || null; },
@@ -220,7 +227,7 @@ function heroAfterWave(ec, sim, auto) {
     let xp = Math.round((sim.heroXp || 0) + (hu.alive ? 2 : 0));
     if (ec.has('akademi')) xp = Math.round(xp * 1.5);
     res = { xp, up: ec.heroGain(xp), alive: hu.alive };
-    if (!hu.alive) res.lost = ec.heroFall();
+    if (!hu.alive) res.fall = ec.heroFall();
   }
   if (auto) heroAuto(ec);
   return res;
@@ -304,7 +311,7 @@ UI = r"""
       if (h) return;
       const eff = ec.types(TYPES);
       html = `<div class="ac-eyebrow">Heltehallen</div><h2>Velg din helt</h2>
-        <p class="ac-note">Helten tar ingen plass i hæren, kan ikke selges, og kommer tilbake hver wave. Han får erfaring av fiender han dreper. Hvert nivå velger du ett av tre tilfeldige talenter; på nivå ${HERO_PATH_LEVEL} velger du retning.</p>
+        <p class="ac-note">Helten tar ingen plass i hæren, kan ikke selges. Faller han, går han ned ett nivå og må gjenopplives for gull. Han får erfaring av fiender han dreper. Hvert nivå velger du ett av tre tilfeldige talenter; på nivå ${HERO_PATH_LEVEL} velger du retning.</p>
         <div class="ch-opts">${Object.keys(HERO_CLASSES).map(k => choiceOpt(`data-hire="${k}"`, HERO_CLASSES[k].name, HERO_CLASSES[k].short, `${heroStatLine(eff[k])} · Nivå ${HERO_PATH_LEVEL}: ${HERO_CLASSES[k].paths.map(p => HERO_PATHS[p].name).join(' eller ')}`, portraits[k])).join('')}</div>
         <div class="ch-row"><span class="ac-prize">Koster ${HERO_COST.gold} gull</span><button type="button" class="ch-later" data-later>Senere</button></div>`;
     } else if (kind === 'talent') {
@@ -468,7 +475,7 @@ def apply(s):
     # Etter waven: erfaring, nivå og valg.
     s = sub(s, "    if (r.win) { report.bonus = waveBonus(W.n); ec.add({ gold: report.bonus }); popRes('gold', report.bonus); }\n    state.lastReport = report;",
                "    if (r.win) { report.bonus = waveBonus(W.n); ec.add({ gold: report.bonus }); popRes('gold', report.bonus); }\n    report.hero = heroAfterWave(ec, sim);\n"
-               "    if (report.hero && report.hero.lost != null) setTimeout(() => toast(`${HERO_CLASSES[ec.hero.type].name} falt${report.hero.lost ? ` og mistet ${report.hero.lost} erfaring` : ''}. Gjenopplive ham for ${ec.heroReviveCost().gold} gull (Hær-fanen eller Heltehallen).`), 600);\n"
+               "    if (report.hero && report.hero.fall) setTimeout(() => { const f = report.hero.fall; toast(`${HERO_CLASSES[ec.hero.type].name} falt${f.level > 1 ? ` og gikk ned til nivå ${ec.heroLevel()}` : ''}${f.perk ? `, og mistet ${f.perk}` : ''}. Gjenopplive ham for ${ec.heroReviveCost().gold} gull (Hær-fanen eller Heltehallen).`); }, 600);\n"
                "    if (report.hero && report.hero.up) setTimeout(() => toast(`${HERO_CLASSES[ec.hero.type].name} nådde nivå ${ec.heroLevel()}! Velg ${ec.hero.kind === 'path' ? 'retning' : 'talent'}.`), 900);\n"
                "    setTimeout(maybeChoice, 1800);\n    state.lastReport = report;")
     s = sub(s, "      ec.deliveries.length = 0;\n    }\n", "      ec.deliveries.length = 0;\n    }\n    if (ec.finds && ec.finds.length) { const f = ec.finds.shift(); toast('⛏ ' + f.text); if (f.bag) Object.keys(f.bag).forEach(r => popRes(r, f.bag[r])); if (f.node && nodeVis[f.node]) nodeVis[f.node].pulse = 0.8; }\n")

@@ -106,5 +106,5 @@ def apply(s):
     s = sub(s, "<div class=\"chips\">${h.path ? `<span class=\"path\">${HERO_PATHS[h.path].name}</span>` : ''}${h.talents.map(id => `<span data-tip=\"${HERO_TALENTS[id].desc}\">${HERO_TALENTS[id].name}</span>`).join('')}</div>` : ''}</div>\n      ${h.fallen ? `<small style=\"color:#f0a59d\">Falt i kamp. Gjenopplives for å kjempe igjen.</small>` : ''}</div>",
                "<div class=\"chips\">${h.path ? `<span class=\"path\">${HERO_PATHS[h.path].name}</span>` : ''}${h.talents.map(id => `<span data-tip=\"${HERO_TALENTS[id].desc}\">${HERO_TALENTS[id].name}</span>`).join('')}</div>` : ''}\n      ${h.fallen ? `<small class=\"hs-fallen\">Falt i kamp. Gjenopplives for å kjempe igjen.</small>` : ''}</div>")
     s = sub(s, "Din egen helt. Han tar ingen plass i hæren, kommer tilbake hver wave og får erfaring av fiender han dreper.",
-               "Din egen helt. Han tar ingen plass i hæren og får erfaring av fiender han dreper. Faller han, mister han litt erfaring og må gjenopplives for gull.")
+               "Din egen helt. Han tar ingen plass i hæren og får erfaring av fiender han dreper. Faller han, går han ned ett nivå, mister valget fra det nivået og må gjenopplives for gull.")
     return s

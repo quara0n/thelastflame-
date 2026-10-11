@@ -937,41 +937,41 @@ const FORMATIONS = {
 // Fallen World 1, Askemyr (FORSLAG): hver wave introduserer en ny fiendetype.
 // Gruppene plasseres etter rolle: front, back (bak), flank (på sidene) eller boss (foran i midten).
 const WAVES = [
-  // 30 skapninger per wave; den nye arten er flertallet (kjemper teller tyngre). 4. okt 2026.
-  { style: 'Horde', groups: [['husk', 30, 'front']] },
-  { style: 'Sverm', groups: [['spider', 22, 'front'], ['husk', 8, 'back']] },
-  { style: 'Spytt', groups: [['spitter', 20, 'back'], ['husk', 10, 'front']] },
-  { style: 'Kile', groups: [['brute', 18, 'front'], ['husk', 8, 'back'], ['spitter', 4, 'back']] },
-  { style: 'Askekråker', groups: [['ashcrow', 16, 'front'], ['serpent', 10, 'flank'], ['husk', 4, 'front']], flyers: true },
-  { style: 'Skall', groups: [['beetle', 18, 'front'], ['spitter', 6, 'back'], ['husk', 6, 'back']] },
-  { style: 'Rede', groups: [['broodmother', 10, 'front'], ['spider', 8, 'flank'], ['husk', 12, 'back']] },
-  { style: 'Skygger', groups: [['stalker', 20, 'flank'], ['brute', 4, 'front'], ['husk', 6, 'front']] },
-  { style: 'Kjemper', groups: [['colossus', 6, 'front'], ['beetle', 6, 'front'], ['husk', 18, 'back']], heavy: true },
-  { style: 'Boss', groups: [['fallenWarden', 1, 'boss'], ['serpent', 10, 'flank'], ['spitter', 8, 'back'], ['husk', 11, 'front']], boss: true },
-  { style: 'Flokk', groups: [['wolf', 22, 'front'], ['serpent', 4, 'flank'], ['spitter', 4, 'back']], world: 2 },
-  { style: 'Stampede', groups: [['boar', 16, 'front'], ['wolf', 14, 'flank']], world: 2 },
-  { style: 'Tornkratt', groups: [['thornling', 20, 'front'], ['locust', 6, 'flank'], ['mantis', 4, 'back']], world: 2 },
-  { style: 'Ljåer', groups: [['mantis', 18, 'front'], ['locust', 12, 'flank']], world: 2 },
-  { style: 'Sverm', groups: [['locust', 22, 'front'], ['boar', 2, 'front'], ['wolf', 6, 'flank']], world: 2, flyers: true },
-  { style: 'Råtne røtter', groups: [['treant', 6, 'boss'], ['thornling', 18, 'front'], ['wolf', 6, 'flank']], world: 2, heavy: true },
-  { style: 'Skall', groups: [['crab', 20, 'front'], ['thornling', 6, 'back'], ['locust', 4, 'flank']], world: 2 },
-  { style: 'Sang', groups: [['siren', 18, 'back'], ['crab', 10, 'front'], ['boar', 2, 'front']], world: 2 },
-  { style: 'Prosesjon', groups: [['acolyte', 18, 'back'], ['crab', 8, 'front'], ['mantis', 4, 'front']], world: 2 },
-  { style: 'Boss', groups: [['warden2', 1, 'boss'], ['seraph', 6, 'front'], ['acolyte', 8, 'back'], ['crab', 15, 'front']], world: 2, boss: true },
-  { style: 'Flokkjakt', groups: [['raptor', 22, 'flank'], ['wolf', 4, 'front'], ['spitter', 4, 'back']], world: 3 },
-  { style: 'Horn', groups: [['hornback', 16, 'front'], ['raptor', 14, 'flank']], world: 3 },
-  { style: 'Sverm', groups: [['snapper', 22, 'front'], ['hornback', 2, 'front'], ['raptor', 6, 'flank']], world: 3 },
-  { style: 'Panser', groups: [['clubtail', 18, 'front'], ['snapper', 12, 'flank']], world: 3 },
-  { style: 'Urdrager', groups: [['urdragon', 6, 'front'], ['clubtail', 6, 'front'], ['snapper', 18, 'flank']], world: 3, flyers: true },
-  { style: 'Tyrant', groups: [['tyrant', 6, 'front'], ['raptor', 16, 'flank'], ['clubtail', 8, 'front']], world: 3, heavy: true },
-  { style: 'Spytt', groups: [['frillspitter', 20, 'back'], ['raptor', 6, 'flank'], ['clubtail', 4, 'front']], world: 3 },
-  { style: 'Jordskjelv', groups: [['earthshaker', 6, 'front'], ['frillspitter', 10, 'back'], ['raptor', 14, 'flank']], world: 3, heavy: true },
-  { style: 'Gjengangere', groups: [['revenant', 20, 'front'], ['frillspitter', 6, 'back'], ['raptor', 4, 'flank']], world: 3 },
-  { style: 'Boss', groups: [['tyrantKing', 1, 'boss'], ['revenant', 12, 'front'], ['raptor', 10, 'flank'], ['frillspitter', 7, 'back']], world: 3, boss: true },
+  // 40 skapninger per wave (versjon 28); den nye arten er flertallet (kjemper teller tyngre).
+  { style: 'Horde', groups: [['husk', 40, 'front']] },
+  { style: 'Sverm', groups: [['spider', 32, 'front'], ['husk', 8, 'back']] },
+  { style: 'Spytt', groups: [['spitter', 30, 'back'], ['husk', 10, 'front']] },
+  { style: 'Kile', groups: [['brute', 28, 'front'], ['husk', 8, 'back'], ['spitter', 4, 'back']] },
+  { style: 'Askekråker', groups: [['ashcrow', 26, 'front'], ['serpent', 10, 'flank'], ['husk', 4, 'front']], flyers: true },
+  { style: 'Skall', groups: [['beetle', 28, 'front'], ['spitter', 6, 'back'], ['husk', 6, 'back']] },
+  { style: 'Rede', groups: [['broodmother', 13, 'front'], ['spider', 15, 'flank'], ['husk', 12, 'back']] },
+  { style: 'Skygger', groups: [['stalker', 30, 'flank'], ['brute', 4, 'front'], ['husk', 6, 'front']] },
+  { style: 'Kjemper', groups: [['colossus', 9, 'front'], ['beetle', 13, 'front'], ['husk', 18, 'back']], heavy: true },
+  { style: 'Boss', groups: [['fallenWarden', 1, 'boss'], ['serpent', 20, 'flank'], ['spitter', 8, 'back'], ['husk', 11, 'front']], boss: true },
+  { style: 'Flokk', groups: [['wolf', 32, 'front'], ['serpent', 4, 'flank'], ['spitter', 4, 'back']], world: 2 },
+  { style: 'Stampede', groups: [['boar', 26, 'front'], ['wolf', 14, 'flank']], world: 2 },
+  { style: 'Tornkratt', groups: [['thornling', 30, 'front'], ['locust', 6, 'flank'], ['mantis', 4, 'back']], world: 2 },
+  { style: 'Ljåer', groups: [['mantis', 28, 'front'], ['locust', 12, 'flank']], world: 2 },
+  { style: 'Sverm', groups: [['locust', 32, 'front'], ['boar', 2, 'front'], ['wolf', 6, 'flank']], world: 2, flyers: true },
+  { style: 'Råtne røtter', groups: [['treant', 9, 'boss'], ['thornling', 25, 'front'], ['wolf', 6, 'flank']], world: 2, heavy: true },
+  { style: 'Skall', groups: [['crab', 30, 'front'], ['thornling', 6, 'back'], ['locust', 4, 'flank']], world: 2 },
+  { style: 'Sang', groups: [['siren', 28, 'back'], ['crab', 10, 'front'], ['boar', 2, 'front']], world: 2 },
+  { style: 'Prosesjon', groups: [['acolyte', 28, 'back'], ['crab', 8, 'front'], ['mantis', 4, 'front']], world: 2 },
+  { style: 'Boss', groups: [['warden2', 1, 'boss'], ['seraph', 16, 'front'], ['acolyte', 8, 'back'], ['crab', 15, 'front']], world: 2, boss: true },
+  { style: 'Flokkjakt', groups: [['raptor', 32, 'flank'], ['wolf', 4, 'front'], ['spitter', 4, 'back']], world: 3 },
+  { style: 'Horn', groups: [['hornback', 26, 'front'], ['raptor', 14, 'flank']], world: 3 },
+  { style: 'Sverm', groups: [['snapper', 32, 'front'], ['hornback', 2, 'front'], ['raptor', 6, 'flank']], world: 3 },
+  { style: 'Panser', groups: [['clubtail', 28, 'front'], ['snapper', 12, 'flank']], world: 3 },
+  { style: 'Urdrager', groups: [['urdragon', 9, 'front'], ['clubtail', 13, 'front'], ['snapper', 18, 'flank']], world: 3, flyers: true },
+  { style: 'Tyrant', groups: [['tyrant', 9, 'front'], ['raptor', 23, 'flank'], ['clubtail', 8, 'front']], world: 3, heavy: true },
+  { style: 'Spytt', groups: [['frillspitter', 30, 'back'], ['raptor', 6, 'flank'], ['clubtail', 4, 'front']], world: 3 },
+  { style: 'Jordskjelv', groups: [['earthshaker', 9, 'front'], ['frillspitter', 17, 'back'], ['raptor', 14, 'flank']], world: 3, heavy: true },
+  { style: 'Gjengangere', groups: [['revenant', 30, 'front'], ['frillspitter', 6, 'back'], ['raptor', 4, 'flank']], world: 3 },
+  { style: 'Boss', groups: [['tyrantKing', 1, 'boss'], ['revenant', 22, 'front'], ['raptor', 10, 'flank'], ['frillspitter', 7, 'back']], world: 3, boss: true },
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.3, 0.663, 0.42, 0.317, 1.349, 0.837, 1.066, 0.989, 0.513, 0.793, 0.954, 0.396, 0.592, 0.282, 0.975, 0.337, 0.65, 0.432, 0.453, 0.287, 0.842, 0.436, 1.799, 0.909, 0.719, 0.405, 0.938, 0.525, 1.011, 0.748];
+const WAVE_FACTOR = [0.315, 0.557, 0.265, 0.133, 0.567, 0.352, 0.447, 0.519, 0.323, 0.5, 0.534, 0.222, 0.531, 0.189, 0.437, 0.226, 0.51, 0.242, 0.305, 0.112, 0.377, 0.293, 1.007, 0.408, 0.161, 0.159, 0.211, 0.147, 0.226, 0.209];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};
@@ -1038,6 +1038,14 @@ class Sim {
       const side = i % 2 ? 1 : -1, k = Math.floor(i / 2);
       this.archers.push({ x: side * (MAP.gateHalf + 2.2 + k * 2.6), z: MAP.gateZ + 0.5, cd: Math.random(), T: ARCHER, type: 'archer', side: 'p' });
     }
+    // Forsvar på muren (versjon 28): ballistaer og kokende olje.
+    const wg = cfg.wallgear || {};
+    this.ballistae = [];
+    for (let i = 0; i < (WALL_BALLISTA[wg.ballista || 0] || WALL_BALLISTA[0]).count; i++) {
+      const side = i % 2 ? 1 : -1;
+      this.ballistae.push({ x: side * (MAP.gateHalf + 1.2) + (i === 2 ? 0.01 : 0), z: MAP.gateZ + 0.6, cd: 1 + i, T: BALLISTA, type: 'archer', side: 'p' });
+    }
+    this.oil = (WALL_OIL[wg.oil || 0] || WALL_OIL[0]).dmg; this.oilCd = 3;
     this.units = []; let id = 0;
     for (const a of army) {
       const c = cellCenter(a.col, a.row);
@@ -1158,6 +1166,28 @@ class Sim {
       a.cd = a.T.interval;
       this._damage(a, best);
       this.events.push({ kind: 'shot', from: { x: a.x, z: a.z, y: 3.8 }, to: best, type: 'archer' });
+    }
+    for (const a of this.ballistae || []) {
+      a.cd -= dt;
+      if (a.cd > 0) continue;
+      let best = null, bs = -1;
+      for (const e of enemies) { const d = Math.hypot(e.x - a.x, e.z - a.z); if (e.alive && d < a.T.range && e.maxHp > bs) { bs = e.maxHp; best = e; } }
+      if (!best) continue;
+      a.cd = a.T.interval;
+      this._damage(a, best);
+      this.events.push({ kind: 'shot', from: { x: a.x, z: a.z, y: 3.8 }, to: best, type: 'siegebreaker' });
+    }
+    if (this.oil) {
+      this.oilCd -= dt;
+      if (this.oilCd <= 0) {
+        const hit = enemies.filter(e => e.alive && !e.T.flies && e.z > MAP.gateZ - 3.2 && Math.abs(e.x) < MAP.gateHalf + 1.5);
+        if (hit.length) {
+          this.oilCd = OIL.interval;
+          const src = { T: Object.assign({}, OIL, { dmg: this.oil, pierce: 99 }), type: 'archer', side: 'p', x: 0, z: MAP.gateZ + 0.5 };
+          hit.forEach(e => this._damage(src, e));
+          this.events.push({ kind: 'oil', at: { x: 0, z: MAP.gateZ - 1.2 } });
+        } else this.oilCd = 0.5;
+      }
     }
     for (const u of this.units) { u.px = u.x; u.pz = u.z; }
     this._moveSquads(enemies, dt);
@@ -1362,7 +1392,7 @@ class Sim {
     if (!this.contact) { u.moving = true; u.z += marchSpeed * dt; u.facing = 0; return; }
     if (!u.atGate && !u.T.flies && this._engage(u, players, attackers, dt, u.T.aggro)) return;
     if (this.gateHp > 0) {
-      if (u.z >= MAP.gateZ - 0.9 && (!u.T.flies || Math.abs(u.x) <= MAP.gateHalf)) {
+      if (u.z >= MAP.gateZ - 0.9 - Math.max(0, (u.T.radius || 0.4) - 0.4) * 2.2 && (!u.T.flies || Math.abs(u.x) <= MAP.gateHalf)) {
         if (!u.leaked) { u.leaked = true; this.leaks++; }
         u.atGate = true; u.target = null;
         if (u.cd <= 0) { this.gateHp = Math.max(0, this.gateHp - u.T.dmg); u.cd = u.T.interval; this.events.push({ kind: 'gate' }); }
@@ -1645,7 +1675,7 @@ const NODES = {
 const NODE_EXPAND = { cost: { gold: 13, timber: 15, stone: 10 }, extra: 3 };
 const DEEPEN = { gold: 9, stone: 25, timber: 15 };
 
-const WORKER_BASE = 5, WORKER_FREE = 6, WORKER_STEP = 4;
+const WORKER_BASE = 10, WORKER_FREE = 6, WORKER_STEP = 4;
 
 const TOOLS = [
   { name: 'Bedre verktøy', cost: { gold: 27, timber: 22 } },
@@ -1737,7 +1767,7 @@ const BOUNTY = { husk: 1, brute: 3, spider: 1, ashcrow: 1, spitter: 2, serpent: 
   wolf: 1, boar: 3, locust: 1, mantis: 3, thornling: 2, treant: 8, crab: 2, siren: 3, acolyte: 3, seraph: 6, warden2: 30 };
 Object.assign(BOUNTY, { raptor: 2, hornback: 4, snapper: 1, clubtail: 4, urdragon: 8, tyrant: 10, frillspitter: 3, earthshaker: 12, revenant: 3, tyrantKing: 40 });
 const WARDEN_KILL_XP = BOUNTY;
-const waveBonus = w => 6 + 2 * Math.min(w, 10) + Math.max(0, w - 10);   // vokser saktere i World 2
+const waveBonus = w => 4 + Math.round(1.5 * Math.min(w, 10) + 0.5 * Math.max(0, w - 10));   // versjon 28: mindre enn før
 const REFUND = 0.75;
 
 class Econ {
@@ -1963,7 +1993,8 @@ function rivalBot(L, ec, army, waveIdx) {
       const n = ec.nodes[k];
       if (!n.unlocked || n.workers >= ec.cap(k) || n.workers >= wantW[k]) continue;
       const pr = ec.workerPrice(k);
-      if (pr <= 10 + 2.5 * w && ec.res.gold >= pr + (w <= 4 ? 8 : 18)) did = ec.addWorker(k);
+      // Version 28: workers cost more (a real investment), so the bot accepts a higher price as the game goes on.
+      if (pr <= 16 + 3 * w && ec.res.gold >= pr + (w <= 4 ? 8 : 18)) did = ec.addWorker(k);
     }
     // A full mine gets more places as soon as the Barracks allows it.
     for (const k of ['gold', 'iron', 'timber', 'stone', 'coal']) if (!did && ec.nodes[k].unlocked && !ec.nodes[k].expanded && ec.nodes[k].workers >= ec.cap(k)) did = ec.expandNode(k);
@@ -2072,7 +2103,7 @@ class Rival {
     ec.res.gold -= keep; rivalBot(RIVAL_L, ec, this.army, Math.min(WAVES.length - 1, this.wi + 1)); ec.res.gold += keep; this.saved = keep;
   }
   // Det som vises av rivalen mellom wavene: hæren hans hjemme.
-  makeView() { const ec = this.ec; this.view = new Sim(withHero(this.army, ec), { types: ec.types(TYPES), enemies: [], gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count }); }
+  makeView() { const ec = this.ec; this.view = new Sim(withHero(this.army, ec), { types: ec.types(TYPES), enemies: [], gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count, wallgear: ec.wallgear }); }
   running() { return !!(this.sim && !this.sim.result); }
   // Waven starter: rivalen samler inn, handler, og kampen bygges. Den kjøres steg for steg (live) eller med end().
   begin(wi, incoming) {
@@ -2081,7 +2112,7 @@ class Rival {
     this.budget = wi >= 2 ? Math.min(Math.floor(ec.res.gold), Math.max(this.saved || 0, Math.floor(ec.res.gold * VERSUS.share) + this.bank)) : 0;
     ec.res.gold -= this.budget; rivalBot(RIVAL_L, ec, this.army, wi); ec.res.gold += this.budget;
     const base = buildWave(W); this.incoming = incoming || [];
-    this.sim = new Sim(withHero(this.army, ec), { types: ec.types(TYPES, versusScale(W)), enemies: base.concat(placeSent(this.incoming, base)), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count });
+    this.sim = new Sim(withHero(this.army, ec), { types: ec.types(TYPES, versusScale(W)), enemies: base.concat(placeSent(this.incoming, base)), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count, wallgear: ec.wallgear });
   }
   // Waven er ferdig (spoles frem om nødvendig). Gir gull for lekk til spilleren og det rivalen sender tilbake.
   end(foe) {
@@ -2144,7 +2175,7 @@ class Rival {
 
 
 // ===== Knapphet (versjon 22): dyrere arbeidere, utvidelse krever Barracks, jern og kull teller mer i høye tiers =====
-const SCARCE = {"cap": {"timber": 4, "stone": 4, "iron": 4, "coal": 3}, "worker": {"gold": [5, 4, 3], "timber": [5, 4, 2], "stone": [5, 4, 2], "iron": [10, 5, 0], "coal": [16, 7, 0]}, "expand": {"gold": {"needs": 2, "cost": {"gold": 40, "timber": 40, "stone": 30}}, "timber": {"needs": 2, "cost": {"gold": 40, "timber": 30, "stone": 30}}, "stone": {"needs": 2, "cost": {"gold": 40, "timber": 40, "stone": 20}}, "iron": {"needs": 2, "cost": {"gold": 90, "timber": 60, "stone": 60}}, "coal": {"needs": 3, "cost": {"gold": 130, "timber": 80, "stone": 80, "iron": 40}}}, "unitIron": {"2": 2, "3": 3, "4": 3}, "unitCoalMin": {"3": 1}, "unitCoal": {"3": 2, "4": 3}, "upgradeIron": 2, "upgradeCoal": 2, "barracksWood": {"3": 0.55, "4": 0.55}};
+const SCARCE = {"cap": {"timber": 4, "stone": 4, "iron": 4, "coal": 3}, "worker": {"gold": [14, 4, 0], "timber": [10, 3, 0], "stone": [10, 3, 0], "iron": [18, 5, 0], "coal": [24, 6, 0]}, "expand": {"gold": {"needs": 2, "cost": {"gold": 40, "timber": 40, "stone": 30}}, "timber": {"needs": 2, "cost": {"gold": 40, "timber": 30, "stone": 30}}, "stone": {"needs": 2, "cost": {"gold": 40, "timber": 40, "stone": 20}}, "iron": {"needs": 2, "cost": {"gold": 90, "timber": 60, "stone": 60}}, "coal": {"needs": 3, "cost": {"gold": 130, "timber": 80, "stone": 80, "iron": 40}}}, "unitIron": {"2": 2, "3": 3, "4": 3}, "unitCoalMin": {"3": 1}, "unitCoal": {"3": 1, "4": 2}, "upgradeIron": 2, "upgradeCoal": 1, "barracksWood": {"3": 0.55, "4": 0.55}};
 (() => {
   for (const k in SCARCE.cap) NODES[k].cap = SCARCE.cap[k];
   for (const k in TYPES) {
@@ -2167,15 +2198,14 @@ const HERO_COST = { gold: 40 };
 const HERO_XP = [12, 35, 70, 150, 225, 290, 370, 500, 680];   // total erfaring for nivå 2, 3, 4 … 10
 const HERO_GROWTH = 0.08;                                    // +8 % helse og skade per nivå (var 6 %; Rune: helten falt av for fort)
 const HERO_PATH_LEVEL = 5;
-const HERO_REVIVE = { base: 5, perLevel: 2 };   // nivå 1: 7 gull, nivå 10: 25 gull (å rekruttere koster 40)
-const HERO_FALL_LOSS = 0.25;                      // andel av fremgangen mot neste nivå som går tapt
+const HERO_REVIVE = { base: 15, perLevel: 6 };   // nivå 1: 21 gull, nivå 5: 45, nivå 10: 75 (versjon 28: Rune ville ha det dyrere)
 // Heltens utstyr (versjon 27): tre spor à tre nivåer, kjøpes i Heltehallen for gull og jern. Gjør helten sterkere uavhengig av erfaring.
 const HERO_GEAR = {
   vapen:    { name: 'Våpen', desc: '+15 % skade per nivå.', lv: [{ dmgMul: 1.15 }, { dmgMul: 1.15 }, { dmgMul: 1.15 }] },
   rustning: { name: 'Rustning', desc: '+15 % helse og +1 rustning per nivå.', lv: [{ hpMul: 1.15, armor: 1 }, { hpMul: 1.15, armor: 1 }, { hpMul: 1.15, armor: 1 }] },
   amulett:  { name: 'Flammeamulett', desc: 'Nivå 1 og 2: gror 0,4 % helse per sekund. Nivå 3, «Siste glød»: reiser seg én gang per wave med 40 % helse.', lv: [{ regenPct: 0.004 }, { regenPct: 0.004 }, { revive: 0.4 }] },
 };
-const HERO_GEAR_COST = [{ gold: 25, iron: 3 }, { gold: 50, iron: 8 }, { gold: 90, iron: 15 }];
+const HERO_GEAR_COST = [{ gold: 50, iron: 6 }, { gold: 100, iron: 14 }, { gold: 180, iron: 26 }];   // versjon 28: dobbelt så dyrt
 const HERO_CLASSES = {
   heroKnight: { name: 'Flammeridder', short: 'Nærkamp. Står foran og tåler mye.', paths: ['paladin', 'berserker'] },
   heroHunter: { name: 'Askejeger', short: 'Skytter med lang rekkevidde, god mot flyvere.', paths: ['falkoye', 'stormskytter'] },
@@ -2299,12 +2329,20 @@ Object.assign(Econ.prototype, {
   // Helten kan falle (Rune 10. okt): han mister halve fremgangen mot neste nivå (aldri et nivå eller talenter),
   // og må gjenopplives for gull før han kan kjempe igjen. Det koster mindre enn å rekruttere ham.
   heroReviveCost() { return { gold: HERO_REVIVE.base + HERO_REVIVE.perLevel * this.heroLevel() }; },
+  // Versjon 28 (Rune): faller han, går han ned ett nivå og mister valget han tok på det nivået (talentet, eller retningen på nivå 5).
   heroFall() {
-    const h = this.hero; if (!h || h.fallen) return 0;
-    const lv = this.heroLevel(), floor = HERO_XP[lv - 2] || 0, next = HERO_XP[lv - 1];
-    const lost = next ? Math.floor((h.xp - floor) * HERO_FALL_LOSS) : 0;
-    h.xp -= lost; h.fallen = true;
-    return lost;
+    const h = this.hero; if (!h || h.fallen) return null;
+    const lv = this.heroLevel(), out = { level: lv, perk: null };
+    h.fallen = true;
+    if (lv <= 1) { h.xp = 0; return out; }
+    h.xp = HERO_XP[lv - 3] || 0;   // starten av nivået under
+    if (h.picks >= lv - 1) {
+      if (lv === HERO_PATH_LEVEL && h.path) { out.perk = HERO_PATHS[h.path].name; h.path = null; }
+      else if (h.talents.length) { const id = h.talents.pop(); out.perk = HERO_TALENTS[id].name; }
+      h.picks = lv - 2;
+    }
+    h.rerolls = 0; this.heroDraw();
+    return out;
   },
   heroGearLevel(k) { return this.hero && this.hero.gear ? this.hero.gear[k] || 0 : 0; },
   heroGearCost(k) { return HERO_GEAR_COST[this.heroGearLevel(k)] || null; },
@@ -2371,7 +2409,7 @@ function heroAfterWave(ec, sim, auto) {
     let xp = Math.round((sim.heroXp || 0) + (hu.alive ? 2 : 0));
     if (ec.has('akademi')) xp = Math.round(xp * 1.5);
     res = { xp, up: ec.heroGain(xp), alive: hu.alive };
-    if (!hu.alive) res.lost = ec.heroFall();
+    if (!hu.alive) res.fall = ec.heroFall();
   }
   if (auto) heroAuto(ec);
   return res;
@@ -2388,6 +2426,7 @@ function withHero(army, ec) {
   return army.concat([{ type: h.type, col: 7.5, row: r ? 3.5 : 1.5, order: r ? 'follow' : 'advance' }]);
 }
 function heroBot(ec, w) {
+  extrasBot(ec, w);
   if (!ec.hero && w >= 2 && ec.res.gold >= HERO_COST.gold + 12) ec.recruitHero(anyOf(Object.keys(HERO_CLASSES)));
   if (ec.hero && ec.hero.fallen && ec.res.gold >= ec.heroReviveCost().gold + 10) ec.heroRevive();
   // Utstyr: billigste spor først, bare når det er gull og jern til overs.
@@ -2398,6 +2437,77 @@ function heroBot(ec, w) {
 
 // Rivalen har også en helt (rivalBot er boten fra game_sim.js, som kaller heroBot), og velger talenter og doktriner tilfeldig.
 { const _end = Rival.prototype.end; Rival.prototype.end = function (foe) { const r = _end.call(this, foe); heroAfterWave(this.ec, r.sim, true); return r; }; }
+
+// ===== Versjon 28: kortere rekkevidde, forsvar på muren, kullmile og smelteovn =====
+// Skyttere: alt over 6 m kortes ned med 40 %. Rekkevidde-oppgraderinger gir +1 m i stedet for +2.
+(() => {
+  for (const k in TYPES) { const t = TYPES[k]; if (t.side !== 'p' || !t.ranged || t.range <= 6) continue;
+    const r = +(6 + (t.range - 6) * 0.6).toFixed(1); t.aggro = +(t.aggro - (t.range - r)).toFixed(1); t.range = r; }
+  for (const k in UPGRADES) for (const u of UPGRADES[k]) if (u.mod && u.mod.range > 1) u.mod.range = 1;
+})();
+// Kull: Barracks IV og V krevde 105 og 174 kull, det tok mange waves med tre kullarbeidere. Nå 40 % av det.
+for (const i of [3, 4]) if (BARRACKS[i].cost.coal) BARRACKS[i].cost.coal = Math.round(BARRACKS[i].cost.coal * 0.4);
+// Forsvar på muren. Kokende olje: hvert 5. sekund brenner alle fiender ved porten. Ballista: tunge bolter mot de største.
+const WALL_OIL = [
+  { dmg: 0 },
+  { dmg: 35, cost: { gold: 30, iron: 10, coal: 8 } },
+  { dmg: 70, cost: { gold: 50, iron: 18, coal: 16 } },
+  { dmg: 120, cost: { gold: 80, iron: 28, coal: 28 } },
+];
+const WALL_BALLISTA = [
+  { count: 0 },
+  { count: 1, cost: { gold: 35, timber: 60, iron: 15 } },
+  { count: 2, cost: { gold: 60, timber: 90, iron: 30, coal: 8 } },
+  { count: 3, cost: { gold: 90, timber: 120, iron: 45, coal: 16 } },
+];
+const BALLISTA = { name: 'Ballista', dmg: 90, interval: 3.4, range: 17, radius: 0.3, pierce: 12, bonus: { big: 1.6 } };
+const OIL = { name: 'Kokende olje', dmg: 0, interval: 5, radius: 0.3 };
+// Omformere i landsbyen: gjør tømmer og stein (som hoper seg opp) om til kull og jern. Hvert nivå én omgang til per runde.
+const CONVERT = {
+  kiln:    { name: 'Kullmile',   from: 'timber', to: 'coal', take: 6, give: 1, every: 15, levels: [
+    { cost: { gold: 40, stone: 40 } }, { cost: { gold: 70, stone: 70, iron: 10 } }, { cost: { gold: 110, stone: 110, iron: 20 } }] },
+  smelter: { name: 'Smelteovn',  from: 'stone',  to: 'iron', take: 5, give: 1, every: 15, levels: [
+    { cost: { gold: 40, timber: 40 } }, { cost: { gold: 70, timber: 70, coal: 5 } }, { cost: { gold: 110, timber: 110, coal: 10 } }] },
+};
+Object.assign(Econ.prototype, {
+  wallLv(k) { return (this.wallgear || {})[k] || 0; },
+  wallNext(k) { const t = k === 'oil' ? WALL_OIL : WALL_BALLISTA; return t[this.wallLv(k) + 1] || null; },
+  buyWallGear(k) { const n = this.wallNext(k); if (!n || !this.pay(n.cost)) return false; (this.wallgear = this.wallgear || {})[k] = this.wallLv(k) + 1; return true; },
+  convLv(k) { return (this.conv || {})[k] || 0; },
+  convNext(k) { return CONVERT[k].levels[this.convLv(k)] || null; },
+  buyConv(k) { const n = this.convNext(k); if (!n || !this.pay(n.cost)) return false; (this.conv = this.conv || {})[k] = this.convLv(k) + 1; return true; },
+  // Per minutt ved fullt lager: hvor mye den gjør om.
+  convRate(k) { const c = CONVERT[k], l = this.convLv(k); return { from: c.take * l * 60 / c.every, to: c.give * l * 60 / c.every }; },
+});
+{
+  const tick0 = Econ.prototype.tick;
+  Econ.prototype.tick = function (dt) {
+    tick0.call(this, dt);
+    if (!this.conv) return;
+    this.convT = this.convT || {};
+    for (const k in CONVERT) {
+      const l = this.convLv(k); if (!l) continue;
+      const c = CONVERT[k];
+      this.convT[k] = (this.convT[k] || 0) + dt;
+      while (this.convT[k] >= c.every) {
+        this.convT[k] -= c.every;
+        const n = Math.min(l, Math.floor((this.res[c.from] || 0) / c.take));
+        if (n > 0) { this.res[c.from] -= n * c.take; this.add({ [c.to]: n * c.give }); if (this.deliveries.length < 300) this.deliveries.push({ node: c.to, res: c.to, amount: n * c.give, conv: k }); }
+      }
+    }
+  };
+}
+// Boten og rivalen: bygger omformere og murforsvar når de har mye til overs.
+function extrasBot(ec, w) {
+  for (let g = 0; g < 4; g++) {
+    let did = false;
+    if (w >= 7 && ec.res.timber >= 120 && ec.convNext('kiln') && ec.can(ec.convNext('kiln').cost) && ec.res.gold >= ec.convNext('kiln').cost.gold + 40) did = ec.buyConv('kiln');
+    if (!did && w >= 6 && ec.res.stone >= 120 && ec.convNext('smelter') && ec.can(ec.convNext('smelter').cost) && ec.res.gold >= ec.convNext('smelter').cost.gold + 40) did = ec.buyConv('smelter');
+    if (!did && w >= 10 && ec.wallNext('ballista') && ec.res.iron >= ec.wallNext('ballista').cost.iron + 25 && ec.res.gold >= ec.wallNext('ballista').cost.gold + 50 && ec.can(ec.wallNext('ballista').cost)) did = ec.buyWallGear('ballista');
+    if (!did && w >= 12 && ec.wallNext('oil') && ec.res.coal >= ec.wallNext('oil').cost.coal + 20 && ec.res.gold >= ec.wallNext('oil').cost.gold + 50 && ec.can(ec.wallNext('oil').cost)) did = ec.buyWallGear('oil');
+    if (!did) break;
+  }
+}
 
 if (typeof module !== 'undefined') module.exports = { supplyOf, WARDEN_GEAR, WARDEN_XP, WARDEN_TRAIN, WARDEN_KILL_XP, Econ, RES, RES_KEYS, NODES, TOOLS, TRACKS, BARRACKS, WALLS, ARCHERS, BOUNTY, waveBonus, DELIVERY, NODE_EXPAND, DEEPEN, REFUND };
 
@@ -4037,7 +4147,7 @@ const Sound = (function () {
     sim = new Sim(state.army, {
       types: ec.types(TYPES, state.versus ? versusScale(W) : W.scale),
       enemies: withSends(buildWave(W)),
-      gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count,
+      gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count, wallgear: ec.wallgear,
     });
     if (sim.warden && ec.wardenHp != null && ec.wardenHp < 1) sim.warden.hp = Math.max(1, Math.round(sim.warden.maxHp * ec.wardenHp));
     buildArchers();
@@ -4740,7 +4850,7 @@ const Sound = (function () {
     sim.units.forEach(u => { if (u.side === 'e' && !u.alive) report.bounty += BOUNTY[u.type] || 0; });
     if (r.win) { report.bonus = waveBonus(W.n); ec.add({ gold: report.bonus }); popRes('gold', report.bonus); }
     report.hero = heroAfterWave(ec, sim);
-    if (report.hero && report.hero.lost != null) setTimeout(() => toast(`${HERO_CLASSES[ec.hero.type].name} falt${report.hero.lost ? ` og mistet ${report.hero.lost} erfaring` : ''}. Gjenopplive ham for ${ec.heroReviveCost().gold} gull (Hær-fanen eller Heltehallen).`), 600);
+    if (report.hero && report.hero.fall) setTimeout(() => { const f = report.hero.fall; toast(`${HERO_CLASSES[ec.hero.type].name} falt${f.level > 1 ? ` og gikk ned til nivå ${ec.heroLevel()}` : ''}${f.perk ? `, og mistet ${f.perk}` : ''}. Gjenopplive ham for ${ec.heroReviveCost().gold} gull (Hær-fanen eller Heltehallen).`); }, 600);
     if (report.hero && report.hero.up) setTimeout(() => toast(`${HERO_CLASSES[ec.hero.type].name} nådde nivå ${ec.heroLevel()}! Velg ${ec.hero.kind === 'path' ? 'retning' : 'talent'}.`), 900);
     setTimeout(maybeChoice, 1800);
     state.lastReport = report;
@@ -5071,6 +5181,7 @@ Object.assign(UP_PIC, {
           upTile({ pic: 'wall', name: 'Mur', lv: ec.wall + 1, max: WALLS.length,
             tip: `Nå: ${WALLS[ec.wall].name}. ${nw ? `Neste: ${nw.name}, ${fmt(nw.hp)} HP.${nw.needsDeep && !ec.deep ? ' Krever at du graver dypere i steinbruddet.' : ''}` : ''}`,
             now: `${fmt(ec.gateMax())} HP`, buy: nw && buyBtn(`${fmt(nw.hp)} HP`, nw.cost, 'wall', nw.needsDeep && !ec.deep ? 'data-lock="deep"' : '') }),
+          ...wallGearTiles(),
           upTile({ pic: 'archers', name: 'Bueskyttere på muren', lv: ec.archers, max: ARCHERS.length - 1,
             tip: `Skyter fiender nær porten: ${ARCHER.dmg} skade, ${ARCHER.range} m rekkevidde.`,
             now: `${ARCHERS[ec.archers].count} stk`, buy: na && buyBtn(`${na.count} stk`, na.cost, 'archers') }),
@@ -5079,7 +5190,7 @@ Object.assign(UP_PIC, {
   };
   function renderVillage() {
     $('#longhouse').innerHTML = longhouseHtml();
-    $('#nodes').innerHTML = Object.keys(NODES).map(nodeHtml).join('');
+    $('#nodes').innerHTML = Object.keys(NODES).map(nodeHtml).join('') + convHtml();
   }
 
   // ---------- Helten, doktriner og funn (versjon 24) ----------
@@ -5106,7 +5217,7 @@ Object.assign(UP_PIC, {
       if (h) return;
       const eff = ec.types(TYPES);
       html = `<div class="ac-eyebrow">Heltehallen</div><h2>Velg din helt</h2>
-        <p class="ac-note">Helten tar ingen plass i hæren, kan ikke selges, og kommer tilbake hver wave. Han får erfaring av fiender han dreper. Hvert nivå velger du ett av tre tilfeldige talenter; på nivå ${HERO_PATH_LEVEL} velger du retning.</p>
+        <p class="ac-note">Helten tar ingen plass i hæren, kan ikke selges. Faller han, går han ned ett nivå og må gjenopplives for gull. Han får erfaring av fiender han dreper. Hvert nivå velger du ett av tre tilfeldige talenter; på nivå ${HERO_PATH_LEVEL} velger du retning.</p>
         <div class="ch-opts">${Object.keys(HERO_CLASSES).map(k => choiceOpt(`data-hire="${k}"`, HERO_CLASSES[k].name, HERO_CLASSES[k].short, `${heroStatLine(eff[k])} · Nivå ${HERO_PATH_LEVEL}: ${HERO_CLASSES[k].paths.map(p => HERO_PATHS[p].name).join(' eller ')}`, portraits[k])).join('')}</div>
         <div class="ch-row"><span class="ac-prize">Koster ${HERO_COST.gold} gull</span><button type="button" class="ch-later" data-later>Senere</button></div>`;
     } else if (kind === 'talent') {
@@ -5193,8 +5304,36 @@ Object.assign(UP_PIC, {
       ${d.length ? `<div class="chips">${d.map(k => `<span data-tip="${DOCTRINES[k].desc}">${DOCTRINES[k].name}</span>`).join('')}</div>` : '<p class="note">Ingen ennå. Den første kommer med Barracks II.</p>'}
       ${ec.docOffer ? `<button type="button" class="hs-go" data-act="docChoice" style="margin-top:6px">Velg doktrine</button>` : ''}`;
   }
+
+  // ---------- Versjon 28: murforsvar og omformere ----------
+  Object.assign(UP_PIC, {
+    oil: '<path d="M8 12 H32 L29 30 Q20 35 11 30 Z" fill="#3b3631" stroke="#1d1a17" stroke-width="1.4"/><path d="M12 12 Q20 6 28 12" fill="none" stroke="#5a5550" stroke-width="2"/><path d="M14 18 Q20 22 26 18" stroke="#ffb03a" stroke-width="2.4" fill="none"/><path d="M17 8 Q15 4 18 1 M23 8 Q25 4 22 1" stroke="#c9d3dd" stroke-width="1.2" fill="none" opacity=".7"/>',
+    ballista: '<path d="M6 14 Q20 26 34 14" fill="none" stroke="#7a5230" stroke-width="3"/><path d="M6 14 L20 24 L34 14" fill="none" stroke="#d8d0c0" stroke-width="1"/><path d="M20 30 V6" stroke="#5a3d24" stroke-width="3"/><path d="M20 4 L17 9 H23 Z" fill="#c9d3dd"/><path d="M12 36 L20 28 L28 36" stroke="#5a3d24" stroke-width="2.4" fill="none"/>',
+    kiln: '<path d="M8 34 Q8 14 20 8 Q32 14 32 34 Z" fill="#5a4636" stroke="#2a1f16" stroke-width="1.4"/><path d="M15 34 V26 Q20 21 25 26 V34 Z" fill="#ff8a2a"/><path d="M18 8 Q16 4 19 1" stroke="#9aa3ad" stroke-width="1.6" fill="none"/><circle cx="14" cy="18" r="1.5" fill="#1b1b1b"/><circle cx="26" cy="20" r="1.5" fill="#1b1b1b"/>',
+    smelter: '<rect x="10" y="12" width="20" height="22" fill="#6b6f78" stroke="#2f3238" stroke-width="1.4"/><rect x="15" y="4" width="10" height="9" fill="#54585f" stroke="#2f3238"/><path d="M14 30 H26 V24 Q20 20 14 24 Z" fill="#ff6a1a"/><path d="M30 28 H36 L34 33 H30" fill="#c9d3dd" stroke="#2f3238"/>',
+  });
+  function convHtml() {
+    const ec = state.econ;
+    const tile = k => { const c = CONVERT[k], l = ec.convLv(k), n = ec.convNext(k), r = ec.convRate(k);
+      return upTile({ pic: k, name: c.name, lv: l, max: c.levels.length,
+        tip: `Gjør ${c.take} ${RES[c.from].name.toLowerCase()} om til ${c.give} ${RES[c.to].name.toLowerCase()} hvert ${c.every}. sekund per nivå, så lenge du har ${RES[c.from].name.toLowerCase()} på lager. Bruker det som hoper seg opp på det som er knapt.`,
+        now: l ? `${icon(c.to, 12)}+${r.to}/min` : 'Ikke bygget',
+        buy: n && buyBtn(l ? `Nivå ${l + 1}` : 'Bygg', n.cost, 'conv', `data-k="${k}"`) }); };
+    return `<div class="card"><h3>Kullmile og smelteovn ${tipIcon('Tømmer og stein hoper seg opp, jern og kull er knappe. Kullmila brenner tømmer til kull, smelteovnen smelter jern ut av stein.')}</h3>${tiles([tile('kiln'), tile('smelter')])}</div>`;
+  }
+  function wallGearTiles() {
+    const ec = state.econ, no = ec.wallNext('oil'), nb = ec.wallNext('ballista'), lo = ec.wallLv('oil'), lb = ec.wallLv('ballista');
+    return [
+      upTile({ pic: 'ballista', name: 'Ballista', lv: lb, max: WALL_BALLISTA.length - 1,
+        tip: `Tunge bolter fra muren mot den største fienden innen ${BALLISTA.range} m: ${BALLISTA.dmg} skade, går gjennom ${BALLISTA.pierce} rustning, 60 % mer mot kjemper.`,
+        now: `${WALL_BALLISTA[lb].count} stk`, buy: nb && buyBtn(`${nb.count} stk`, nb.cost, 'wallgear', 'data-k="ballista"') }),
+      upTile({ pic: 'oil', name: 'Kokende olje', lv: lo, max: WALL_OIL.length - 1,
+        tip: `Hvert ${OIL.interval}. sekund heller muren kokende olje over alle fiender ved porten. Går gjennom all rustning. Fyres med kull.`,
+        now: lo ? `${WALL_OIL[lo].dmg} skade` : 'Ingen', buy: no && buyBtn(`${no.dmg} skade`, no.cost, 'wallgear', 'data-k="oil"') }),
+    ];
+  }
   function renderBuildings() {
-    $('#buildings').innerHTML = `<div class="card"><h3>Heltehallen ${tipIcon('Din egen helt. Han tar ingen plass i hæren og får erfaring av fiender han dreper. Faller han, mister han litt erfaring og må gjenopplives for gull.')}</h3>${heroStripHtml()}</div>` + ['barracks', 'forge', 'workshop', 'gatehouse', 'sanctum'].map(k => BUILDING_HTML[k]()).join('');
+    $('#buildings').innerHTML = `<div class="card"><h3>Heltehallen ${tipIcon('Din egen helt. Han tar ingen plass i hæren og får erfaring av fiender han dreper. Faller han, går han ned ett nivå, mister valget fra det nivået og må gjenopplives for gull.')}</h3>${heroStripHtml()}</div>` + ['barracks', 'forge', 'workshop', 'gatehouse', 'sanctum'].map(k => BUILDING_HTML[k]()).join('');
   }
 
   // ---------- Bygningsvindu: klikk på en bygning i verden ----------
@@ -5955,6 +6094,7 @@ Object.assign(UP_PIC, {
       'worker+': () => ec.addWorker(k), 'worker-': () => ec.removeWorker(k),
       unlock: () => ec.unlockNode(k), expand: () => ec.expandNode(k), deepen: () => ec.deepen(), tools: () => ec.buyTools(),
       track: () => ec.buyTrack(k), wgear: () => ec.buyWardenGear(k), wtrain: () => ec.trainWarden(), wabil: () => ec.buyWardenAbility(k), wheal: () => ec.healWarden(), heroGear: () => { if (!ec.buyHeroGear(k)) return false; toast(`${HERO_CLASSES[ec.hero.type].name} fikk ${HERO_GEAR[k].name.toLowerCase()} nivå ${ec.heroGearLevel(k)}.`); return true; }, heroOpen: () => (openChoice('class'), false), heroRevive: () => { if (state.phase !== 'build') { toast('Helten kan gjenopplives i byggefasen.'); return false; } if (!ec.heroRevive()) return false; toast(`${HERO_CLASSES[ec.hero.type].name} er tilbake i hæren.`); return true; }, heroChoice: () => (openChoice('talent'), false), docChoice: () => (openChoice('doctrine'), false),
+      wallgear: () => ec.buyWallGear(k), conv: () => ec.buyConv(k),
       barracks: () => ec.buyBarracks(), wall: () => ec.buyWall(), archers: () => ec.buyArchers(), repair: () => ec.repair(),
     };
     if (acts[b.dataset.act] && acts[b.dataset.act]()) {
@@ -5962,7 +6102,7 @@ Object.assign(UP_PIC, {
       if (b.dataset.act === 'barracks' && ec.docOffer) setTimeout(() => openChoice('doctrine'), 60);
       // Oppgraderinger virker med én gang i byggefasen; midt i en kamp gjelder de fra neste wave.
       if (state.phase === 'build') rebuild();
-      else if (['wall', 'repair', 'archers', 'track', 'wgear', 'wtrain'].includes(b.dataset.act)) toast('Gjelder fra neste wave.');
+      else if (['wall', 'repair', 'archers', 'track', 'wgear', 'wtrain', 'wallgear'].includes(b.dataset.act)) toast('Gjelder fra neste wave.');
       renderPanel(); syncVillage();
     }
   }
