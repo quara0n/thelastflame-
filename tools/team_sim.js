@@ -1,14 +1,12 @@
-// Team of four bots around one flame (version 33): north, east, south and west play the same wave in lockstep and
+// Team of four bots around one flame (version 34): north, east, south and west play the same wave in lockstep and
 // share the Warden and the flame shield. The team loses when an enemy reaches the flame on any side.
 // Usage: node team_sim.js [runs] [variant]   variant: roam (default) | fixed (Warden stays north) | old (fixed, no shield)
-const fs = require('fs');
-const { bot } = require('./game_sim.js');
+const G = require('./game_sim.js'), { bot } = G;
 
+// Same loader as game_sim.js (so the bot gets everything it uses there), plus the team pieces.
 function load(extra) {
-  const html = fs.readFileSync(__dirname + '/../prototype/kamptest-2.html', 'utf8');
-  const a = html.indexOf('// ===== The Last Flame — kampsimulering'), b = html.indexOf('// ===== The Last Flame — musikk');
-  const code = html.slice(a, b).replace(/if \(typeof module !== 'undefined'\) module.exports/g, '//') + (extra || '');
-  return new Function(code + ';return { Sim, Econ, TYPES, WAVES, BARRACKS, NODES, TRACKS, BOUNTY, waveBonus, UPGRADES, MAX_LEVEL, supplyOf, ARCHERS, buildWave, upgradeSpent, REFUND, WALLS, heroBot, withHero, heroAfterWave, Citadel, CITADEL, teamStep };')();
+  const L = G.load((extra || '') + ';globalThis.__team = { Citadel, CITADEL, teamStep };');
+  return Object.assign(L, globalThis.__team);
 }
 
 function playTeam(L) {
@@ -19,7 +17,7 @@ function playTeam(L) {
     const W = L.WAVES[wi];
     P.forEach(p => { p.ec.tick(t); bot(L, p.ec, p.army, wi); });
     const cit = new L.Citadel();
-    const sims = P.map((p, si) => new L.Sim(L.withHero(p.army, p.ec), { types: p.ec.types(L.TYPES, W.scale), enemies: L.buildWave(W), gateHp: p.ec.gateHp, gateMax: p.ec.gateMax(), archers: L.ARCHERS[p.ec.archers].count, wallgear: p.ec.wallgear, warden: si === 0, citadel: cit, si }));
+    const sims = P.map((p, si) => new L.Sim(L.withHero(p.army, p.ec), { types: p.ec.types(L.TYPES, W.scale), enemies: L.buildWave(W), gateHp: p.ec.gateHp, gateMax: p.ec.gateMax(), archers: L.ARCHERS[p.ec.archers].count, wallgear: p.ec.wallgear, warden: si === 0, citadel: cit, si, bot: si === 0 ? p.ec : undefined }));
     while (!L.teamStep(sims, 1 / 15)) {}
     P.forEach((p, si) => {
       const sim = sims[si];

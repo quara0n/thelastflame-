@@ -1,4 +1,4 @@
-"""Flammeskjoldet og Warden som går dit kampen er (11. okt 2026, versjon 33). Siste steg i build_v2.py.
+"""Flammeskjoldet og Warden som går dit kampen er (11. okt 2026, versjon 34). Siste steg i build_v2.py.
 
 Rune: «Warden skal kunne gå til hver side der kampen er. Det skal være et skjold over flammen som er der på grunn av
 Warden, så fienden ikke bare kan gå til flammen hvis én spiller lekker mens han slåss på sørsiden.»
@@ -22,7 +22,7 @@ Uten lagkamerater har citadellet bare nord, så Warden står der han alltid har 
 from patch import sub
 
 LOGIC = r"""
-// Flammeskjoldet og Warden som går dit kampen er (11. okt 2026, versjon 33).
+// Flammeskjoldet og Warden som går dit kampen er (11. okt 2026, versjon 34).
 // Warden er lagets felles konge. Så lenge han lever, står et skjold av hans kraft over flammen: fiender som når
 // citadellet på en side der Warden ikke står, må slå seg gjennom det, og hvert slag tar av Wardens helse. Faller Warden,
 // faller skjoldet. Der Warden står, er det han som stopper fienden (som før). Warden går selv langs ringveien til den siden der fienden er nærmest flammen.
@@ -117,7 +117,7 @@ function teamStep(sims, dt) {
 """
 
 MATE = r"""
-// Lagkamerat styrt av computeren (versjon 33, test av lagspill). Han holder én side av Bastionen (si = 1 øst, 2 sør,
+// Lagkamerat styrt av computeren (versjon 34, test av lagspill). Han holder én side av Bastionen (si = 1 øst, 2 sør,
 // 3 vest) med samme waves og den samme fornuftige boten som rivalen, men sender ingenting.
 class Mate {
   constructor(si) { this.si = si; this.ec = new Econ(); this.army = []; this.t = 45; this.alive = true; this.sim = null; this.wi = -1; this.hold = null; rivalBot(RIVAL_L, this.ec, this.army, 0); this.makeView(); }
@@ -148,7 +148,7 @@ class Mate {
 """
 
 UI = r"""
-  // ---------- Flammeskjoldet og Warden mellom sidene (versjon 33) ----------
+  // ---------- Flammeskjoldet og Warden mellom sidene (versjon 34) ----------
   const shieldMat = new THREE.MeshBasicMaterial({ color: 0xffcf5a, transparent: true, opacity: 0.14, side: THREE.DoubleSide, depthWrite: false });
   const shieldDome = new THREE.Mesh(new THREE.SphereGeometry(CITADEL.shieldR, 40, 14, 0, Math.PI * 2, 0, Math.PI / 2), shieldMat);
   shieldDome.position.set(0, 0, MAP.flameZ); shieldDome.scale.y = 1.15; shieldDome.castShadow = false; shieldDome.renderOrder = 5; scene.add(shieldDome);
@@ -245,7 +245,7 @@ def apply(s):
     s = sub(s, "class Rival {", LOGIC + MATE + "class Rival {")
     s = sub(s, "      this.units.push(w); this.warden = w;\n    }\n",
             "      this.units.push(w); this.warden = w;\n    }\n"
-            "    // Flammeskjoldet og Warden mellom sidene (versjon 33): alle sider med samme citadell deler Warden og skjoldet.\n"
+            "    // Flammeskjoldet og Warden mellom sidene (versjon 34): alle sider med samme citadell deler Warden og skjoldet.\n"
             "    this.si = cfg.si || 0;\n"
             "    this.citadel = cfg.citadel || (this.warden ? new Citadel() : null);\n"
             "    if (this.citadel) this.citadel.attach(this, this.si);\n")

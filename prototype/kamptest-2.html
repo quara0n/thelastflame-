@@ -1027,7 +1027,7 @@ const WAVES = [
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.315, 0.557, 0.265, 0.133, 0.51, 0.352, 0.447, 0.519, 0.275, 0.5, 0.534, 0.222, 0.531, 0.189, 0.437, 0.226, 0.51, 0.242, 0.305, 0.112, 0.377, 0.293, 1.007, 0.408, 0.161, 0.159, 0.211, 0.147, 0.226, 0.209];
+const WAVE_FACTOR = [0.315, 0.557, 0.265, 0.133, 0.459, 0.475, 0.492, 0.467, 0.242, 0.48, 0.587, 0.239, 0.526, 0.255, 0.481, 0.223, 0.551, 0.29, 0.288, 0.136, 0.543, 0.29, 1.33, 0.606, 0.463, 0.323, 0.717, 0.337, 0.588, 0.46];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};
@@ -1117,7 +1117,7 @@ class Sim {
       w.homeZ = w.z; w.facing = 0;
       this.units.push(w); this.warden = w;
     }
-    // Flammeskjoldet og Warden mellom sidene (versjon 33): alle sider med samme citadell deler Warden og skjoldet.
+    // Flammeskjoldet og Warden mellom sidene (versjon 34): alle sider med samme citadell deler Warden og skjoldet.
     this.si = cfg.si || 0;
     this.citadel = cfg.citadel || (this.warden ? new Citadel() : null);
     if (this.citadel) this.citadel.attach(this, this.si);
@@ -2006,7 +2006,7 @@ function arenaOutcome(sim) {
 // Knapper for 1 mot 1: hvor mye computeren sender (andel av gullet), hvor sterke portalens egne waves er, og sendeprisene.
 const VERSUS = { share: 0.35, wave: 0.5, price: 1, smart: true };
 const sendPrice = k => Math.max(1, Math.round(SEND[k] * VERSUS.price));
-const versusScale = W => ({ hp: W.scale.hp * VERSUS.wave, dmg: W.scale.dmg * Math.sqrt(VERSUS.wave) });
+const versusScale = W => ({ hp: W.scale.hp * VERSUS.wave, dmg: W.scale.dmg * Math.sqrt(VERSUS.wave), armor: W.scale.armor || 0 });
 // Det man kan sende i wave wi: skapninger fra verdenen man er i nå, som allerede har vist seg.
 function sendable(wi) {
   const W = WAVES[Math.min(wi, WAVES.length - 1)];
@@ -2040,16 +2040,21 @@ function rivalBot(L, ec, army, waveIdx) {
   };
   const buy = type => {
     const p = ec.unitPrice(T[type]);
-    if (!ec.unitUnlocked(type) || sup() + L.supplyOf(T[type]) > ec.supplyCap() || !ec.can(p)) return false;
+    if (!ec.unitUnlocked(type) || sup() + L.supplyOf(T[type]) > ec.supplyCap() || !afford(p)) return false;
     const spot = free(T[type].ranged); if (!spot) return false;
     ec.pay(p); army.push({ type, level: 0, ...spot, order: T[type].ranged ? 'follow' : 'advance' }); return true;
   };
   const upgrade = a => {
     if ((a.level || 0) >= L.MAX_LEVEL) return false;
     const c = L.UPGRADES[a.type][a.level || 0].cost;
-    if (!ec.can(c)) return false; ec.pay(c); a.level = (a.level || 0) + 1; return true;
+    if (!afford(c)) return false; ec.pay(c); a.level = (a.level || 0) + 1; return true;
   };
   const w = waveIdx + 1;
+  // Version 33: Barracks come first. Once the next Barracks is due, its timber, stone, iron and coal are held back from
+  // units, upgrades and everything else (before, the bot spent them and often never reached Tier 3 or 4).
+  const due = () => (w >= 5 && ec.barracks === 0) || (w >= 9 && ec.barracks === 1) || (w >= 16 && ec.barracks === 2);
+  const keep = r => { const b = L.BARRACKS[ec.barracks + 1]; return r !== 'gold' && due() && b && b.cost && !b.future ? b.cost[r] || 0 : 0; };
+  const afford = c => Object.keys(c || {}).every(r => (ec.res[r] || 0) - keep(r) >= c[r]);
   // Version 24: a random hero at wave 2; talents and doctrines picked at random.
   L.heroBot(ec, w);
   for (let guard = 0; guard < 80; guard++) {
@@ -2065,14 +2070,14 @@ function rivalBot(L, ec, army, waveIdx) {
       if (!n.unlocked || n.workers >= ec.cap(k) || n.workers >= wantW[k]) continue;
       const pr = ec.workerPrice(k);
       // Version 28: workers cost more (a real investment), so the bot accepts a higher price as the game goes on.
-      if (pr <= 16 + 3 * w && ec.res.gold >= pr + (w <= 4 ? 8 : 18)) did = ec.addWorker(k);
+      if (pr <= (L.workerCap ? L.workerCap(w) : 16 + 3 * w) && ec.res.gold >= pr + (w <= 4 ? 8 : 18)) did = ec.addWorker(k);
     }
     // A full mine gets more places as soon as the Barracks allows it.
     for (const k of ['gold', 'iron', 'timber', 'stone', 'coal']) if (!did && ec.nodes[k].unlocked && !ec.nodes[k].expanded && ec.nodes[k].workers >= ec.cap(k)) did = ec.expandNode(k);
     if (!did && w >= 6 && !ec.nodes.coal.unlocked && ec.can(L.NODES.coal.unlock)) did = ec.unlockNode('coal');
     if (!did && w >= 5 && ec.barracks === 0 && ec.can(L.BARRACKS[1].cost)) did = ec.buyBarracks();
-    if (!did && w >= 11 && ec.barracks === 1 && ec.can(L.BARRACKS[2].cost)) did = ec.buyBarracks();
-    if (!did && w >= 20 && ec.barracks === 2 && ec.can(L.BARRACKS[3].cost)) did = ec.buyBarracks();
+    if (!did && w >= 9 && ec.barracks === 1 && ec.can(L.BARRACKS[2].cost)) did = ec.buyBarracks();
+    if (!did && w >= 16 && ec.barracks === 2 && ec.can(L.BARRACKS[3].cost)) did = ec.buyBarracks();
     if (!did && ec.gateHp < ec.gateMax() * 0.7) did = ec.repair();
     if (!did && w >= 3 && ec.archers === 0) did = ec.buyArchers();
     // Army: keep roughly half melee, half ranged; buy the best tier that is open.
@@ -2090,7 +2095,7 @@ function rivalBot(L, ec, army, waveIdx) {
       for (const a of cand) if (upgrade(a)) { did = true; break; }
     }
     // When the next Barracks is due, save timber, stone and iron for it.
-    const saving = ((ec.barracks === 1 && w >= 12) || (ec.barracks === 2 && w >= 20)) && !ec.can(L.BARRACKS[ec.barracks + 1].cost);
+    const saving = due() && !ec.can(L.BARRACKS[ec.barracks + 1].cost);
     // Forge when there is iron to spare.
     if (!did && !saving && ec.res.iron >= 25) for (const k of ['melee', 'ranged', 'armor']) if (ec.buyTrack(k)) { did = true; break; }
     // Full army: sell maxed lower-tier units until a unit of the newest tier fits, if it can be afforded.
@@ -2167,7 +2172,7 @@ function pickSends(opts, money, prof, memo) {
 }
 const RIVAL_L = { heroBot, TYPES, BARRACKS, NODES, UPGRADES, MAX_LEVEL, supplyOf, ARCHERS, upgradeSpent, REFUND, WALLS };
 
-// Flammeskjoldet og Warden som går dit kampen er (11. okt 2026, versjon 33).
+// Flammeskjoldet og Warden som går dit kampen er (11. okt 2026, versjon 34).
 // Warden er lagets felles konge. Så lenge han lever, står et skjold av hans kraft over flammen: fiender som når
 // citadellet på en side der Warden ikke står, må slå seg gjennom det, og hvert slag tar av Wardens helse. Faller Warden,
 // faller skjoldet. Der Warden står, er det han som stopper fienden (som før). Warden går selv langs ringveien til den siden der fienden er nærmest flammen.
@@ -2260,7 +2265,7 @@ function teamStep(sims, dt) {
   return !sims.some(s => s && !s.result);
 }
 
-// Lagkamerat styrt av computeren (versjon 33, test av lagspill). Han holder én side av Bastionen (si = 1 øst, 2 sør,
+// Lagkamerat styrt av computeren (versjon 34, test av lagspill). Han holder én side av Bastionen (si = 1 øst, 2 sør,
 // 3 vest) med samme waves og den samme fornuftige boten som rivalen, men sender ingenting.
 class Mate {
   constructor(si) { this.si = si; this.ec = new Econ(); this.army = []; this.t = 45; this.alive = true; this.sim = null; this.wi = -1; this.hold = null; rivalBot(RIVAL_L, this.ec, this.army, 0); this.makeView(); }
@@ -2305,7 +2310,7 @@ class Rival {
     this.budget = wi >= 2 ? Math.min(Math.floor(ec.res.gold), Math.max(this.saved || 0, Math.floor(ec.res.gold * VERSUS.share) + this.bank)) : 0;
     ec.res.gold -= this.budget; rivalBot(RIVAL_L, ec, this.army, wi); ec.res.gold += this.budget;
     const base = buildWave(W); this.incoming = incoming || [];
-    this.sim = new Sim(withHero(this.army, ec), { types: ec.types(TYPES, versusScale(W)), enemies: base.concat(placeSent(this.incoming, base)), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count, wallgear: ec.wallgear });
+    this.sim = new Sim(withHero(this.army, ec), { bot: ec, types: ec.types(TYPES, versusScale(W)), enemies: base.concat(placeSent(this.incoming, base)), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count, wallgear: ec.wallgear });
   }
   // Waven er ferdig (spoles frem om nødvendig). Gir gull for lekk til spilleren og det rivalen sender tilbake.
   end(foe) {
@@ -2394,11 +2399,11 @@ const HERO_PATH_LEVEL = 5;
 const HERO_REVIVE = { base: 15, perLevel: 6 };   // nivå 1: 21 gull, nivå 5: 45, nivå 10: 75 (versjon 28: Rune ville ha det dyrere)
 // Heltens utstyr (versjon 27): tre spor à tre nivåer, kjøpes i Heltehallen for gull og jern. Gjør helten sterkere uavhengig av erfaring.
 const HERO_GEAR = {
-  vapen:    { name: 'Våpen', desc: '+15 % skade per nivå.', lv: [{ dmgMul: 1.15 }, { dmgMul: 1.15 }, { dmgMul: 1.15 }] },
-  rustning: { name: 'Rustning', desc: '+15 % helse og +1 rustning per nivå.', lv: [{ hpMul: 1.15, armor: 1 }, { hpMul: 1.15, armor: 1 }, { hpMul: 1.15, armor: 1 }] },
+  vapen:    { name: 'Våpen', desc: '+25 % skade per nivå.', lv: [{ dmgMul: 1.25 }, { dmgMul: 1.25 }, { dmgMul: 1.25 }] },
+  rustning: { name: 'Rustning', desc: '+25 % helse og +2 rustning per nivå.', lv: [{ hpMul: 1.25, armor: 2 }, { hpMul: 1.25, armor: 2 }, { hpMul: 1.25, armor: 2 }] },
   amulett:  { name: 'Flammeamulett', desc: 'Nivå 1 og 2: gror 0,4 % helse per sekund. Nivå 3, «Siste glød»: reiser seg én gang per wave med 40 % helse.', lv: [{ regenPct: 0.004 }, { regenPct: 0.004 }, { revive: 0.4 }] },
 };
-const HERO_GEAR_COST = [{ gold: 50, iron: 6 }, { gold: 100, iron: 14 }, { gold: 180, iron: 26 }];   // versjon 28: dobbelt så dyrt
+const HERO_GEAR_COST = [{ gold: 35, iron: 5 }, { gold: 70, iron: 10 }, { gold: 120, iron: 18 }];   // versjon 33: billigere og sterkere, så en helte-satsing kan bære
 const HERO_CLASSES = {
   heroKnight: { name: 'Flammeridder', short: 'Nærkamp. Står foran og tåler mye.', paths: ['paladin', 'berserker'] },
   heroHunter: { name: 'Askejeger', short: 'Skytter med lang rekkevidde, god mot flyvere.', paths: ['falkoye', 'stormskytter'] },
@@ -2700,6 +2705,98 @@ function extrasBot(ec, w) {
     if (!did && w >= 12 && ec.wallNext('oil') && ec.res.coal >= ec.wallNext('oil').cost.coal + 20 && ec.res.gold >= ec.wallNext('oil').cost.gold + 50 && ec.can(ec.wallNext('oil').cost)) did = ec.buyWallGear('oil');
     if (!did) break;
   }
+}
+
+
+// ===== Versjon 33: testspillerne bruker hele spillet (Warden, Workshop, verktøy) =====
+function wardenBot(ec, w) {
+  const spare = (c, g, i) => c && ec.can(c) && ec.res.gold >= (c.gold || 0) + g && (ec.res.iron || 0) >= (c.iron || 0) + i;
+  if (ec.wardenHp != null && ec.wardenHp < 0.6) { const c = ec.wardenHealCost(); if (c && ec.res.gold >= c.gold + 20) ec.healWarden(); }
+  // Hvor mye som er lurt å ha kjøpt etter hvert: litt Warden og Workshop hver tredje wave, så hæren ikke sulter.
+  const gearN = ec.warden.sword + ec.warden.shield + ec.warden.armor, abilN = ec.warden.abil.stun + ec.warden.abil.spin + ec.warden.abil.freeze;
+  for (let g = 0; g < 4; g++) {
+    let did = false;
+    // Verktøy til arbeiderne: alle leveranser blir større, betaler seg fort.
+    // Ett nivå per Barracks-nivå, og bare med tømmer til overs (ellers kommer Barracks for sent).
+    const tl = TOOLS[ec.tools]; if (tl && ec.barracks > ec.tools && (ec.res.timber || 0) >= tl.cost.timber + 40 && spare(tl.cost, 15, 5)) did = ec.buyTools();
+    // Forge: gjelder alle units av typen, så det er mer verdt enn å oppgradere én soldat.
+    if (!did && w >= 4) for (const k of ['melee', 'ranged', 'armor']) { const lv = TRACKS[k].levels[ec.up[k]]; if (lv && !ec.trackLocked(k) && spare(lv.cost, 20, 5) && ec.buyTrack(k)) { did = true; break; } }
+    // Warden-utstyr: billigste del først, omtrent én del per tredje wave.
+    if (!did && w >= 4 && gearN < Math.floor(w / 3)) { const k = Object.keys(WARDEN_GEAR).sort((a, b) => ec.warden[a] - ec.warden[b])[0], lv = WARDEN_GEAR[k].levels[ec.warden[k]];
+      if (lv && spare(lv.cost, 50, 25)) did = ec.buyWardenGear(k); }
+    // Warden-evner: lammelse først, så virvelvind, så frost, omtrent én per fjerde wave.
+    if (!did && abilN < Math.floor((w - 2) / 4)) for (const [k, from] of [['stun', 6], ['spin', 9], ['freeze', 13]]) {
+      if (did || w < from) continue; const lv = WARDEN_ABIL[k].levels[ec.warden.abil[k]];
+      if (lv && spare(lv.cost, 50, 25)) did = ec.buyWardenAbility(k);
+    }
+    // Workshop: teknologi for skytterne når det er kull til overs.
+    if (!did && w >= 8 && ec.up.tech < Math.floor(w / 8)) { const lv = TRACKS.tech.levels[ec.up.tech]; if (lv && (ec.res.coal || 0) >= (lv.cost.coal || 0) + 15 && spare(lv.cost, 30, 15)) did = ec.buyTrack('tech'); }
+    if (!did) break;
+  }
+}
+{ const _x = extrasBot; extrasBot = function (ec, w) { _x(ec, w); wardenBot(ec, w); }; }
+// Når neste Barracks er på tur, holdes tømmer, stein, jern og kull til den igjen før helt, utstyr og ekstra bygg får noe
+// (før kjøpte boten kullmile, ballista og Warden-skjold for tømmeret og steinen, og fikk Barracks II altfor sent).
+{ const _h = heroBot; heroBot = function (ec, w) {
+  const due = (w >= 5 && ec.barracks === 0) || (w >= 9 && ec.barracks === 1) || (w >= 16 && ec.barracks === 2);
+  const r = due && BARRACKS[ec.barracks + 1] && BARRACKS[ec.barracks + 1].cost, held = {};
+  if (r) for (const k in r) if (k !== 'gold') { held[k] = Math.min(ec.res[k] || 0, r[k]); ec.res[k] -= held[k]; }
+  try { return _h(ec, w); } finally { for (const k in held) ec.res[k] += held[k]; }
+}; }
+// Kamper for testspillerne (cfg.bot = Econ): Warden bruker evnene selv, har helsen fra forrige wave og får erfaring av drap.
+{
+  const step0 = Sim.prototype.step;
+  Sim.prototype.step = function (dt) {
+    const ec = this.cfg && this.cfg.bot;
+    if (!ec) return step0.call(this, dt);
+    const w = this.warden;
+    if (!this._botInit) {
+      this._botInit = true; this._abReady = {}; this._evI = 0;
+      if (w && ec.wardenHp != null && ec.wardenHp < 1) w.hp = Math.max(1, Math.round(w.maxHp * ec.wardenHp));
+    }
+    if (w && w.alive && this.t > 1) for (const k of ['freeze', 'stun', 'spin']) {
+      const lv = ec.warden.abil[k]; if (!lv || (this._abReady[k] || 0) > this.t || this.t < (this._abLook || 0)) continue;
+      const r = k === 'freeze' ? 8 + 2 * lv : k === 'stun' ? 5 + lv : 3;
+      const near = this.units.filter(e => e.alive && e.side === 'e' && dist(e, w) < r).length;
+      if (near >= (k === 'freeze' ? 6 : 4) && this.wardenAbility(k, lv) >= 0) this._abReady[k] = this.t + ABIL_CD[k][lv - 1];
+    }
+    // Et menneske ser ikke alt på en gang: boten ser etter en sjanse til evnene hvert andre sekund.
+    if (this.t >= (this._abLook || 0)) this._abLook = this.t + 2;
+    step0.call(this, dt);
+    if (this.events.length < this._evI) this._evI = 0;
+    for (; this._evI < this.events.length; this._evI++) { const e = this.events[this._evI]; if (e.kind === 'death' && e.unit.side === 'e' && e.by === 'warden') ec.addWardenXp(WARDEN_KILL_XP[e.unit.type] || 1); }
+    if (this.result && this.warden) { const v = this.warden; ec.wardenHp = Math.min(1, (v.alive ? Math.max(0, v.hp) / v.maxHp : 0.25) + (v.alive ? 0.1 : 0)); }
+  };
+}
+
+const botSpend = { on: false, tot: {}, cat: null };
+{
+  const pay0 = Econ.prototype.pay;
+  Econ.prototype.pay = function (cost) {
+    const ok = pay0.call(this, cost);
+    if (ok && botSpend.on && cost) { let c = botSpend.cat; if (!c) { const st = new Error().stack || ''; c = /at upgrade /.test(st) ? 'unitUpgrade' : /at buy /.test(st) ? 'unit' : 'other'; }
+      const b = botSpend.tot[c] || (botSpend.tot[c] = {}); for (const r in cost) b[r] = (b[r] || 0) + cost[r]; }
+    return ok;
+  };
+  const CAT = { addWorker: 'workers', unlockNode: 'mines', expandNode: 'mines', deepen: 'mines', buyTools: 'tools', buyBarracks: 'barracks', buyWall: 'wall', buyArchers: 'wall',
+    repair: 'repair', buyWallGear: 'wallgear', buyConv: 'converters', buyWardenGear: 'warden', buyWardenAbility: 'warden', healWarden: 'warden', trainWarden: 'warden',
+    recruitHero: 'hero', heroRevive: 'hero', buyHeroGear: 'hero' };
+  for (const m in CAT) { const f = Econ.prototype[m]; if (!f) continue;
+    Econ.prototype[m] = function (...a) { const prev = botSpend.cat; botSpend.cat = m === 'buyTrack' ? null : CAT[m]; try { return f.apply(this, a); } finally { botSpend.cat = prev; } }; }
+  const bt = Econ.prototype.buyTrack;
+  Econ.prototype.buyTrack = function (k) { const prev = botSpend.cat; botSpend.cat = k === 'tech' ? 'workshop' : 'forge'; try { return bt.call(this, k); } finally { botSpend.cat = prev; } };
+}
+
+// ===== Versjon 33: rustning på fiendene fra verden 2, så Tier 3+ trengs =====
+const WAVE_ARMOR = w => w <= 10 ? 0 : w <= 20 ? 2 : 8;
+WAVES.forEach(W => { W.scale.armor = WAVE_ARMOR(W.n); });
+{
+  const _t = Econ.prototype.types;
+  Econ.prototype.types = function (baseTypes, enemyScale) {
+    const out = _t.call(this, baseTypes, enemyScale), a = enemyScale && enemyScale.armor;
+    if (a) for (const k in out) if (out[k].side === 'e') out[k].armor = (out[k].armor || 0) + a;
+    return out;
+  };
 }
 
 if (typeof module !== 'undefined') module.exports = { supplyOf, WARDEN_GEAR, WARDEN_XP, WARDEN_TRAIN, WARDEN_KILL_XP, Econ, RES, RES_KEYS, NODES, TOOLS, TRACKS, BARRACKS, WALLS, ARCHERS, BOUNTY, waveBonus, DELIVERY, NODE_EXPAND, DEEPEN, REFUND };
@@ -6373,7 +6470,7 @@ Object.assign(UP_PIC, {
   }
 
 
-  // ---------- Flammeskjoldet og Warden mellom sidene (versjon 33) ----------
+  // ---------- Flammeskjoldet og Warden mellom sidene (versjon 34) ----------
   const shieldMat = new THREE.MeshBasicMaterial({ color: 0xffcf5a, transparent: true, opacity: 0.14, side: THREE.DoubleSide, depthWrite: false });
   const shieldDome = new THREE.Mesh(new THREE.SphereGeometry(CITADEL.shieldR, 40, 14, 0, Math.PI * 2, 0, Math.PI / 2), shieldMat);
   shieldDome.position.set(0, 0, MAP.flameZ); shieldDome.scale.y = 1.15; shieldDome.castShadow = false; shieldDome.renderOrder = 5; scene.add(shieldDome);

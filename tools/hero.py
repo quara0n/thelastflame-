@@ -19,11 +19,11 @@ const HERO_PATH_LEVEL = 5;
 const HERO_REVIVE = { base: 15, perLevel: 6 };   // nivå 1: 21 gull, nivå 5: 45, nivå 10: 75 (versjon 28: Rune ville ha det dyrere)
 // Heltens utstyr (versjon 27): tre spor à tre nivåer, kjøpes i Heltehallen for gull og jern. Gjør helten sterkere uavhengig av erfaring.
 const HERO_GEAR = {
-  vapen:    { name: 'Våpen', desc: '+15 % skade per nivå.', lv: [{ dmgMul: 1.15 }, { dmgMul: 1.15 }, { dmgMul: 1.15 }] },
-  rustning: { name: 'Rustning', desc: '+15 % helse og +1 rustning per nivå.', lv: [{ hpMul: 1.15, armor: 1 }, { hpMul: 1.15, armor: 1 }, { hpMul: 1.15, armor: 1 }] },
+  vapen:    { name: 'Våpen', desc: '+25 % skade per nivå.', lv: [{ dmgMul: 1.25 }, { dmgMul: 1.25 }, { dmgMul: 1.25 }] },
+  rustning: { name: 'Rustning', desc: '+25 % helse og +2 rustning per nivå.', lv: [{ hpMul: 1.25, armor: 2 }, { hpMul: 1.25, armor: 2 }, { hpMul: 1.25, armor: 2 }] },
   amulett:  { name: 'Flammeamulett', desc: 'Nivå 1 og 2: gror 0,4 % helse per sekund. Nivå 3, «Siste glød»: reiser seg én gang per wave med 40 % helse.', lv: [{ regenPct: 0.004 }, { regenPct: 0.004 }, { revive: 0.4 }] },
 };
-const HERO_GEAR_COST = [{ gold: 50, iron: 6 }, { gold: 100, iron: 14 }, { gold: 180, iron: 26 }];   // versjon 28: dobbelt så dyrt
+const HERO_GEAR_COST = [{ gold: 35, iron: 5 }, { gold: 70, iron: 10 }, { gold: 120, iron: 18 }];   // versjon 33: billigere og sterkere, så en helte-satsing kan bære
 const HERO_CLASSES = {
   heroKnight: { name: 'Flammeridder', short: 'Nærkamp. Står foran og tåler mye.', paths: ['paladin', 'berserker'] },
   heroHunter: { name: 'Askejeger', short: 'Skytter med lang rekkevidde, god mot flyvere.', paths: ['falkoye', 'stormskytter'] },

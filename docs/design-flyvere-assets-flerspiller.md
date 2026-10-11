@@ -170,7 +170,7 @@ Bildene: `docs/art/landsby-konsept.png` (nord), `landsby-ost-gronnlund.png`, `la
 
 Navnene kommer fra Runes bilder (11. okt). Senere: egne modeller per side (i dag samme modeller med sidens farger og merke).
 
-## Flammeskjoldet og Warden som går dit kampen er (11. okt 2026, versjon 33)
+## Flammeskjoldet og Warden som går dit kampen er (11. okt 2026, versjon 34)
 
 Rune (11. okt): Warden skal kunne gå til hver side der kampen er, og et skjold over flammen, som er der på grunn av Warden, skal hindre at fienden bare går til flammen når én spiller lekker mens Warden slåss på en annen side (f.eks. sør).
 
@@ -178,6 +178,6 @@ Rune (11. okt): Warden skal kunne gå til hver side der kampen er, og et skjold 
 - **Der Warden står, er han selv skjoldet.** Fienden må forbi ham, som før. Derfor er spill alene uendret (Warden står alltid i nord). Et skjold også der Warden står gjorde spillet mye lettere (median wave 15 → 19).
 - **Warden velger selv (Auto).** Han går langs ringveien til den siden der fienden er nærmest flammen. Fiender som slår på skjoldet teller mest. Han bytter ikke for småting (den andre siden må være klart verre), og han blir minst 2 sekunder. Nabosiden tar ca. 5 s, motsatt side ca. 10 s.
 - **Test med computeren:** Send-fanen kan slå på lagkamerater på øst, sør og vest. Taper én side, taper hele laget.
-- Målt med fire boter rundt én flamme: laget kom i snitt til wave 9,4 med Warden som går, 6,5 med Warden fast i nord, og 6,1 uten skjold.
+- Målt med fire boter rundt én flamme (versjon 33-balansen): laget kom i snitt til wave 5,9 med Warden som går, 4,9 med Warden fast i nord, og 5,0 uten skjold. Lag på fire faller nesten alltid på wave 6: alene vinner boten den bare fordi Warden dreper restene. Balansen forutsetter én Warden per spiller, så lagspill trenger svakere waves, en vokter per side eller hjelpere som går til Warden.
 - Mulig neste: «Kall Warden» (en spiller ber ham komme), soldater som går til Warden når egen wave er ferdig, lagspill online.
 
