@@ -185,3 +185,12 @@ Runes tilbakemelding etter å ha spilt versjon 27 (`tools/hardmode.py`, siste st
 - Bare utseende og kamera; kampen og balansen er uendret. Tegnekall: Bastion-oversikten ca. 950 (før 777), landsbyen ca. 310 (før 145), slagmarken 250 (før 225).
 - Neste mulig: egne modeller per side (ikke bare farger), at også slagmarken snus når flerspiller gir deg en annen side enn nord.
 
+## 11 Oct 2026 – version 30: Runes bilder for hver side og slagmarken
+
+- Rune sendte referansebilder: vest Havbryn (`docs/art/landsby-vest-havbryn.png`, ankerbannere, Tidehall), øst Grønnlund (`landsby-ost-gronnlund.png`, trebannere, Roothall), sør Lysheim (`landsby-sor-lysheim.png`, hvit marmor, gull, engler, Sanctum) og slagmarken i nord (`slagmark-nord.png`: portalen øverst, porten med troppen nederst, unitkort nede til venstre, minikart nede til høyre, mål oppe til høyre).
+- **Navn fra bildene:** Longhouse heter Roothall (øst), Sanctum (sør) og Tidehall (vest). Barracks, Forge og Workshop heter det samme på alle sider. Forslagene fra versjon 29 (Tinghall, Jegerleir osv.) er droppet.
+- **Merker på bannerne:** hjort i nord, tre i øst, stjerne i sør, anker i vest. Mørkeblå bannere i nord, sør og vest, mørkegrønne i øst. Sør har mørkeblå tak og gullmerker (før gulltak); vest har varmt tre og blå tak.
+- Bannere med merke på porttårnene (begge sider), glødepanner på muren, fakler med gjerde langs kantene av slagmarken, engler på porttårnene og ved enden av veien i Lysheim.
+- Bare utseende; balansen er uendret.
+- Ikke bygget ennå fra slagmarksbildet: snø i nord, unitkort-rad nede til venstre, mål-boks oppe til høyre. Mulig neste.
+

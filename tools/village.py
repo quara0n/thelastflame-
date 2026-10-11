@@ -172,6 +172,8 @@ NODE_NEW = r"""  // Ressursene som på bildet: gullhaug med kran, tømmerleir me
 
 DECOR = r"""
   // ---------- Landsbyen etter konseptbildet (village.py) ----------
+  // EMB: steder for sidens merke på bannerne [x, y, z, rotasjon y, størrelse]. Merket bygges per side i sideExtras.
+  const EMB = [];
   // Lys steinvei med kantstein fra porten til citadellet, fakler med bannere, belagte plasser under
   // bygningene, bannere på muren, glødepanner ved porten, røyk fra smia og småting rundt husene.
   // Alt havner i `village`, så sideKit kopierer det til de andre sidene.
@@ -203,8 +205,8 @@ DECOR = r"""
       if (flag) {
         const sd = Math.sign(x);
         add(new THREE.BoxGeometry(0.5, 0.05, 0.05), mats.iron, x - sd * 0.25, 2.0, z);
-        const b = add(new THREE.BoxGeometry(0.04, 1.0, 0.46), vm.banner, x - sd * 0.45, 1.45, z); b.userData.wave = 1;
-        add(new THREE.BoxGeometry(0.05, 0.2, 0.2), VD.emblem, x - sd * 0.45, 1.55, z).rotation.x = Math.PI / 4;
+        add(new THREE.BoxGeometry(0.04, 1.0, 0.46), vm.banner, x - sd * 0.45, 1.45, z);
+        [-1, 1].forEach(f => EMB.push([x - sd * 0.45 + f * 0.03, 1.55, z, f * Math.PI / 2, 0.36]));
       }
     };
     [18.6, 23.8, 29, 34.2].forEach((z, i) => [-1, 1].forEach(sd => torch(sd * 3.0, z, i % 2 === 0)));
@@ -216,13 +218,13 @@ DECOR = r"""
       add(new THREE.SphereGeometry(0.65, 10, 8), VD.glow, sd * 3.0, 1.7, 16.4).castShadow = false;
       [7.5, 13].forEach(x => {
         add(new THREE.BoxGeometry(1.3, 2.1, 0.05), vm.banner, sd * x, 2.0, MAP.gateZ + 1.33);
-        add(new THREE.BoxGeometry(0.34, 0.34, 0.05), VD.emblem, sd * x, 2.3, MAP.gateZ + 1.37).rotation.z = Math.PI / 4;
+        EMB.push([sd * x, 2.2, MAP.gateZ + 1.38, 0, 0.8]);
         add(new THREE.BoxGeometry(1.45, 0.1, 0.1), mats.brass, sd * x, 3.08, MAP.gateZ + 1.35);
       });
     });
     // Longhouse: banner over døra, benk og tønner.
     add(new THREE.BoxGeometry(0.08, 2.6, 0.08), mats.iron, -3.6, 1.3, 25.4);
-    add(new THREE.BoxGeometry(0.6, 0.9, 0.04), vm.banner, -3.25, 2.1, 25.4).userData.wave = 1;
+    add(new THREE.BoxGeometry(0.6, 0.9, 0.04), vm.banner, -3.25, 2.1, 25.4); EMB.push([-3.25, 2.15, 25.43, 0, 0.42]);
     const barrel = (x, z) => add(new THREE.CylinderGeometry(0.26, 0.26, 0.6, 10), VD.wood, x, 0.3, z);
     barrel(-3.4, 22.2); barrel(-3.5, 21.6); barrel(8.2, 22.6); barrel(-8.9, 26.3);
     const crate = (x, z, s) => add(new THREE.BoxGeometry(s, s, s), vm.crate, x, s / 2, z);
@@ -258,9 +260,9 @@ DECOR = r"""
   }
   // Sidens farger på kopiene av landsbyen (øst, sør, vest). Nord beholder verdenens utseende.
   const VSTYLE = [null,
-    { plank: 0x5c4630, roof: 0x3f5e2c, banner: 0x2f6a3a, leaf: 0x3d7a30, pave: 0x8a8a70, seam: 0x4a5040, wood: 0x5a4028, tarp: 0x3f6a34, canvas: 0xcfd6b4, stone: 0x5e6656, block: 0xb9bfa8, emblem: 0xe4d9a0 },
-    { plank: 0xe4ddcc, roof: 0xc9a24e, banner: 0xf2e8c8, leaf: 0x9fae70, pave: 0xd9d1bd, seam: 0xa89a74, wood: 0xc4ac78, tarp: 0xf3ead2, canvas: 0xfff6e0, stone: 0xdcd6c8, block: 0xf0ece2, emblem: 0xc9a24e, fire: 0xffe9b0, window: 0xfff0c0 },
-    { plank: 0x6b655d, roof: 0x2a3e52, banner: 0x1f6a7a, leaf: 0x3a5a48, pave: 0xa49a84, seam: 0x5a5448, wood: 0x6a5a48, tarp: 0x2a6a7a, canvas: 0xd8d4c8, stone: 0x5a6670, block: 0xb4b8bc, emblem: 0xe8e2d0 },
+    { plank: 0x5c4630, roof: 0x3f5e2c, banner: 0x1f4a2a, leaf: 0x3d7a30, pave: 0x8a8a70, seam: 0x4a5040, wood: 0x5a4028, tarp: 0x3f6a34, canvas: 0xcfd6b4, stone: 0x5e6656, block: 0xb9bfa8, emblem: 0xe4d9a0 },
+    { plank: 0xe4ddcc, roof: 0x2a3f7a, banner: 0x24346a, leaf: 0x9fae70, pave: 0xd9d1bd, seam: 0xa89a74, wood: 0xc4ac78, tarp: 0xf3ead2, canvas: 0xfff6e0, stone: 0xdcd6c8, block: 0xf0ece2, emblem: 0xe2b54a, fire: 0xffe9b0, window: 0xfff0c0 },
+    { plank: 0x6a4a30, roof: 0x2b4470, banner: 0x22325a, leaf: 0x3a5a48, pave: 0xa49a84, seam: 0x5a5448, wood: 0x6a5a48, tarp: 0x2b4470, canvas: 0xe6e2d8, stone: 0x5a6670, block: 0xb4b8bc, emblem: 0xe8e2d0 },
   ];
   const vstyleCache = new Map();
   function restyleVillage(root, si) {
@@ -272,7 +274,7 @@ DECOR = r"""
       if (!vstyleCache.has(ck)) {
         const m = o.material.clone();
         if (k === 'window') m.emissive.setHex(st[k]); else m.color.setHex(st[k]);
-        if (si === 2 && k === 'roof') { m.metalness = 0.5; m.roughness = 0.4; m.emissive = new THREE.Color(0x2a1e06); }
+        if (si === 2 && k === 'emblem') { m.metalness = 0.6; m.roughness = 0.35; m.emissive = new THREE.Color(0x3a2a08); }
         vstyleCache.set(ck, m);
       }
       o.material = vstyleCache.get(ck);
@@ -315,12 +317,12 @@ LABELS_NEW = r"""    // Landsbyskilt for alle fire sider, med sidens egne navn p
       ...Object.keys(NODE_POS).map(k => Object.assign({ vl: true, si, node: si ? null : k, icon: NODE_ICON[k], text: NODES[k].name, y: 3.0 }, sideToWorld(si, NODE_POS[k].x, NODE_POS[k].z))),
     ]),
 """
-NAMES = r"""  // Bygningene heter noe eget på hver side (samme rolle, annet utseende). Navnene kan byttes.
+NAMES = r"""  // Longhouse heter noe eget på hver side (Runes bilder 11. okt): Roothall, Sanctum, Tidehall. Resten heter det samme.
   const SIDE_NAMES = [
     { longhouse: 'Longhouse', barracks: 'Barracks', forge: 'Forge', workshop: 'Workshop' },
-    { longhouse: 'Tinghall', barracks: 'Jegerleir', forge: 'Rotsmie', workshop: 'Treverksted' },
-    { longhouse: 'Lystempel', barracks: 'Lysgarde', forge: 'Solsmie', workshop: 'Stjerneverksted' },
-    { longhouse: 'Havhall', barracks: 'Sjøgarde', forge: 'Ankersmie', workshop: 'Verft' },
+    { longhouse: 'Roothall', barracks: 'Barracks', forge: 'Forge', workshop: 'Workshop' },
+    { longhouse: 'Sanctum', barracks: 'Barracks', forge: 'Forge', workshop: 'Workshop' },
+    { longhouse: 'Tidehall', barracks: 'Barracks', forge: 'Forge', workshop: 'Workshop' },
   ];
   const VBUILD = [
     { key: 'longhouse', icon: '🏠', x: -5.2, y: 4.4, z: 23.4 }, { key: 'barracks', icon: '⚔️', x: -6, y: 4.4, z: 31 },
@@ -332,6 +334,65 @@ NAMES = r"""  // Bygningene heter noe eget på hver side (samme rolle, annet uts
     let best = 0, bd = 1e9;
     SIDES.forEach((sd, i) => { const p = sideToWorld(i, 0, 26); const d = Math.hypot(p.x - cam.tx, p.z - cam.tz); if (d < bd) { bd = d; best = i; } });
     return best;
+  }
+  // Sidens merke, fakler og statuer (Runes referansebilder 11. okt): hjort i nord, tre i øst, stjerne i sør, anker i vest.
+  // Hvert merke er noen flate deler i xy-planet, ca. 1 x 1 stort; [geometri, x, y, rotasjon z, rotasjon x].
+  function sideExtras(si, g) {
+    const EMBLEM = [
+      () => [[new THREE.BoxGeometry(0.2, 0.3, 0.05), 0, -0.2], [new THREE.BoxGeometry(0.12, 0.16, 0.05), 0, -0.4],
+        ...[-1, 1].flatMap(s => [[new THREE.BoxGeometry(0.06, 0.5, 0.05), s * 0.2, 0.12, -s * 0.5], [new THREE.BoxGeometry(0.05, 0.24, 0.05), s * 0.13, 0.22, s * 0.3],
+          [new THREE.BoxGeometry(0.05, 0.24, 0.05), s * 0.36, 0.34, -s * 1.0], [new THREE.BoxGeometry(0.05, 0.2, 0.05), s * 0.3, 0.42, -s * 0.1], [new THREE.BoxGeometry(0.14, 0.06, 0.05), s * 0.15, -0.08, 0]])],
+      () => [[new THREE.BoxGeometry(0.08, 0.42, 0.05), 0, -0.24], [new THREE.CylinderGeometry(0.3, 0.3, 0.05, 18), 0, 0.14, 0, Math.PI / 2],
+        ...[-1, 1].map(s => [new THREE.BoxGeometry(0.05, 0.24, 0.05), s * 0.1, -0.4, s * 0.7])],
+      () => [[new THREE.BoxGeometry(0.09, 0.9, 0.05), 0, 0], [new THREE.BoxGeometry(0.9, 0.09, 0.05), 0, 0], [new THREE.BoxGeometry(0.06, 0.5, 0.05), 0, 0, Math.PI / 4],
+        [new THREE.BoxGeometry(0.06, 0.5, 0.05), 0, 0, -Math.PI / 4], [new THREE.TorusGeometry(0.2, 0.03, 6, 20), 0, 0]],
+      () => [[new THREE.BoxGeometry(0.07, 0.62, 0.05), 0, -0.02], [new THREE.BoxGeometry(0.36, 0.06, 0.05), 0, 0.18], [new THREE.TorusGeometry(0.07, 0.025, 6, 12), 0, 0.36],
+        [new THREE.TorusGeometry(0.24, 0.035, 6, 16, Math.PI), 0, -0.1, Math.PI], ...[-1, 1].map(s => [new THREE.BoxGeometry(0.1, 0.05, 0.05), s * 0.25, -0.06, -s * 0.7])],
+    ];
+    const G = new THREE.Group(), add = (geo, mat, x, y, z) => { const m = mesh(geo, mat, x, y, z); G.add(m); return m; };
+    const putEmblem = (x, y, z, ry, size) => {
+      const e = new THREE.Group(); e.position.set(x, y, z); e.rotation.y = ry; e.scale.setScalar(size); G.add(e);
+      EMBLEM[si]().forEach(([geo, ex, ey, rz, rx]) => { const m = mesh(geo, VD.emblem, ex, ey, 0.02); m.rotation.set(rx || 0, 0, rz || 0); m.castShadow = false; e.add(m); });
+    };
+    EMB.forEach(p => putEmblem(...p));
+    const wz = MAP.gateZ + 0.6, tx = MAP.gateHalf + 0.9;
+    const fire = (x, y, z, r) => {
+      add(new THREE.CylinderGeometry(r, r * 0.55, r * 0.8, 10), mats.brass, x, y, z);
+      add(new THREE.ConeGeometry(r * 0.7, r * 1.7, 8), VD.fire, x, y + r * 1.1, z).castShadow = false;
+      add(new THREE.SphereGeometry(r * 1.3, 8, 6), VD.glow, x, y + r, z).castShadow = false;
+    };
+    // Porttårnene: banner med merket mot slagmarken og mot landsbyen, glødepanner på muren.
+    [-1, 1].forEach(sd => {
+      [-1, 1].forEach(f => {
+        add(new THREE.BoxGeometry(1.0, 2.2, 0.05), vm.banner, sd * tx, 3.0, wz + f * 1.42);
+        putEmblem(sd * tx, 3.1, wz + f * 1.46, f > 0 ? 0 : Math.PI, 0.7);
+      });
+      [5.6, 15.5].forEach(x => fire(sd * x, 3.9, wz, 0.42));
+    });
+    // Fakler med gjerde langs kantene av slagmarken, som på bildet av nord.
+    [-26, -16, -6, 4].forEach(z => [-1, 1].forEach(sd => {
+      const x = sd * 15.2;
+      add(new THREE.CylinderGeometry(0.1, 0.13, 1.5, 6), mats.iron, x, 0.75, z);
+      fire(x, 1.6, z, 0.32);
+      add(new THREE.BoxGeometry(0.06, 0.06, 2.4), VD.wood, x + sd * 0.3, 0.55, z + 2.2);
+      add(new THREE.BoxGeometry(0.06, 0.06, 2.4), VD.wood, x + sd * 0.3, 0.25, z + 2.2);
+      [1.0, 3.4].forEach(dz => add(new THREE.BoxGeometry(0.1, 0.7, 0.1), VD.wood, x + sd * 0.3, 0.35, z + dz));
+    }));
+    // Lysheim: engler på porttårnene og ved enden av veien mot citadellet.
+    if (si === 2) {
+      const marble = M(0xeeeae0, { roughness: 0.5, emissive: 0x2a2820 });
+      const angel = (x, y, z, s, ry) => {
+        const a = new THREE.Group(); a.position.set(x, y, z); a.scale.setScalar(s); a.rotation.y = ry; G.add(a);
+        a.add(mesh(new THREE.BoxGeometry(0.9, 0.4, 0.9), marble, 0, 0.2, 0), mesh(new THREE.ConeGeometry(0.42, 1.7, 10), marble, 0, 1.25, 0), mesh(new THREE.SphereGeometry(0.2, 10, 8), marble, 0, 2.25, 0));
+        const halo = mesh(new THREE.TorusGeometry(0.22, 0.03, 6, 18), vm.gold, 0, 2.6, -0.05); a.add(halo);
+        [-1, 1].forEach(sd => { const w = mesh(new THREE.BoxGeometry(0.08, 1.4, 0.55), vm.gold, sd * 0.36, 1.8, -0.25); w.rotation.set(-0.3, 0, -sd * 0.35); a.add(w); });
+        a.add(mesh(new THREE.CylinderGeometry(0.03, 0.03, 2.4, 6), vm.gold, 0.4, 1.4, 0.2));
+      };
+      [-1, 1].forEach(sd => angel(sd * tx, 5.6, wz, 0.9, Math.PI));
+      [-1, 1].forEach(sd => angel(sd * 3.4, 0, MAP.roadEnd - 0.3, 1.1, 0));
+    }
+    restyleVillage(G, si);
+    g.add(mergeGroup(G));
   }
   // Navneskilt i landsbyen, vises når kameraet er der.
 """
@@ -403,5 +464,6 @@ def apply(s):
                '<button type="button" data-vs="0" class="on">Nord</button><button type="button" data-vs="1">Øst</button>'
                '<button type="button" data-vs="2">Sør</button><button type="button" data-vs="3">Vest</button></div>\n'
                '      <div id="longhouse"></div>\n')
+    s = sub(s, "    return pivot;\n  }\n  const sideKits", "    sideExtras(si, g);\n    return pivot;\n  }\n  const sideKits")
     s = sub(s, "      if (vis && L.side) { const hw = L.el.offsetWidth / 2 + 4;", "      if (vis && (L.side || L.vl)) { const hw = L.el.offsetWidth / 2 + 4;")
     return s

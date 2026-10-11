@@ -159,12 +159,14 @@ Rune delte `docs/art/landsby-konsept.png` som retning for landsbyen. Oppsettet e
 - **Hver spiller ser sin egen side opp.** Står du på vest, snus kameraet slik at din port er øverst og alt ligger på samme plass som for nord.
 - De andre sidene følger samme prinsipp, men med eget utseende og egne navn:
 
-| Side | Longhouse | Barracks | Forge | Workshop | Utseende |
-| --- | --- | --- | --- | --- | --- |
-| Nord (Askemyr) | Longhouse | Barracks | Forge | Workshop | mørkt tre, blå bannere, varm jord |
-| Øst Grønnlund | Tinghall | Jegerleir | Rotsmie | Treverksted | mosegrønne tak, grønne bannere |
-| Sør Lysheim | Lystempel | Lysgarde | Solsmie | Stjerneverksted | hvit marmor, gulltak |
-| Vest Havbryn | Havhall | Sjøgarde | Ankersmie | Verft | grått tre, skiferblå tak, havblå bannere |
+| Side | Longhouse | Barracks / Forge / Workshop | Merke | Utseende (Runes bilder) |
+| --- | --- | --- | --- | --- |
+| Nord (Askemyr) | Longhouse | samme navn | hjort | mørkt tre, mørkeblå bannere, snø og furu |
+| Øst Grønnlund | Roothall | samme navn | tre | røtter og grønne bladtak, mørkegrønne bannere, eføy på muren |
+| Sør Lysheim | Sanctum | samme navn | stjerne | hvit marmor med gull, mørkeblå tak, engler ved porten og citadellet |
+| Vest Havbryn | Tidehall | samme navn | anker | sjøbuer med blå tak, brygger og garn, mørkeblå bannere, måker |
 
-Navnene er forslag og kan byttes. Senere: egne modeller per side (i dag samme modeller med sidens farger).
+Bildene: `docs/art/landsby-konsept.png` (nord), `landsby-ost-gronnlund.png`, `landsby-sor-lysheim.png`, `landsby-vest-havbryn.png`, og `slagmark-nord.png` for slagmarken (portal øverst, port og tropp nederst, unitkort nede til venstre, minikart nede til høyre, mål oppe til høyre).
+
+Navnene kommer fra Runes bilder (11. okt). Senere: egne modeller per side (i dag samme modeller med sidens farger og merke).
 
