@@ -211,3 +211,16 @@ Rune: «gå gjennom og se om det er for vanskelig eller for lett, heller mot van
 - Versjon 31: vanlig bot median wave 15, 7 % når wave 30. Sterk spiller median 19, men wave 9 (Kjemper) stoppet 24 % av dem uansett økonomi, fordi kjempene nå faktisk slår på porten (portfeilen fra versjon 28). Wave 5 (askekråker) stoppet 12 % av vanlige spillere.
 - Endring: wave 9 × 0,85 og wave 5 × 0,9 i `wave_factors.json`. Resten uendret (prøvde å gjøre wave 1–4 30 % tøffere, men da snøballet det: dobbelt så mange tapte på wave 5).
 - Nå: vanlig bot median 15, 7 % når wave 30; sterk spiller median 22, 64 % når wave 20, 10 % når wave 30. Tapene er spredt over wave 8, 15, 19, 22–25 i stedet for én vegg. Det er «vanskelig, men rettferdig».
+
+
+## 11 Oct 2026 – version 33: balanse mot mål, testspillere som bruker hele spillet
+
+Rune: «jeg kan ikke teste dette for alltid» og «hvordan vet vi at botene oppgraderer Forge, Warden osv.?». Mål (koordinatorens forslag, ikke endret av Rune): gjennomsnittsspilleren taper rundt wave 22–25, bare en sterk spiller klarer 30 ofte, wave 1–5 er snille, og fra wave 10 kan én feil koste porten. Rune la til: alt skal brukes litt, ulike satsinger skal kunne holde, én-triks (bare Warden e.l.) skal ikke vinne, og Tier 1–2 alene skal ikke holde sent.
+- **Funn:** testspilleren hadde aldri kjøpt Forge, Workshop, verktøy eller noe til Warden, og Warden fikk aldri erfaring (`node tools/spend.js` viser nå hvor gull, jern og kull går). Forge er det sterkeste kjøpet i spillet; uten den faller selv en god spiller rundt wave 10–11.
+- **`tools/botplay.py`:** testspillerne (og rivalen i 1 mot 1) kjøper verktøy, Forge, Workshop, Warden-utstyr og -evner, leger Warden, bruker evnene selv i kamp (ser etter sjanser hvert 2. sekund), og Warden bærer helsen og får erfaring som i spillet. Neste Barracks får tømmer, stein, jern og kull først når den er på tur (Barracks II fra wave 5, III fra 9, IV fra 16). Før kom mange aldri til Tier 3–4.
+- **`tools/late_armor.py`:** fiendene får +2 rustning i verden 2 og +8 i verden 3 (trekkes fra hvert slag), så små slag fra Tier 1–2 mister mye.
+- **Heltens utstyr:** +25 % skade / +25 % helse og +2 rustning per nivå, pris 35/70/120 gull og 5/10/18 jern (var +15 %, 50/100/180). En helte-satsing gikk ellers til grunne rundt wave 9–14.
+- **Ny tuner `tools/tune_targets.js`:** stiller hver wave mot målene på spillere som faktisk kom dit (tapere byttes med kopier av de som holdt). Wave 1–4 er urørt, wave 5 maks ×1,2.
+- **Resultat (40 spill hver):** vanlig spiller median wave 24, 12 % klarer 30. Sterk spiller (25 % raskere innsamling) median 29, halvparten klarer 30. Slurvete spiller (20 % tregere) median 15, ingen klarer 30. Tapene er spredt over wave 14–28, ingen enkelt vegg.
+- **Spillestiler (`node tools/strategies.js 16`):** satser du på hær, økonomi (flere arbeidere og verktøy tidlig), Warden, helt eller mur, havner du på median 22–25. Bare Warden (13), bare helt (8), bare mur (15) eller bare Forge (14) faller tidlig. Bare Tier 1–2 (aldri forbi Barracks II) når median 22 men vinner aldri.
+- **Åpent:** Forge er et må-kjøp (uten den median 11). Tier 1–2 faller bare to waves før snittet; kan gjøres skarpere med mer rustning i verden 3. Nærkamp mot skyttere er ikke testet som egne stiler ennå (boten holder halvt om halvt).

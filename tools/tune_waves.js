@@ -19,8 +19,8 @@ const botFn = require('./game_sim.js').bot;
 const cloneEcon = ec => { const c = Object.assign(Object.create(Object.getPrototypeOf(ec)), JSON.parse(JSON.stringify(ec))); return c; };
 const runWave = (st, wi, k) => {
   const W = L.WAVES[wi], ec = st.ec;
-  const scale = { hp: W.scale.hp * k, dmg: W.scale.dmg * Math.sqrt(k) };
-  const sim = new L.Sim(L.withHero(st.army, ec), { types: ec.types(L.TYPES, scale), enemies: L.buildWave(W), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: L.ARCHERS[ec.archers].count, wallgear: ec.wallgear });
+  const scale = { ...W.scale, hp: W.scale.hp * k, dmg: W.scale.dmg * Math.sqrt(k) };
+  const sim = new L.Sim(L.withHero(st.army, ec), { types: ec.types(L.TYPES, scale), enemies: L.buildWave(W), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: L.ARCHERS[ec.archers].count, wallgear: ec.wallgear, bot: ec });
   while (!sim.result) sim.step(1 / 15);
   return sim;
 };

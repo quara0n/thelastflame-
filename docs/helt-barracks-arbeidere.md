@@ -30,9 +30,9 @@ Målet er at to spill aldri blir like: du tar valg som stenger andre veier, og n
 - **Erfaring:** fiender han dreper gir like mye erfaring som gullet de gir; fiender som faller innen 10 m fra ham gir 40 % av det. +2 for hver wave han overlever. Nivå 1–10. Slik får også presten og skytteren erfaring, og det lønner seg å ha ham der kampen er.
 - **Tempo (målt med boten):** nivå 2–4 i de første wavene, nivå 5 rundt wave 7–8, nivå 10 rundt wave 27.
 - **Hvert nivå:** +8 % helse og skade (var 6 %; Rune syntes helten falt av for fort), og du **trekker 3 tilfeldige talenter og velger 1**. Liker du ingen av dem, kan du trekke på nytt for gull (10, så 20, så 30 … for samme nivå).
-- **Utstyr i Heltehallen (versjon 27):** tre spor med tre nivåer hver, for gull og jern (50 g + 6 jern, 100 g + 14 jern, 180 g + 26 jern; doblet i versjon 28).
-  - **Våpen:** +15 % skade per nivå.
-  - **Rustning:** +15 % helse og +1 rustning per nivå.
+- **Utstyr i Heltehallen (versjon 27):** tre spor med tre nivåer hver, for gull og jern (35 g + 5 jern, 70 g + 10 jern, 120 g + 18 jern; versjon 33: billigere og sterkere, så en helte-satsing kan bære et spill).
+  - **Våpen:** +25 % skade per nivå.
+  - **Rustning:** +25 % helse og +2 rustning per nivå.
   - **Flammeamulett:** nivå 1 og 2 gror 0,4 % helse per sekund hver; nivå 3, «Siste glød», lar ham reise seg én gang per wave med 40 % helse.
   Slik kan du gjøre helten sterkere med ressurser, ikke bare med erfaring.
 - **Nivå 5: veivalg.** Hver klasse har to retninger som endrer hvordan han spiller. Valget er for hele spillet.
