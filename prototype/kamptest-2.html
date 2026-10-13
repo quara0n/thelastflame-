@@ -1027,7 +1027,7 @@ const WAVES = [
 ].map((w, i) => Object.assign(w, { n: i + 1, world: w.world || 1,
   scale: i < 10 ? { hp: 1 + 0.08 * i, dmg: 1 + 0.05 * i } : i < 20 ? { hp: +(2.6 + 0.12 * (i - 10)).toFixed(2), dmg: +(1.75 + 0.05 * (i - 10)).toFixed(2) } : { hp: +(3.4 + 0.12 * (i - 20)).toFixed(2), dmg: +(2.0 + 0.05 * (i - 20)).toFixed(2) } }));
 // Styrkefaktor per wave, målt med hele spill simulert mot en fornuftig spiller (3. okt 2026).
-const WAVE_FACTOR = [0.643, 1.225, 0.636, 0.351, 0.858, 0.574, 0.59, 0.462, 0.218, 0.432, 0.528, 0.237, 0.521, 0.255, 0.424, 0.223, 0.595, 0.314, 0.285, 0.122, 0.522, 0.255, 1.33, 0.6, 0.687, 0.32, 0.71, 0.333, 0.588, 0.46];
+const WAVE_FACTOR = [0.643, 1.213, 0.629, 0.309, 0.755, 0.574, 0.59, 0.462, 0.218, 0.432, 0.528, 0.237, 0.521, 0.255, 0.424, 0.201, 0.535, 0.283, 0.257, 0.11, 0.522, 0.255, 1.33, 0.54, 0.481, 0.32, 0.71, 0.333, 0.529, 0.414];
 WAVES.forEach((w, i) => { const k = WAVE_FACTOR[i] || 1; w.scale = { hp: +(w.scale.hp * k).toFixed(3), dmg: +(w.scale.dmg * Math.sqrt(k)).toFixed(3) }; });
 const WORLDS = { 1: { name: 'Askemyr', desc: 'en verden av aske og gift' }, 2: { name: 'Vrangheim', desc: 'en vridd verden der alt levende er blitt vilt' }, 3: { name: 'Urheim', desc: 'en urtid der tiden har gått i stykker, og dinosaurene er tilbake' } };
 const FIRST_SEEN = {};
@@ -1789,6 +1789,8 @@ const BARRACKS = [
   { name: 'Barracks V',   tier: 5, supply: 80, unlocks: [], cost: { timber: 754, stone: 522, iron: 290, coal: 174 }, future: true },
 ];
 
+// Versjon 36: reparasjon av porten koster gull også (full reparasjon: base + perWall × murnivå, delt på skaden).
+const REPAIR_GOLD = { base: 10, perWall: 6 };
 const WALLS = [
   { name: 'Steinmur',            hp: 1000 },
   { name: 'Deepstone-mur',       hp: 1600, cost: { stone: 40 }, needsDeep: true },
@@ -1933,7 +1935,8 @@ class Econ {
   repairCost() {
     const miss = this.gateMax() - this.gateHp;
     if (miss <= 0) return null;
-    return { stone: Math.max(1, Math.ceil(miss / this.gateMax() * (6 + 6 * this.wall))) };
+    const f = miss / this.gateMax();
+    return { gold: Math.max(1, Math.ceil(f * (REPAIR_GOLD.base + REPAIR_GOLD.perWall * this.wall))), stone: Math.max(1, Math.ceil(f * (6 + 6 * this.wall))) };
   }
   repair() { const c = this.repairCost(); if (!c || !this.pay(c)) return false; this.gateHp = this.gateMax(); return true; }
 
@@ -2087,10 +2090,11 @@ function rivalBot(L, ec, army, waveIdx) {
     // A full mine gets more places as soon as the Barracks allows it.
     for (const k of ['gold', 'iron', 'timber', 'stone', 'coal']) if (!did && ec.nodes[k].unlocked && !ec.nodes[k].expanded && ec.nodes[k].workers >= ec.cap(k)) did = ec.expandNode(k);
     if (!did && w >= 6 && !ec.nodes.coal.unlocked && ec.can(L.NODES.coal.unlock)) did = ec.unlockNode('coal');
+    // Version 36: repair costs gold too, so a sensible player mends the gate before buying the next Barracks.
+    if (!did && ec.gateHp < ec.gateMax() * 0.7) did = ec.repair();
     if (!did && w >= 5 && ec.barracks === 0 && ec.can(L.BARRACKS[1].cost)) did = ec.buyBarracks();
     if (!did && w >= 9 && ec.barracks === 1 && ec.can(L.BARRACKS[2].cost)) did = ec.buyBarracks();
     if (!did && w >= 16 && ec.barracks === 2 && ec.can(L.BARRACKS[3].cost)) did = ec.buyBarracks();
-    if (!did && ec.gateHp < ec.gateMax() * 0.7) did = ec.repair();
     if (!did && w >= 3 && ec.archers === 0) did = ec.buyArchers();
     // Army: keep roughly half melee, half ranged; buy the best tier that is open.
     if (!did && sup() < ec.supplyCap()) did = buyArmy();
@@ -5799,7 +5803,7 @@ Object.assign(UP_PIC, {
       return `<div class="card"><h3>Gatehouse ${tipIcon('Porten tar skade når fiender slipper forbi. Faller den, går de gjennom distriktet mot flammen.')} <small>${WALLS[ec.wall].name}</small></h3>
         <div class="xpbar gate" data-tip="Portens HP"><i style="width:${gr * 100}%"></i><span>${fmt(ec.gateHp)} / ${fmt(ec.gateMax())}</span></div>
         ${tiles([
-          upTile({ pic: 'repair', name: 'Reparasjon', tip: 'Setter porten i full stand. Prisen avhenger av skaden og murens nivå.', now: rc ? 'Skadet' : 'Hel ✓', buy: rc ? buyBtn('Reparer', rc, 'repair') : ' ' }),
+          upTile({ pic: 'repair', name: 'Reparasjon', tip: 'Setter porten i full stand. Koster gull og stein etter hvor skadet den er og murens nivå.', now: rc ? 'Skadet' : 'Hel ✓', buy: rc ? buyBtn('Reparer', rc, 'repair') : ' ' }),
           upTile({ pic: 'wall', name: 'Mur', lv: ec.wall + 1, max: WALLS.length,
             tip: `Nå: ${WALLS[ec.wall].name}. ${nw ? `Neste: ${nw.name}, ${fmt(nw.hp)} HP.${nw.needsDeep && !ec.deep ? ' Krever at du graver dypere i steinbruddet.' : ''}` : ''}`,
             now: `${fmt(ec.gateMax())} HP`, buy: nw && buyBtn(`${fmt(nw.hp)} HP`, nw.cost, 'wall', nw.needsDeep && !ec.deep ? 'data-lock="deep"' : '') }),

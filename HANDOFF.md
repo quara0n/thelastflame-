@@ -247,3 +247,11 @@ Rune: «1–5 er altfor lett fortsatt … harde valg i begynnelsen om hvor en pl
 - **Åpninger (`node tools/openers.js 24`):** grådig på arbeidere: alle 24 falt før wave 5. Aldri reparere porten: alle falt før wave 5. Bare hær de første wavene: like bra som balansert. Balansert: rundt 1 av 10 faller før wave 5.
 - **Resultat:** vanlig spiller median wave 25, 15 % vinner; sterk median 25, 30 % vinner; slurvete median 10. Spillestilene (hær, økonomi, Warden, forsvar) havner på 22–25; helt-satsing 16; én-triks og bare Tier 1–2 faller tidligere.
 - **Åpent:** grådig arbeider-åpning taper alltid; et mellomting (litt flere arbeidere, litt mindre hær) er ikke testet. Portreparasjon koster bare 6–12 stein; kan gjøres dyrere om porten skal være et ekte valg.
+
+## 13 Oct 2026 – version 36: portreparasjon koster gull
+
+Rune sa ja til at reparasjon av porten skal koste mer, så porten blir et ekte valg mot hæren og arbeiderne.
+- `tools/repair_gold.py` (sist i kjeden): full reparasjon koster nå også gull, 10 + 6 per murnivå (`REPAIR_GOLD`), delt på hvor mye som mangler. Steinen er som før (6 + 6 per murnivå). Teksten på flisen sier at den koster gull og stein.
+- Testspilleren reparerer porten før den kjøper neste Barracks (ellers brukte den gullet på Barracks og falt på wave 5 med knust port).
+- Alle waves stilt på nytt med `tune_targets.js 40 1`; wave 1 holdt på samme nivå som før (0.643), wave 2–4 så gjort 10 % sterkere for hånd så rundt 7 % faller før wave 5.
+- **Resultat:** vanlig spiller median wave 23, 15 % vinner; sterk median 26, 25 % vinner; slurvete median 9. Åpninger: grådig på arbeidere og aldri reparere taper fortsatt alltid før wave 5; bare hær er like bra som balansert.

@@ -169,5 +169,7 @@ import late_armor
 s = late_armor.apply(s)
 import citadel
 s = citadel.apply(s)
+import repair_gold
+s = repair_gold.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))
