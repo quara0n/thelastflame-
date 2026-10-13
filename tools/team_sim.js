@@ -1,11 +1,12 @@
 // Team of four bots around one flame (version 34): north, east, south and west play the same wave in lockstep and
 // share the Warden and the flame shield. The team loses when an enemy reaches the flame on any side.
-// Usage: node team_sim.js [runs] [variant]   variant: roam (default) | fixed (Warden stays north) | old (fixed, no shield)
+// Usage: node team_sim.js [runs] [variant] ['{"early":0.45,"late":0.8}']   (overrides TEAM, the team-play wave factors)
+//   variant: roam (default) | fixed (Warden stays north) | old (fixed, no shield)
 const G = require('./game_sim.js'), { bot } = G;
 
 // Same loader as game_sim.js (so the bot gets everything it uses there), plus the team pieces.
 function load(extra) {
-  const L = G.load((extra || '') + ';globalThis.__team = { Citadel, CITADEL, teamStep };');
+  const L = G.load((extra || '') + ';globalThis.__team = { Citadel, CITADEL, teamStep, teamScale, TEAM };');
   return Object.assign(L, globalThis.__team);
 }
 
@@ -17,7 +18,7 @@ function playTeam(L) {
     const W = L.WAVES[wi];
     P.forEach(p => { p.ec.tick(t); bot(L, p.ec, p.army, wi); });
     const cit = new L.Citadel();
-    const sims = P.map((p, si) => new L.Sim(L.withHero(p.army, p.ec), { types: p.ec.types(L.TYPES, W.scale), enemies: L.buildWave(W), gateHp: p.ec.gateHp, gateMax: p.ec.gateMax(), archers: L.ARCHERS[p.ec.archers].count, wallgear: p.ec.wallgear, warden: si === 0, citadel: cit, si, bot: si === 0 ? p.ec : undefined }));
+    const sims = P.map((p, si) => new L.Sim(L.withHero(p.army, p.ec), { types: p.ec.types(L.TYPES, L.teamScale(W.scale, W.n)), enemies: L.buildWave(W), gateHp: p.ec.gateHp, gateMax: p.ec.gateMax(), archers: L.ARCHERS[p.ec.archers].count, wallgear: p.ec.wallgear, warden: si === 0, citadel: cit, si, bot: si === 0 ? p.ec : undefined }));
     while (!L.teamStep(sims, 1 / 15)) {}
     P.forEach((p, si) => {
       const sim = sims[si];
@@ -38,7 +39,7 @@ function playTeam(L) {
 module.exports = { load, playTeam };
 if (require.main === module) {
   const runs = +(process.argv[2] || 10), variant = process.argv[3] || 'roam';
-  const extra = variant === 'fixed' ? ';CITADEL.roam = false;' : variant === 'old' ? ';CITADEL.roam = false; CITADEL.shield = false;' : '';
+  const extra = (process.argv[4] ? `;Object.assign(TEAM, ${process.argv[4]});` : '') + (variant === 'fixed' ? ';CITADEL.roam = false;' : variant === 'old' ? ';CITADEL.roam = false; CITADEL.shield = false;' : '');
   const L = load(extra);
   const ends = [], from = [0, 0, 0, 0];
   let moves = 0, hits = 0, waves = 0;

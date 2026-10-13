@@ -247,3 +247,13 @@ Rune: «1–5 er altfor lett fortsatt … harde valg i begynnelsen om hvor en pl
 - **Åpninger (`node tools/openers.js 24`):** grådig på arbeidere: alle 24 falt før wave 5. Aldri reparere porten: alle falt før wave 5. Bare hær de første wavene: like bra som balansert. Balansert: rundt 1 av 10 faller før wave 5.
 - **Resultat:** vanlig spiller median wave 25, 15 % vinner; sterk median 25, 30 % vinner; slurvete median 10. Spillestilene (hær, økonomi, Warden, forsvar) havner på 22–25; helt-satsing 16; én-triks og bare Tier 1–2 faller tidligere.
 - **Åpent:** grådig arbeider-åpning taper alltid; et mellomting (litt flere arbeidere, litt mindre hær) er ikke testet. Portreparasjon koster bare 6–12 stein; kan gjøres dyrere om porten skal være et ekte valg.
+
+## 13 Oct 2026 – version 36: svakere waves i lagspill
+
+Rune valgte «svakere waves i lagspill» (av: svakere waves, egen vokter per side, hjelpere som går til Warden) for at lag på fire ikke skal falle på wave 6.
+- `TEAM` i `tools/citadel.py`: med lagkamerater på får alle fire sidene fiender med HP × k og skade × √k. Wave 1–5: k = 0,45. Wave 6–30: k = 0,75. Spill alene og 1 mot 1 uten lag er uendret.
+- Hvorfor to tall: etter versjon 35 brytes porten i de fleste av de første wavene, og alene er det Warden som rydder opp. I lag kan han ikke være fire steder. Wave 1 snur brått: k 0,5 holder alltid, 0,55 taper alltid. Etter wave 5 tåler laget mer, men wave 6 snur mellom 0,75 og 0,9.
+- Målt (`node tools/team_sim.js 50`, fire boter): median wave 25, alle når wave 20, 4 av 50 vinner. Det ligner en vanlig spiller alene (median 25, 15 % vinner). Taper laget, er det like ofte fra hver side.
+- Med disse tallene lekker botene sjelden, så Warden flytter seg lite (ca. én gang per 12 waves). Skjoldet og Warden som går betyr mest når et menneske lekker.
+- Prøv andre tall: `node tools/team_sim.js 20 roam '{"early":0.45,"late":0.8}'`.
+
