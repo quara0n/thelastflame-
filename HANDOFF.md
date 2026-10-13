@@ -248,7 +248,15 @@ Rune: «1–5 er altfor lett fortsatt … harde valg i begynnelsen om hvor en pl
 - **Resultat:** vanlig spiller median wave 25, 15 % vinner; sterk median 25, 30 % vinner; slurvete median 10. Spillestilene (hær, økonomi, Warden, forsvar) havner på 22–25; helt-satsing 16; én-triks og bare Tier 1–2 faller tidligere.
 - **Åpent:** grådig arbeider-åpning taper alltid; et mellomting (litt flere arbeidere, litt mindre hær) er ikke testet. Portreparasjon koster bare 6–12 stein; kan gjøres dyrere om porten skal være et ekte valg.
 
-## 13 Oct 2026 – version 36: svakere waves i lagspill
+## 12 Oct 2026 – version 36: spill mot en venn uten kode
+
+- Rune: «Gjør hele onboardingen mer brukervennlig» (for 1 mot 1 med en venn). `tools/onboarding.py`, kjøres sist i `build_v2.py`.
+- Lobby i rommets presence (basisrommet, `g: 'kt2l'`): alle med spillet åpent står med navn i Send-fanen. «Utfordre» lager et kode-rom og sender invitasjonen; vennen får et kort «Spill mot X» / «Ikke nå», begge er klare med en gang, og kampen starter. Kode-rommet ligger under «Spill med kode i stedet».
+- «⚔ Spill mot en venn»-knapp øverst i panelet (viser «1 online»), velkomstkort første gang (computer eller venn, husket i localStorage), «Slik inviterer du en venn» (Del → e-post, ikke offentlig lenke; gratis Claude-konto holder).
+- Test: `tools/online_test.js` og en lobbytest med en mock der basisrommet også har presence. Repoet på GitHub er fortsatt på versjon 22; prosjektfilene under `knowledge/claude/kode/` er kilden for versjon 34+.
+- 13 Oct (versjon 37): info-bobler og enhetskort lukket seg ikke på telefon (iOS holder «mus over» og fokus). `tools/touch_tips.py`: på berøring viser ett trykk boblen, neste trykk hvor som helst lukker, og de lukker seg selv etter 6–8 s.
+
+## 13 Oct 2026 – versjon 39: svakere waves i lagspill
 
 Rune valgte «svakere waves i lagspill» (av: svakere waves, egen vokter per side, hjelpere som går til Warden) for at lag på fire ikke skal falle på wave 6.
 - `TEAM` i `tools/citadel.py`: med lagkamerater på får alle fire sidene fiender med HP × k og skade × √k. Wave 1–5: k = 0,45. Wave 6–30: k = 0,75. Spill alene og 1 mot 1 uten lag er uendret.
@@ -256,4 +264,3 @@ Rune valgte «svakere waves i lagspill» (av: svakere waves, egen vokter per sid
 - Målt (`node tools/team_sim.js 50`, fire boter): median wave 25, alle når wave 20, 4 av 50 vinner. Det ligner en vanlig spiller alene (median 25, 15 % vinner). Taper laget, er det like ofte fra hver side.
 - Med disse tallene lekker botene sjelden, så Warden flytter seg lite (ca. én gang per 12 waves). Skjoldet og Warden som går betyr mest når et menneske lekker.
 - Prøv andre tall: `node tools/team_sim.js 20 roam '{"early":0.45,"late":0.8}'`.
-

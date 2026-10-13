@@ -180,5 +180,5 @@ Rune (11. okt): Warden skal kunne gå til hver side der kampen er, og et skjold 
 - **Test med computeren:** Send-fanen kan slå på lagkamerater på øst, sør og vest. Taper én side, taper hele laget.
 - Målt med fire boter rundt én flamme (versjon 33-balansen): laget kom i snitt til wave 5,9 med Warden som går, 4,9 med Warden fast i nord, og 5,0 uten skjold. Lag på fire faller nesten alltid på wave 6: alene vinner boten den bare fordi Warden dreper restene. Balansen forutsetter én Warden per spiller, så lagspill trenger svakere waves, en vokter per side eller hjelpere som går til Warden.
 - Mulig neste: «Kall Warden» (en spiller ber ham komme), soldater som går til Warden når egen wave er ferdig, lagspill online.
-- **Svakere waves i lagspill (13. okt, versjon 36, Runes valg):** når fire sider deler én Warden, får alle sidene svakere fiender: wave 1–5 med 45 % av styrken, resten med 75 %. Da kommer et lag på fire boter like langt som én vanlig spiller alene (median wave 25).
+- **Svakere waves i lagspill (13. okt, versjon 39, Runes valg):** når fire sider deler én Warden, får alle sidene svakere fiender: wave 1–5 med 45 % av styrken, resten med 75 %. Da kommer et lag på fire boter like langt som én vanlig spiller alene (median wave 25).
 

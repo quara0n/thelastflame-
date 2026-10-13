@@ -106,7 +106,7 @@ class Citadel {
     sim.events.push({ kind: 'shield', from: u, fell: !w.alive });
   }
 }
-// Lagspill (versjon 36, Runes valg): wavene er svakere når fire sider deler én Warden. Hver side får fiender med
+// Lagspill (versjon 39, Runes valg): wavene er svakere når fire sider deler én Warden. Hver side får fiender med
 // HP × k og skade × √k. Alene holder du de første wavene fordi Warden dreper det som slipper gjennom porten; i lag må
 // han dele seg på fire, så de første wavene trenger mest hjelp (early til og med wave `until`, late etter).
 const TEAM = { early: 0.45, late: 0.75, until: 5 };
