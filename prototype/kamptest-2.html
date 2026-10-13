@@ -600,6 +600,35 @@ button.tier-h:hover b { text-decoration: underline; }
   .ucd.more { min-height: 51px; }
   .stage.has-cards .abilbar { bottom: 66px; }
 }
+
+.vsbtn { margin-top: 10px; width: 100%; background: #a35ae0; color: #12061c; border: 0; border-radius: 8px; padding: 10px 12px; font-weight: 700; font-size: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+.vsbtn em { font-style: normal; font-weight: 600; font-size: 12px; background: #12061c; color: #c99af0; border-radius: 999px; padding: 1px 8px; }
+.vsbtn em:empty { display: none; }
+.lob-list { display: flex; flex-direction: column; gap: 6px; }
+.lob-p { display: flex; align-items: center; gap: 10px; background: var(--panel-2); border: 1px solid #5a3a7a; border-radius: 8px; padding: 8px 10px; }
+.lob-p > span { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.lob-p b { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lob-p small { font-size: 12px; color: var(--muted); }
+.lob-p button, .lob-btn { background: #a35ae0; color: #12061c; border: 0; border-radius: 6px; padding: 8px 14px; font-weight: 700; flex: none; }
+.lob-p button:disabled { background: var(--panel); color: var(--muted); }
+.online .on-row input#lob-name { width: 150px; text-transform: none; letter-spacing: 0; font: 500 14px var(--body); }
+.online details { border-top: 1px solid var(--line); padding-top: 8px; }
+.online summary { cursor: pointer; font-size: 13px; font-weight: 600; color: #c99af0; }
+.online details[open] summary { margin-bottom: 8px; }
+.online ol { margin: 0 0 8px; padding-left: 20px; font-size: 13px; display: flex; flex-direction: column; gap: 6px; }
+.online ol b { color: var(--fg); }
+.lob-btn.ghost { background: transparent; border: 1px solid #a35ae0; color: #c99af0; }
+.invcard { position: fixed; z-index: 70; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(360px, calc(100% - 24px)); max-height: calc(100dvh - 24px); overflow-y: auto;
+  background: linear-gradient(180deg, #24123a, #120a1c); border: 1px solid #a35ae0; border-radius: 14px; padding: 18px 16px 16px; text-align: center; display: flex; flex-direction: column; gap: 10px;
+  box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .55), 0 20px 50px rgba(0, 0, 0, .6); color: var(--fg); }
+.invcard .ic-eye { font: 600 11px var(--body); letter-spacing: .16em; text-transform: uppercase; color: #c99af0; }
+.invcard h2 { font-family: var(--display); font-size: 22px; letter-spacing: .03em; text-transform: none; color: var(--fg); margin: 0; }
+.invcard p { margin: 0; font-size: 13.5px; color: var(--muted); }
+.invcard .ic-row { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.invcard .ic-row button { border-radius: 8px; padding: 12px; font-weight: 700; font-size: 15px; border: 0; }
+.invcard .ic-go { background: #a35ae0; color: #12061c; }
+.invcard .ic-cpu { background: var(--flame); color: var(--flame-ink); }
+.invcard .ic-no { background: transparent; border: 1px solid var(--line) !important; color: var(--muted); font-weight: 600 !important; }
 </style>
 
 <div class="app">
@@ -608,6 +637,7 @@ button.tier-h:hover b { text-decoration: underline; }
       <div class="eyebrow">Prototype · milepæl A–D · oppgraderinger</div>
       <h1>The Last Flame</h1>
       <p>Hold ut i tretti waves gjennom tre verdener. Arbeiderne samler hele tiden; bruk ressursene på hær, oppgraderinger og mur. Klikk på bygningene i landsbyen for å bruke dem.</p>
+      <button type="button" class="vsbtn" data-tab="send" data-vs>⚔ Spill mot en venn <em id="vs-online"></em></button>
     </header>
 
     <nav class="tabs" role="tablist">
@@ -5107,9 +5137,8 @@ const Sound = (function () {
       drag = { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, moved: false, button: e.button, box };
       // Ta tak i en markert unit: hele den markerte gjengen flyttes.
       if (state.phase === 'build' && e.button === 0 && !state.tool && state.selection.size) {
-        const c = cellAt(e.clientX, e.clientY);
-        const i = c ? state.army.findIndex(a => a.col === c.col && a.row === c.row) : -1;
-        if (i >= 0 && state.selection.has(i)) { drag.box = false; drag.move = { col: c.col, row: c.row, dc: 0, dr: 0, ok: true }; }
+        const i = unitAt(e.clientX, e.clientY);
+        if (i >= 0 && state.selection.has(i)) { const u = state.army[i]; drag.box = false; drag.move = { col: u.col, row: u.row, dc: 0, dr: 0, ok: true, i }; }
       }
     }
   });
@@ -5149,7 +5178,7 @@ const Sound = (function () {
   function c_isUnit(e) {
     if (state.phase !== 'build') return false;
     const c = cellAt(e.clientX, e.clientY);
-    return !!c && state.army.some(a => a.col === c.col && a.row === c.row);
+    return (!!c && state.army.some(a => a.col === c.col && a.row === c.row)) || unitAt(e.clientX, e.clientY) >= 0;
   }
   function panBy(dx, dy) {
     const k = cam.dist * 0.0017;
@@ -5177,15 +5206,41 @@ const Sound = (function () {
     });
     selectionChanged();
   }
+  // Nærmeste unit under fingeren: avstand på skjermen til kroppen (fot til hode). Helten har større treffsone.
+  const pickA = new THREE.Vector3(), pickB = new THREE.Vector3();
+  function unitAt(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    const scr = v => { v.project(camera); return { x: rect.left + (v.x + 1) / 2 * rect.width, y: rect.top + (1 - v.y) / 2 * rect.height }; };
+    let best = -1, bestD = Infinity;
+    state.army.forEach((a, i) => {
+      const p = cellCenter(a.col, a.row), hero = TYPES[a.type] && TYPES[a.type].hero;
+      const f = scr(pickA.set(p.x, 0.1, p.z)), h = scr(pickB.set(p.x, hero ? 2.2 : 1.6, p.z));
+      const side = scr(pickA.set(p.x + MAP.cell / 2, 0.1, p.z));
+      const px = Math.max(8, Math.hypot(side.x - f.x, side.y - f.y));   // en halv rute i piksler
+      const r = Math.max(hero ? 34 : 18, px * (hero ? 1.9 : 1.0));
+      const vx = h.x - f.x, vy = h.y - f.y, L = vx * vx + vy * vy || 1;
+      const t = clampN(((clientX - f.x) * vx + (clientY - f.y) * vy) / L, 0, 1);
+      const d = Math.hypot(clientX - (f.x + vx * t), clientY - (f.y + vy * t));
+      const score = d / r;
+      if (score <= 1 && score < bestD) { best = i; bestD = score; }
+    });
+    if (best >= 0) return best;
+    const c = cellAt(clientX, clientY);
+    return c ? state.army.findIndex(a => a.col === c.col && a.row === c.row) : -1;
+  }
   let lastClick = { t: 0, i: -1 };
-  function clickSelect(c, add) {
-    const i = c ? state.army.findIndex(a => a.col === c.col && a.row === c.row) : -1;
+  function clickSelect(c, add, ui) {
+    const i = ui !== undefined ? ui : c ? state.army.findIndex(a => a.col === c.col && a.row === c.row) : -1;
     if (i < 0) { if (!add) clearSelection(); return; }
     const now = performance.now();
-    if (lastClick.i === i && now - lastClick.t < 350) {
+    if (now - lastClick.t < 450 && (lastClick.i === i || (state.army[lastClick.i] && state.army[lastClick.i].type === state.army[i].type))) {
       // Dobbeltklikk: velg alle av samme type.
       const type = state.army[i].type;
       state.army.forEach((a, j) => { if (a.type === type) state.selection.add(j); });
+      lastClick = { t: 0, i: -1 };
+      toast(`Alle ${state.selection.size} ${TYPES[type].name} er valgt.`);
+      selectionChanged();
+      return;
     } else if (add) {
       state.selection.has(i) ? state.selection.delete(i) : state.selection.add(i);
     } else if (state.selection.has(i) && state.selection.size > 1) {
@@ -5234,8 +5289,10 @@ const Sound = (function () {
     selectionChanged();
   }
   const endPointer = e => {
-    if (drag && drag.move) {
-      if (drag.moved) finishMove();
+    if (drag && drag.move && drag.moved) {
+      finishMove();
+    } else if (drag && drag.move && pointers.size === 1) {
+      clickSelect(null, e.shiftKey || e.ctrlKey || e.metaKey, drag.move.i);
     } else if (drag && drag.box && drag.moved) {
       selbox.hidden = true;
       boxSelect(drag.sx, drag.sy, e.clientX, e.clientY, e.shiftKey);
@@ -5247,7 +5304,7 @@ const Sound = (function () {
         if (state.tool) { state.tool = null; renderPanel(); }
         else if (c) placeAt(c, 'remove');
       } else if (state.tool && c) placeAt(c, state.tool);
-      else clickSelect(c, e.shiftKey || e.ctrlKey || e.metaKey);
+      else clickSelect(c, e.shiftKey || e.ctrlKey || e.metaKey, unitAt(e.clientX, e.clientY));
     } else if (drag && !drag.moved && pointers.size === 1 && drag.button === 0 && state.selection.size) clearSelection();
     pointers.delete(e.pointerId);
     if (pointers.size < 2) pinch = null;
@@ -6364,7 +6421,7 @@ Object.assign(UP_PIC, {
   function netStart(mid) {
     newMatch();
     Object.assign(net, { mid, ready: false, out: [], seq: 0, owe: 0, got: 0, lastIn: 0, lk: 0, goneAt: 0, last: '' });
-    state.versus = true; state.rival = new RemoteRival();
+    state.versus = true; state.rival = new RemoteRival(); lobDone();
     sfx('horn'); toast(`Kampen mot motspilleren starter. Lykke til!`);
     netPush(true); renderPanel();
     if (net.foe) netApply(net.foe);
@@ -6460,16 +6517,16 @@ Object.assign(UP_PIC, {
   function onlineHtml() {
     if (net.avail === null) return '';
     const tip = tipIcon('Dere spiller hvert deres spill med de samme wavene og sender skapninger til hverandre, akkurat som mot computeren. Den som mister flammen først, taper. Arenaen er ikke med online ennå.');
-    if (!net.avail) return `<section class="online"><h2>Spill online ${tip}</h2><p class="note">Online 1 mot 1 virker når spillet er åpnet i Claude. Her spiller du mot computeren.</p></section>`;
-    if (!net.room) return `<section class="online"><h2>Spill online ${tip}</h2>
+    if (!net.avail) return `<section class="online"><h2>Spill online ${tip}</h2><p class="note">Online virker når du er logget inn i Claude og er invitert til spillet på e-post. Kom du inn via en offentlig lenke, spiller du mot computeren.</p></section>`;
+    if (!net.room) return lobbyHtml(tip, `<section class="online"><h2>Spill online ${tip}</h2>
         <div class="on-row"><button type="button" class="go" data-net="create">Lag rom</button><span class="on-st">eller</span>
           <input id="net-code" maxlength="6" placeholder="KODE" autocomplete="off" autocapitalize="characters" value="${(net.typed || '').replace(/[^a-z0-9]/gi, '')}"><button type="button" data-net="join">Bli med</button></div>
-        <p class="note">Motspilleren må være logget inn i Claude og ha fått tilgang til spillet gjennom Del-menyen. Du kan teste alene med telefon og PC på samme konto.</p></section>`;
+        <p class="note">Motspilleren må være logget inn i Claude og ha fått tilgang til spillet gjennom Del-menyen. Du kan teste alene med telefon og PC på samme konto.</p></section>`);
     net.shownKey = netKey();
     const f = net.foe;
     const btn = net.mid ? '' : f ? (net.ready ? '<button type="button" data-net="unready">Ikke klar</button>' : '<button type="button" class="go" data-net="ready">Klar</button>') : '';
     return `<section class="online"><h2>Spill online ${tip}</h2>
-        <div class="on-row"><span class="on-st">Rom</span><span class="on-code">${net.code}</span>${btn}<button type="button" data-net="leave">${net.mid && state.phase !== 'over' ? 'Gi opp' : 'Forlat rommet'}</button></div>
+        <div class="on-row"><span class="on-st">Rom</span><span class="on-code">${net.code}</span>${btn}${lob.inv && !net.mid && !net.foe ? '<button type="button" data-lob-cancel>Avbryt</button>' : `<button type="button" data-net="leave">${net.mid && state.phase !== 'over' ? 'Gi opp' : 'Forlat rommet'}</button>`}</div>
         <p class="on-st" id="net-st">${netStatus()}</p>${!net.mid ? '<p class="note">Når begge trykker Klar, starter en ny kamp fra wave 1 hos begge.</p>' : ''}</section>`;
   }
   // Det som avgjør hvilke knapper som vises. Endres det, tegnes Send-fanen på nytt.
@@ -6477,8 +6534,143 @@ Object.assign(UP_PIC, {
   function netStatus() {
     const f = net.foe, h = state.rival && state.rival.remote ? state.rival.hold : null;
     return net.mid && state.phase === 'over' ? 'Kampen er over. Trykk «Spill igjen» og så Klar for omkamp.' : net.mid ? (f ? `Kamp pågår. Motspilleren: ${h ? `ferdig med wave ${h.wave}, port ${h.gate}/${h.gateMax}, ${h.army} soldater, Tier ${h.tier}` : 'har ikke kjempet ennå'}${f.ph === 'battle' ? ' (kjemper nå)' : ''}.` : 'Motspilleren er borte fra rommet. Venter …')
-      : !f ? 'Venter på motspiller. Gi dem koden.' : net.ready ? (f.ready ? 'Starter …' : 'Venter på at motspilleren trykker Klar.') : f.ready ? 'Motspilleren er klar. Trykk Klar for å starte.' : 'Motspilleren er her. Trykk Klar når du vil starte.';
+      : !f ? lobWaitText() : net.ready ? (f.ready ? 'Starter …' : 'Venter på at motspilleren trykker Klar.') : f.ready ? 'Motspilleren er klar. Trykk Klar for å starte.' : 'Motspilleren er her. Trykk Klar når du vil starte.';
   }
+
+  // ---------- Lobby: spill mot en venn uten kode (versjon 35) ----------
+  // Alle med spillet åpent står i rommets presence med navn. Trykker du «Utfordre», lager spillet et rom og legger
+  // invitasjonen i presence; vennen får et kort, og når han sier ja, går begge inn og er klare med en gang.
+  const GAME_URL = 'https://claude.ai/artifact/4h6eEwfWuJEPxzigKGvk3V';
+  const store = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
+  const lob = { room: null, me: null, peers: [], name: store.get('kt2-name') || '', inv: null, nope: null, seen: new Set(), first: true, declined: new Set(), shown: null, sent: '' };
+  const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const lobName = p => esc(String((p && p.presence && p.presence.nm) || 'En spiller').slice(0, 14));
+  const lobOthers = () => lob.peers.filter(p => !p.sameTab && p.kind !== 'agent' && p.presence && p.presence.g === 'kt2l');
+  function lobSet() {
+    if (!lob.room) return;
+    const P = { g: 'kt2l', v: NET_V, nm: (lob.name || '').slice(0, 14), busy: !!net.mid, inv: lob.inv, nope: lob.nope };
+    const s = JSON.stringify(P); if (s === lob.sent) return;
+    lob.sent = s; lob.room.presence(P).catch(() => {});
+  }
+  (async () => {
+    let L = null;
+    try { L = window.claude && window.claude.use ? await window.claude.use('room') : null; } catch (e) { L = null; }
+    if (!L) return;
+    lob.room = L; lobSet();
+    L.onPeers(ch => {
+      lob.peers = ch.peers || [];
+      const me = lob.peers.find(p => p.sameTab); if (me) lob.me = me.peer;
+      const others = lobOthers();
+      // Noen åpnet spillet nå (ikke de som var her da du kom).
+      for (const p of others) if (!lob.seen.has(p.peer)) { lob.seen.add(p.peer); if (!lob.first && !net.mid) toast(`${lobName(p)} har åpnet spillet. Trykk «Spill mot en venn» for å utfordre.`); }
+      lob.first = false;
+      // Svar på din utfordring.
+      if (lob.inv) {
+        const to = others.find(p => p.peer === lob.inv.to);
+        if (!to) { toast('Den du utfordret, lukket spillet.'); lobCancel(); }
+        else if (to.presence.nope === lob.inv.c) { toast(`${lobName(to)} vil ikke spille akkurat nå.`); lobCancel(); }
+      }
+      lobInviteCheck(others);
+      lobBadge();
+      // Bare lista tegnes på nytt, så navnefeltet ikke mister det du skriver.
+      const wrap = document.getElementById('lob-wrap');
+      if (state.tab === 'send' && !net.room && wrap) wrap.innerHTML = lobListHtml();
+    }, () => { lob.room = null; lob.peers = []; lobBadge(); });
+  })();
+  setInterval(lobSet, 3000);   // «i en kamp» følger med uten egne kall overalt
+  function lobBadge() {
+    const el = document.getElementById('vs-online'); if (!el) return;
+    const n = lobOthers().length; el.textContent = n ? `${n} online` : '';
+  }
+  async function lobChallenge(peer) {
+    const p = lobOthers().find(o => o.peer === peer); if (!p) return;
+    if (p.presence.v !== NET_V) { toast('Dere har ulike versjoner av spillet. Last inn siden på nytt, begge to.'); return; }
+    if (!lob.name) { lob.name = 'Spiller'; }
+    const code = netNewCode();
+    lob.inv = { to: peer, c: code, nm: lobName(p) }; lobSet();
+    await netJoin(code);
+    if (!net.room) { lobCancel(); return; }
+    net.ready = true; net.last = ''; netPush(true); renderPanel();
+  }
+  function lobCancel() {
+    lob.inv = null; lobSet();
+    if (net.room && !net.mid) { netLeave(true).then(() => renderPanel()); } else renderPanel();
+  }
+  async function lobAccept(inv) {
+    lob.declined.add(inv.c); lobHideCard(); lob.nope = null;
+    await netJoin(inv.c);
+    if (!net.room) return;
+    net.ready = true; net.last = ''; netPush(true); renderPanel();
+    if (net.foe && net.foe.ready) netPeers({ peers: net.room.peers() });
+  }
+  function lobDecline(inv) { lob.declined.add(inv.c); lob.nope = inv.c; lobSet(); lobHideCard(); }
+  function lobInviteCheck(others) {
+    if (lob.shown && !others.some(p => p.presence.inv && p.presence.inv.c === lob.shown.c && p.presence.inv.to === lob.me)) lobHideCard();
+    if (lob.shown || !lob.me || net.mid || lob.inv) return;
+    const from = others.find(p => p.presence.inv && p.presence.inv.to === lob.me && !lob.declined.has(p.presence.inv.c));
+    if (!from) return;
+    const inv = { c: String(from.presence.inv.c || '').slice(0, 6), from: lobName(from) };
+    if (inv.c.length < 3) return;
+    lob.shown = inv; sfx('horn');
+    const midGame = state.phase === 'battle' || (state.lastReport && state.phase !== 'over');
+    lobShowCard(`<div class="ic-eye">Utfordring</div><h2>${inv.from} vil spille mot deg</h2>
+      <p>Dere spiller hvert deres spill med de samme wavene og sender skapninger til hverandre. Den som mister flammen først, taper.</p>
+      ${midGame ? '<p>Kampen du er i nå, avsluttes.</p>' : ''}
+      <div class="ic-row"><button type="button" class="ic-go" data-ic="yes">Spill mot ${inv.from}</button><button type="button" class="ic-no" data-ic="no">Ikke nå</button></div>`);
+  }
+  let icEl = null;
+  function lobShowCard(html) { lobHideCard(true); icEl = document.createElement('div'); icEl.className = 'invcard'; icEl.innerHTML = html; document.body.appendChild(icEl); }
+  function lobHideCard(keep) { if (icEl) { icEl.remove(); icEl = null; } if (!keep) lob.shown = null; }
+  function lobDone() { if (lob.inv || lob.nope) { lob.inv = null; lob.nope = null; } lobSet(); }
+  async function lobShare() {
+    const text = `Bli med og spill The Last Flame mot meg! Åpne lenken, trykk «Spill mot en venn» og velg meg. ${GAME_URL}`;
+    try { if (navigator.share) { await navigator.share({ title: 'The Last Flame', text, url: GAME_URL }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+    try { await navigator.clipboard.writeText(text); toast('Lenken er kopiert. Lim den inn til vennen din.'); return; } catch (e) {}
+    toast('Lenken: ' + GAME_URL);
+  }
+  function lobWaitText() {
+    return lob.inv ? `Venter på svar fra ${lob.inv.nm} …` : 'Venter på motspiller. Gi dem koden.';
+  }
+  function lobbyHtml(tip, codeHtml) {
+    const others = lobOthers(), row = (codeHtml.match(/<div class="on-row">[\s\S]*?<\/div>/) || [''])[0];
+    return `<section class="online"><h2>Spill mot en venn ${tip}</h2>
+        <div class="on-row"><span class="on-st">Ditt navn</span><input id="lob-name" maxlength="14" placeholder="Skriv navnet ditt" autocomplete="off" value="${esc(lob.name)}"></div>
+        <div id="lob-wrap">${lobListHtml()}</div>
+        <details${others.length ? '' : ' open'}><summary>Slik inviterer du en venn</summary><ol>
+          <li>Trykk <b>Del</b> øverst på siden i Claude og inviter vennen din <b>på e-post</b>. Ikke velg «alle med lenken», da kommer han ikke inn.</li>
+          <li>Han trenger en Claude-konto. Gratis holder. Han åpner lenken i e-posten.</li>
+          <li>Når han har spillet åpent, står navnet hans her. Trykk <b>Utfordre</b>, så får han spørsmål om å spille.</li></ol>
+          <button type="button" class="lob-btn ghost" data-lob-share>Send lenken til spillet</button></details>
+        <details><summary>Spill med kode i stedet</summary>${row}<p class="note">Den ene lager rom og gir koden til den andre. Begge trykker Klar.</p></details></section>`;
+  }
+  function lobListHtml() {
+    const others = lobOthers();
+    return !lob.room ? '<p class="on-st">Kobler til …</p>' : others.length ? `<div class="lob-list">${others.map(p => {
+      const old = p.presence.v !== NET_V, busy = !!p.presence.busy;
+      return `<div class="lob-p"><span><b>${lobName(p)}</b><small>${old ? 'Har en annen versjon. Begge må laste inn siden på nytt.' : busy ? 'Er i en kamp nå' : 'Har spillet åpent nå'}</small></span><button type="button" data-lob="${esc(p.peer)}"${old || busy ? ' disabled' : ''}>Utfordre</button></div>`;
+    }).join('')}</div>` : '<p class="on-st">Ingen andre har spillet åpent akkurat nå. Når vennen din åpner det, står navnet hans her.</p>';
+  }
+  document.addEventListener('input', e => { if (e.target.id === 'lob-name') { lob.name = e.target.value.slice(0, 14); store.set('kt2-name', lob.name); lobSet(); } });
+  document.addEventListener('click', e => {
+    const ch = e.target.closest('[data-lob]'); if (ch && !ch.disabled) { lobChallenge(ch.dataset.lob); return; }
+    if (e.target.closest('[data-lob-share]')) { lobShare(); return; }
+    if (e.target.closest('[data-lob-cancel]')) { lobCancel(); return; }
+    const ic = e.target.closest('[data-ic]'); if (!ic) return;
+    const v = ic.dataset.ic, inv = lob.shown;
+    if (v === 'yes' && inv) lobAccept(inv);
+    else if (v === 'no' && inv) lobDecline(inv);
+    else if (v === 'cpu') { lobHideCard(); store.set('kt2-hello', '1'); }
+    else if (v === 'friend') { lobHideCard(); store.set('kt2-hello', '1'); state.tab = 'send'; renderPanel(); lobScroll(); }
+  });
+  function lobScroll() { setTimeout(() => { const el = document.querySelector('#pane-send .online'); if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); }
+  // Første gang: velg motstander.
+  setTimeout(() => {
+    if (store.get('kt2-hello') || icEl || net.mid) return;
+    lobShowCard(`<div class="ic-eye">Velkommen</div><h2>The Last Flame</h2>
+      <p>Hold porten mot tretti waves. Arbeiderne samler ressurser mens du kjøper soldater og oppgraderer dem mellom wavene.</p>
+      <p>Du har en motstander som sender skapninger til deg, og du kan sende til ham i Send-fanen.</p>
+      <div class="ic-row"><button type="button" class="ic-cpu" data-ic="cpu">Spill mot computeren</button><button type="button" class="ic-go" data-ic="friend">Spill mot en venn</button></div>`);
+  }, 900);
 
 
   // ---------- Flammeskjoldet og Warden mellom sidene (versjon 34) ----------
@@ -6610,6 +6802,16 @@ Object.assign(UP_PIC, {
   }
 
   // ---------- Statkort for units i Hær-fanen ----------
+  // Telefon: ingen mus. Ett trykk viser en boble, neste trykk (hvor som helst) lukker den.
+  let touchUi = false, tipFor = null, tipT = 0, ustatT = 0;
+  document.addEventListener('pointerdown', e => {
+    touchUi = e.pointerType === 'touch' || e.pointerType === 'pen';
+    if (!touchUi) return;
+    const t = e.target.closest && e.target.closest('[data-tip]'), was = tipFor;
+    tipEl.hidden = true; tipFor = null; clearTimeout(tipT);
+    if (t && t !== was) { showTip(t); tipFor = t; tipT = setTimeout(() => { tipEl.hidden = true; tipFor = null; }, 6000); }
+    if (!(e.target.closest && e.target.closest('[data-info]'))) { ustatPinned = null; ustat.hidden = true; }
+  }, true);
   const ustat = document.createElement('div');
   ustat.className = 'ustat'; ustat.hidden = true;
   document.body.appendChild(ustat);
@@ -6642,7 +6844,7 @@ Object.assign(UP_PIC, {
   }
   $('.panel').addEventListener('mouseover', e => {
     const c = e.target.closest('.ucard[data-unit]');
-    if (c && !ustatPinned) showUnitStat(c.dataset.unit, c);
+    if (c && !ustatPinned && !touchUi) showUnitStat(c.dataset.unit, c);
   });
   $('.panel').addEventListener('mouseout', e => {
     const c = e.target.closest('.ucard[data-unit]');
@@ -6662,8 +6864,8 @@ Object.assign(UP_PIC, {
     tipEl.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, x)) + 'px';
     tipEl.style.top = y + 'px';
   }
-  document.addEventListener('mouseover', e => { const t = e.target.closest && e.target.closest('[data-tip]'); if (t) showTip(t); else tipEl.hidden = true; });
-  document.addEventListener('focusin', e => { const t = e.target.closest && e.target.closest('[data-tip]'); if (t) showTip(t); });
+  document.addEventListener('mouseover', e => { if (touchUi) return; const t = e.target.closest && e.target.closest('[data-tip]'); if (t) showTip(t); else tipEl.hidden = true; });
+  document.addEventListener('focusin', e => { if (touchUi) return; const t = e.target.closest && e.target.closest('[data-tip]'); if (t) showTip(t); });
   document.addEventListener('focusout', () => { tipEl.hidden = true; });
 
   // ---------- Testbenk: kjør samme kamp mange ganger og se hva som virker ----------
@@ -6783,14 +6985,14 @@ Object.assign(UP_PIC, {
     if (info) {
       const k = info.dataset.info;
       if (ustatPinned === k) { ustatPinned = null; ustat.hidden = true; }
-      else { ustatPinned = null; showUnitStat(k, info.closest('.ucard')); ustatPinned = k; }
+      else { ustatPinned = null; showUnitStat(k, info.closest('.ucard')); ustatPinned = k; if (touchUi) { clearTimeout(ustatT); ustatT = setTimeout(() => { if (ustatPinned === k) { ustatPinned = null; ustat.hidden = true; } }, 8000); } }
       return;
     }
     if (ustatPinned) { ustatPinned = null; ustat.hidden = true; }
     const tierBtn = e.target.closest('[data-tier]');
     if (tierBtn) { const t = +tierBtn.dataset.tier; state.collapsed.has(t) ? state.collapsed.delete(t) : state.collapsed.add(t); renderPanel(); return; }
     const tab = e.target.closest('[data-tab]');
-    if (tab) { state.tab = tab.dataset.tab; renderPanel(); return; }
+    if (tab) { state.tab = tab.dataset.tab; renderPanel(); if (tab.hasAttribute('data-vs')) lobScroll(); return; }
     const pick = e.target.closest('[data-pick]');
     if (pick) { toggleType(pick.dataset.pick); return; }
     const add = e.target.closest('.u-add');

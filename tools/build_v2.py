@@ -169,5 +169,11 @@ import late_armor
 s = late_armor.apply(s)
 import citadel
 s = citadel.apply(s)
+import onboarding
+s = onboarding.apply(s)
+import touch_tips
+s = touch_tips.apply(s)
+import group_select
+s = group_select.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))
