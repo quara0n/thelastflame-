@@ -67,7 +67,7 @@ function bot(L, ec, army, waveIdx) {
     // A full mine gets more places as soon as the Barracks allows it.
     for (const k of ['gold', 'iron', 'timber', 'stone', 'coal']) if (!did && ec.nodes[k].unlocked && !ec.nodes[k].expanded && ec.nodes[k].workers >= ec.cap(k)) did = ec.expandNode(k);
     if (!did && w >= 6 && !ec.nodes.coal.unlocked && ec.can(L.NODES.coal.unlock)) did = ec.unlockNode('coal');
-    // Version 36: repair costs gold too, so a sensible player mends the gate before buying the next Barracks.
+    // Version 40: repair costs gold too, so a sensible player mends the gate before buying the next Barracks.
     if (!did && ec.gateHp < ec.gateMax() * 0.7) did = ec.repair();
     if (!did && w >= 5 && ec.barracks === 0 && ec.can(L.BARRACKS[1].cost)) did = ec.buyBarracks();
     if (!did && w >= 9 && ec.barracks === 1 && ec.can(L.BARRACKS[2].cost)) did = ec.buyBarracks();

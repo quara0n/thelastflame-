@@ -106,6 +106,12 @@ class Citadel {
     sim.events.push({ kind: 'shield', from: u, fell: !w.alive });
   }
 }
+// Lagspill (versjon 39, Runes valg): wavene er svakere når fire sider deler én Warden. Hver side får fiender med
+// HP × k og skade × √k. Alene holder du de første wavene fordi Warden dreper det som slipper gjennom porten; i lag må
+// han dele seg på fire, så de første wavene trenger mest hjelp (early til og med wave `until`, late etter).
+const TEAM = { early: 0.45, late: 0.75, until: 5 };
+const teamK = n => n <= TEAM.until ? TEAM.early : TEAM.late;
+const teamScale = (sc, n) => { const k = teamK(n); return Object.assign({}, sc, { hp: sc.hp * k, dmg: sc.dmg * Math.sqrt(k) }); };
 // Lagets wave: alle sidene kjøres i takt, så Warden kan gå mellom dem. Når fienden når flammen på én side, taper hele laget.
 // Returnerer true når alle sidene er ferdige.
 function teamStep(sims, dt) {
@@ -127,7 +133,7 @@ class Mate {
     const ec = this.ec, W = WAVES[wi];
     ec.tick(this.t); this.wi = wi;
     rivalBot(RIVAL_L, ec, this.army, wi);
-    this.sim = new Sim(withHero(this.army, ec), { types: ec.types(TYPES, W.scale), enemies: buildWave(W), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count, wallgear: ec.wallgear, warden: false, citadel, si: this.si });
+    this.sim = new Sim(withHero(this.army, ec), { types: ec.types(TYPES, teamScale(W.scale, W.n)), enemies: buildWave(W), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: ARCHERS[ec.archers].count, wallgear: ec.wallgear, warden: false, citadel, si: this.si });
   }
   end() {
     const ec = this.ec, sim = this.sim, W = WAVES[this.wi];
@@ -234,7 +240,7 @@ UI = r"""
   }
   function teamHtml() {
     const st = i => { const m = state.mates[i]; if (!m) return ''; const h = m.hold; return `<span>${SIDES[i].name}: ${m.running() ? 'kjemper' : h ? `wave ${h.wave} ${h.lost ? 'tapt' : h.win ? 'holdt' : 'porten tok skade'}${h.leaks ? `, ${h.leaks} lekket` : ''}` : 'klar'} · ${m.army.length} soldater</span>`; };
-    return `<section class="rival"><label class="vs-tog"><input type="checkbox" id="team-toggle" ${state.team ? 'checked' : ''}> Lagkamerater på øst, sør og vest (computer) ${tipIcon('Test av lagspill: computeren holder de tre andre sidene av Bastionen med de samme wavene. Lekker en side, går fienden mot den felles flammen. Flammeskjoldet stopper dem, men hvert slag tar av Wardens helse, og Warden løper langs ringveien dit kampen er. Taper én side, taper hele laget. Kan bare slås av eller på før første wave.')}</label>
+    return `<section class="rival"><label class="vs-tog"><input type="checkbox" id="team-toggle" ${state.team ? 'checked' : ''}> Lagkamerater på øst, sør og vest (computer) ${tipIcon('Test av lagspill: computeren holder de tre andre sidene av Bastionen med de samme wavene. Lekker en side, går fienden mot den felles flammen. Flammeskjoldet stopper dem, men hvert slag tar av Wardens helse, og Warden løper langs ringveien dit kampen er. Taper én side, taper hele laget. Wavene er svakere i lag (wave 1–5 på 45 %, resten på 75 %), fordi fire sider deler én Warden. Kan bare slås av eller på før første wave.')}</label>
       ${state.team ? `<div class="rv-h" style="flex-direction:column;align-items:flex-start;gap:2px">${[1, 2, 3].map(st).join('')}</div><p class="note">Trykk «Bastion» for å se hele byen og Warden som går mellom sidene.</p>` : ''}</section>`;
   }
 """
@@ -269,6 +275,8 @@ def apply(s):
             "    const w = this.warden; if (!w || !w.alive || !lv || !this.units.includes(w)) return -1;")
 
     # ---------- UI ----------
+    s = sub(s, "      types: ec.types(TYPES, state.versus ? versusScale(W) : W.scale),",
+            "      types: ec.types(TYPES, state.team ? teamScale(state.versus ? versusScale(W) : W.scale, W.n) : state.versus ? versusScale(W) : W.scale),")
     s = sub(s, "versus: true, flags: 0,", "versus: true, team: false, mates: [], flags: 0,")
     s = sub(s, "  // ---------- 1 mot 1: Send-fanen ----------", UI + "\n  // ---------- 1 mot 1: Send-fanen ----------")
     # Evnene brukes der Warden står, også på en annen side.
