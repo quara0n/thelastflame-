@@ -67,7 +67,7 @@ body { background: var(--ink); color: var(--bone); overflow: hidden; font-family
     <p>Før verdenene falt …</p>
     <button class="btn" id="play" disabled>Forbereder …</button>
     <button class="link" id="playMute">Spill uten lyd</button>
-    <span class="note">Ca. 75 sekunder · best med lyd</span>
+    <span class="note">Musikk: «Hold porten» · ca. 90 sekunder</span>
   </div>
 </div>
 
@@ -976,44 +976,49 @@ const v = (x, y, z) => new V3(x, y, z);
 // ========== shot list ==========
 // t0/t1 seconds, scene, camera path, look path, fov, bloom, grade, fade in/out.
 const SHOTS = [
-  { t0: 0, t1: 7.2, sc: 'A', pos: [v(.0, 1.55, 4.2), v(.15, 1.45, 2.4)], look: [v(0, 1.45, 0), v(0, 1.5, 0)], fov: [32, 30], e: 'o', bl: [.8, .5, .55], ex: 1.0, tint: [1.08, 1, .9], fi: 1.2, fo: .7 },
-  { t0: 7.2, t1: 15, sc: 'B', pos: [v(-2, 1.5, 9), v(2.5, 3, 5)], look: [v(0, .5, -14), v(0, 1.5, -20)], fov: [48, 44], bl: [1.1, .6, .25], ex: 1.05, tint: [.92, .96, 1.1], fi: .8, fo: .6 },
-  { t0: 15, t1: 23, sc: 'C', pos: [v(.3, 1.0, 11.5), v(-.2, 1.25, 8.4)], look: [v(0, 1.1, 0), v(0, 1.2, 0)], fov: [38, 36], bl: [.9, .5, .3], ex: 1.05, tint: [.96, 1.02, .92], fi: .6, fo: .5 },
-  { t0: 23, t1: 29.2, sc: 'D', pos: [v(0, 1.6, 10), v(0, 1.8, 3.5)], look: [v(0, 1.8, -10), v(0, 2.0, -18)], fov: [44, 40], roll: .04, bl: [1.3, .5, .2], ex: 1.1, tint: [1.02, .92, 1.1], fi: .5, fo: .5 },
-  { t0: 29.2, t1: 35.2, sc: 'E', pos: [v(2.5, .8, 11), v(1.8, .6, 8.5)], look: [v(-1.5, 4.4, -6), v(-.5, 5.0, -5)], fov: [46, 50], bl: [.6, .55, .7], ex: .95, tint: [1.08, .98, .86], fi: .5, fo: .9 },
-  { t0: 35.2, t1: 44, sc: 'F', pos: [v(11, 1.6, 23), v(6, 6, 32), v(0, 22, 52)], look: [v(0, 6, 0), v(0, 10, -10), v(0, 17, -36)], fov: [38, 42], bl: [1.0, .55, .35], ex: 1.05, tint: [1, .98, 1.02], fi: .9, fo: .25 },
-  { t0: 44, t1: 48, sc: 'F', pos: [v(7, 2.6, 45), v(4, 3, 50)], look: [v(0, 7, 68), v(0, 7.2, 68)], fov: [44, 40], bl: [1.2, .6, .3], ex: 1.05, tint: [1.06, .96, .94], fi: .25, fo: 0 },
-  { t0: 48, t1: 52, sc: 'F', pos: [v(-15, 13, 1.4), v(-11, 12.6, 4)], look: [v(-2, 3, 40), v(0, 3, 44)], fov: [40, 38], bl: [1.0, .55, .35], ex: 1.05, tint: [1.02, .97, 1], fi: 0, fo: .3 },
-  { t0: 52, t1: 61, sc: 'F', pos: [v(2.2, 1.0, 18), v(4.4, 1.6, 14.4), v(2.3, 2.6, 8.6)], look: [v(0, 2.5, 12.2), v(0, 2.6, 12.4), v(-1, .8, 40)], fov: [32, 40], bl: [1.15, .55, .3], ex: 1.05, tint: [1.02, 1, .98], fi: .3, fo: 0 },
-  { t0: 61, t1: 63.3, sc: 'F', pos: [v(13, 1.7, 16), v(12, 1.8, 15)], look: [v(4.5, 1.2, 10), v(3.5, 1.2, 10)], fov: [38, 40], bl: [1.1, .5, .3], ex: 1.05, tint: [1.02, .98, .98] },
-  { t0: 63.3, t1: 65.6, sc: 'F', pos: [v(-15.3, 12.7, -2.8), v(-15, 13, -2.2)], look: [v(-7, 9, 26), v(-6, 8, 30)], fov: [46, 44], bl: [1.2, .55, .3], ex: 1.05, tint: [1.04, .98, .96] },
-  { t0: 65.6, t1: 68, sc: 'F', pos: [v(1.25, 3.0, 13.6), v(.9, 3.25, 13.3)], look: 'blade', fov: [30, 26], bl: [1.4, .6, .25], ex: 1.05, tint: [1.04, 1, .95], fo: .15 },
-  { t0: 68, t1: 74, sc: 'F', pos: [v(11, 0, 15), v(5, 0, 7)], rel: 'flame', look: 'flame', fov: [40, 46], bl: [1.2, .7, .2], ex: 1.05, tint: [1.05, 1, .92], fi: .15, fo: 0 },
-  { t0: 74, t1: 1e9, sc: 'F', pos: [v(-30, 16, 46), v(-22, 18, 40)], look: [v(0, 13, -24), v(0, 14, -26)], span: 30, fov: [40, 40], bl: [1.0, .6, .35], ex: .85, tint: [1, .98, 1], fi: 0, fo: 0 }
+  { t0: 0, t1: 6.5, sc: 'A', pos: [v(.0, 1.55, 4.2), v(.15, 1.45, 2.4)], look: [v(0, 1.45, 0), v(0, 1.5, 0)], fov: [32, 30], e: 'o', bl: [.8, .5, .55], ex: 1.0, tint: [1.08, 1, .9], fi: 1.2, fo: .6 },
+  { t0: 6.5, t1: 13.5, s0: 7.2, sc: 'B', pos: [v(-2, 1.5, 9), v(2.5, 3, 5)], look: [v(0, .5, -14), v(0, 1.5, -20)], fov: [48, 44], bl: [1.1, .6, .25], ex: 1.05, tint: [.92, .96, 1.1], fi: .6, fo: .6 },
+  { t0: 13.5, t1: 23, s0: 35.2, rate: .9, sc: 'F', pos: [v(11, 1.6, 23), v(6, 6, 32), v(0, 22, 52)], look: [v(0, 6, 0), v(0, 10, -10), v(0, 17, -36)], fov: [38, 42], bl: [1.0, .55, .35], ex: 1.05, tint: [1, .98, 1.02], fi: .8, fo: .5 },
+  { t0: 23, t1: 27, s0: 16.6, sc: 'C', pos: [v(.3, 1.0, 11), v(-.2, 1.25, 8.6)], look: [v(0, 1.1, 0), v(0, 1.2, 0)], fov: [38, 36], bl: [.9, .5, .3], ex: 1.05, tint: [.96, 1.02, .92], fi: .5, fo: .35 },
+  { t0: 27, t1: 31, s0: 24, sc: 'D', pos: [v(0, 1.6, 9), v(0, 1.8, 4)], look: [v(0, 1.8, -10), v(0, 2.0, -18)], fov: [44, 40], roll: .04, bl: [1.3, .5, .2], ex: 1.1, tint: [1.02, .92, 1.1], fi: .35, fo: .35 },
+  { t0: 31, t1: 36, s0: 28.4, sc: 'E', pos: [v(2.5, .8, 11), v(1.8, .6, 8.5)], look: [v(-1.5, 4.4, -6), v(-.5, 5.0, -5)], fov: [46, 50], bl: [.6, .55, .7], ex: .95, tint: [1.08, .98, .86], fi: .35, fo: .5 },
+  { t0: 36, t1: 41, s0: 44, rate: .9, sc: 'F', pos: [v(7, 2.6, 45), v(4, 3, 50)], look: [v(0, 7, 68), v(0, 7.2, 68)], fov: [44, 40], bl: [1.2, .6, .3], ex: 1.05, tint: [1.06, .96, .94], fi: .4 },
+  { t0: 41, t1: 48, s0: 47.6, sc: 'F', pos: [v(-15, 13, 1.4), v(-10, 12.4, 4.5)], look: [v(-2, 3, 40), v(0, 3, 42)], fov: [40, 38], bl: [1.0, .55, .35], ex: 1.05, tint: [1.02, .97, 1] },
+  { t0: 48, t1: 58, s0: 54.6, rate: .8, sc: 'F', pos: [v(2.2, 1.0, 18), v(4.4, 1.6, 14.4), v(2.3, 2.6, 8.6)], look: [v(0, 2.5, 12.2), v(0, 2.6, 12.4), v(-1, .8, 40)], fov: [32, 40], bl: [1.15, .55, .3], ex: 1.05, tint: [1.02, 1, .98] },
+  { t0: 58, t1: 61, s0: 61.2, rate: .8, sc: 'F', pos: [v(13, 1.7, 16), v(12, 1.8, 15)], look: [v(4.5, 1.2, 10), v(3.5, 1.2, 10)], fov: [38, 40], bl: [1.1, .5, .3], ex: 1.05, tint: [1.02, .98, .98] },
+  { t0: 61, t1: 65, s0: 63.3, rate: .85, sc: 'F', pos: [v(-15.3, 12.7, -2.8), v(-15, 13, -2.2)], look: [v(-7, 9, 26), v(-6, 8, 30)], fov: [46, 44], bl: [1.2, .55, .3], ex: 1.05, tint: [1.04, .98, .96] },
+  { t0: 65, t1: 69, s0: 64.2, rate: .7, sc: 'F', pos: [v(-2, 8.5, 4.5), v(0, 10.5, 6.5)], look: [v(0, 1, 22), v(0, 1, 28)], fov: [44, 42], bl: [1.1, .55, .3], ex: 1.05, tint: [1.02, .98, .98] },
+  { t0: 69, t1: 73.5, s0: 64.9, rate: .6, sc: 'F', pos: [v(1.25, 3.0, 13.6), v(.9, 3.25, 13.3)], look: 'blade', fov: [30, 26], bl: [1.4, .6, .25], ex: 1.05, tint: [1.04, 1, .95], fo: .2 },
+  { t0: 73.5, t1: 80, s0: 58, rate: .42, sc: 'F', pos: [v(-4, 1.2, 22), v(-3, 2.6, 30)], look: [v(0, 2.8, 10), v(0, 5, 0)], fov: [30, 38], bl: [1.1, .55, .3], ex: 1.05, tint: [1.02, 1, .98], fi: .3, fo: .2 },
+  { t0: 80, t1: 87, s0: 66.4, sc: 'F', pos: [v(11, 0, 15), v(5, 0, 7)], rel: 'flame', look: 'flame', fov: [40, 46], bl: [1.2, .7, .2], ex: 1.05, tint: [1.05, 1, .92], fi: .3 },
+  { t0: 87, t1: 1e9, s0: 74, sc: 'F', pos: [v(-30, 16, 46), v(-22, 18, 40)], look: [v(0, 13, -24), v(0, 14, -26)], span: 30, fov: [40, 40], bl: [1.0, .6, .35], ex: .85, tint: [1, .98, 1] }
 ];
 for (const s of SHOTS) { if (Array.isArray(s.pos)) s.cp = curve(s.pos); if (Array.isArray(s.look)) s.cl = curve(s.look); }
+// the song's own lyrics and timings (Hold Porten)
 const SUBS = [
-  [2.0, 6.7, 'Før verdenene falt, fantes det tusen flammer.'],
-  [8.4, 13.8, 'Én etter én slukket de.'],
-  [16.6, 21.8, 'Askemyr ble til aske og gift.'],
-  [24.2, 28.6, 'Vrangheim ble vill.'],
-  [30.0, 34.4, 'I Urheim brast tiden.'],
-  [37.2, 42.6, 'Men én flamme brenner fortsatt.'],
-  [45.4, 51.0, 'Og alt som falt, kommer for å slukke den.'],
-  [55.5, 59.8, 'Hold porten.'],
-  [63.4, 67.2, 'Vokt flammen.']
+  [2.5, 9.8, 'Når mørket presser mot murene, står én port igjen.'],
+  [10.1, 14.9, 'Bak den ligger alt vi har lovet å beskytte.'],
+  [14.9, 20.4, 'Et hjem. Et håp. En morgen vi ennå ikke har sett.'],
+  [29.3, 33.4, 'De sier at flammen snart vil slukne.'],
+  [33.4, 36.2, 'Men den trenger ikke være stor.'],
+  [36.2, 41.0, 'Den trenger bare å leve i én hånd, og finne veien til den neste.'],
+  [48.2, 56.5, 'Så hold linjen. Hold fast ved hverandre.'],
+  [73.6, 83.8, 'Når natten krever alt, skal vi svare med det eneste den ikke kan ta:'],
+  [84.1, 87.2, 'Vi står her.'],
+  [87.2, 90.2, 'Vi holder porten.']
 ];
-const PLACES = [[15.6, 20.6, 'ASKEMYR', 'Den første verdenen'], [23.4, 27.8, 'VRANGHEIM', 'Den andre verdenen'], [29.6, 33.8, 'URHEIM', 'Den tredje verdenen'], [35.8, 40.4, 'DEN SISTE BYEN', 'Der flammen brenner']];
-const END_T = 74.6;
+const PLACES = [[14.2, 19.6, 'DEN SISTE BYEN', 'Der flammen brenner'], [23.3, 26.7, 'ASKEMYR', 'Den første verdenen'], [27.3, 30.8, 'VRANGHEIM', 'Den andre verdenen'], [31.3, 35.4, 'URHEIM', 'Den tredje verdenen']];
+const END_T = 90.4;
+const sceneT = (sh, t) => (sh.s0 ?? sh.t0) + (t - sh.t0) * (sh.rate ?? 1);
 
 function shotAt(t) { for (let i = SHOTS.length - 1; i >= 0; i--) if (t >= SHOTS[i].t0) return SHOTS[i]; return SHOTS[0]; }
 const _look = new V3(), _wp = new V3();
-function applyShot(sh, t, dt) {
+function applyShot(sh, t, dt, st) {
   const span = sh.span || (sh.t1 - sh.t0), u0 = clamp((t - sh.t0) / span, 0, 1), u = (ease[sh.e] || ease.io)(u0);
   if (sh.rel === 'flame') { _wp.copy(F.flamePos); camera.position.copy(sh.cp.getPoint(u)).add(_wp); }
   else camera.position.copy(sh.cp.getPoint(u));
   if (sh.look === 'blade') { F.warden.blade.getWorldPosition(_look); _look.y += .2; }
-  else if (sh.look === 'flame') { _look.copy(F.flamePos); _look.y += 2.5 + sm(68, 72, t) * 4; }
+  else if (sh.look === 'flame') { _look.copy(F.flamePos); _look.y += 2.5 + sm(68, 72, st) * 4; }
   else _look.copy(sh.cl.getPoint(u));
   // handheld drift and shake
   const hd = .02 + (sh.sc === 'F' ? .02 : 0);
@@ -1034,8 +1039,8 @@ function applyShot(sh, t, dt) {
   let f = 1; if (fi > 0) f = Math.min(f, sm(sh.t0, sh.t0 + fi, t)); if (fo > 0) f = Math.min(f, 1 - sm(sh.t1 - fo, sh.t1, t));
   FU.fade.value = f;
   // flare to white, then back to the city at night
-  FU.white.value = sm(71.6, 73.4, t) * (1 - sm(74.2, 76.2, t));
-  if (t > 68) bloom.strength = sh.bl[0] + sm(70, 73, t) * 1.0 * (t < 74 ? 1 : 0);
+  FU.white.value = sh.sc === 'F' ? sm(71.6, 73.4, st) * (1 - sm(74.2, 76.2, st)) : 0;
+  if (sh.sc === 'F' && st > 68 && st < 74) bloom.strength = sh.bl[0] + sm(70, 73, st) * 1.0;
   FU.bars.value = camera.aspect > 1.25 ? clamp((1 - camera.aspect / 2.39) / 2, 0, .12) : 0;
   renderPass.scene = scenes[sh.sc];
 }
@@ -1045,15 +1050,27 @@ const A = { on: false };
 function initAudio() {
   const Ctx = window.AudioContext || window.webkitAudioContext; if (!Ctx) return false;
   const c = new Ctx(); A.ctx = c;
-  const comp = c.createDynamicsCompressor(); comp.threshold.value = -16; comp.knee.value = 12; comp.ratio.value = 5; comp.attack.value = .005; comp.release.value = .25; comp.connect(c.destination);
-  A.master = c.createGain(); A.master.gain.value = .9; A.master.connect(comp);
+  const comp = c.createDynamicsCompressor(); comp.threshold.value = -10; comp.knee.value = 10; comp.ratio.value = 3; comp.attack.value = .005; comp.release.value = .25; comp.connect(c.destination);
+  A.master = c.createGain(); A.master.gain.value = 1; A.master.connect(comp);
   const len = c.sampleRate * 4, ir = c.createBuffer(2, len, c.sampleRate);
   for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.8); }
   A.rev = c.createConvolver(); A.rev.buffer = ir; const wet = c.createGain(); wet.gain.value = .55; A.rev.connect(wet); wet.connect(A.master);
   const mkBus = () => { const b = c.createGain(); b.connect(A.master); const sd = c.createGain(); sd.gain.value = .6; b.connect(sd); sd.connect(A.rev); return b; };
-  A.intro = mkBus(); A.end = mkBus(); A.bus = A.intro;
+  A.intro = mkBus(); A.intro.gain.value = .5; A.bus = A.intro;
+  A.songGain = c.createGain(); A.songGain.connect(A.master);
   const nb = c.createBuffer(1, c.sampleRate * 3, c.sampleRate), nd = nb.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1; A.noise = nb;
-  A.on = true; return true;
+  A.on = false; return true;
+}
+function loadSong() {
+  return fetch('musikk/hold-porten.mp3').then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+    .then(b => new Promise((ok, no) => A.ctx.decodeAudioData(b, ok, no))).then(buf => { A.song = buf; }).catch(e => console.warn('song', e));
+}
+function playSong(at, offset = 0, fadeIn = 0) {
+  if (!A.song) return;
+  if (A.src) { try { A.src.stop(); } catch (e) {} }
+  const src = A.ctx.createBufferSource(); src.buffer = A.song; src.connect(A.songGain);
+  A.songGain.gain.cancelScheduledValues(at); A.songGain.gain.setValueAtTime(fadeIn ? .0001 : 1, at); if (fadeIn) A.songGain.gain.linearRampToValueAtTime(1, at + fadeIn);
+  src.start(at, offset); A.src = src;
 }
 function env(p, t, a, peak, h, r) { p.setValueAtTime(.0001, t); p.linearRampToValueAtTime(peak, t + a); if (h > 0) p.setValueAtTime(peak, t + a + h); p.exponentialRampToValueAtTime(.0001, t + a + h + r); }
 function osc(type, f, t, vol, o = {}) {
@@ -1105,62 +1122,24 @@ function whoosh(t, k = .12) { nz(t, k, { type: 'bandpass', f: 700, f2: 2600, q: 
 function swish(t) { nz(t, .32, { type: 'bandpass', f: 400, f2: 3400, q: 1.2, a: .05, r: .3 }); }
 function rumble(t, dur, k = .12) { nz(t, k, { f: 140, a: 1.5, h: dur - 3, r: 1.5 }); }
 
-const D = 50; // D3 midi
 const EVENTS = [];
 const ev = (t, fn) => EVENTS.push({ t, fn });
+// sound effects on top of the song, in film time
 function buildScore() {
   EVENTS.length = 0;
-  ev(0, w => drone(w, 74));
   ev(1.5, ignite);
-  ev(6.8, w => pad([D, D + 3, D + 7], w, 8.6, .045));
-  [8.3, 8.92, 9.54, 10.16, 10.78, 11.4, 12.02, 12.64, 13.26].forEach(x => ev(x, puff));
-  ev(14.9, w => boom(w, .7));
-  ev(15, w => pad([D, D + 1, D + 7], w, 8.4, .04, { f1: 600, f2: 900 }));
-  [16.0, 16.6, 17.1, 17.8, 18.3, 18.9, 19.4, 20.0].forEach(x => ev(x, groan));
-  ev(15.2, w => rumble(w, 8, .06));
-  ev(22.9, w => boom(w, .7));
-  ev(23, w => pad([D - 12, D + 3, D + 8], w, 6.4, .045, { f1: 900, f2: 1500 }));
-  ev(23.2, w => buzz(w, 6));
-  for (let x = 23.6; x < 28.4; x += .3 + Math.random() * .3) ev(x, tick);
-  ev(29.1, w => boom(w, .8));
-  ev(29.2, w => pad([D - 12, D - 5, D, D + 3], w, 6.2, .05, { f1: 520, f2: 820 }));
-  [29.6, 30.35, 31.1].forEach(x => ev(x, w => thud(w, 1)));
-  ev(31.35, roar);
-  ev(31.5, w => thud(w, 1.2));
-  ev(35.1, w => boom(w, 1));
-  ev(35.2, w => pad([D - 4, D, D + 3, D + 8], w, 9, .06));
-  ev(36.2, w => horn(w, 62, 1.2)); ev(37.8, w => horn(w, 65, 1.0)); ev(39.2, w => horn(w, 69, 1.6)); ev(41.4, w => horn(w, 67, 2.2));
-  ev(38.9, caw); ev(39.9, caw);
-  ev(41.2, w => shimmer(w, 1.4));
-  ev(44, w => pad([D - 12, D - 9, D - 5, D], w, 8.2, .055, { f1: 600, f2: 950 }));
-  ev(44.5, w => tear(w, 2.6));
-  ev(47.1, w => boom(w, 1.1));
-  for (let i = 0; i < 9; i++) { const x = 44.2 + i * .857; ev(x, w => drum(w, i % 4 === 0 ? .7 : .45)); }
-  for (let i = 0; i < 10; i++) { const x = 48 + i * .428; ev(x, w => drum(w, i % 2 ? .35 : .6)); }
-  ev(48, w => rumble(w, 13, .14));
-  ev(52, w => pad([D - 12, D - 9, D - 5, D], w, 4, .06));
-  ev(55.9, w => pad([D - 14, D - 10, D - 7, D - 2], w, 2.8, .075));
-  ev(58.6, w => pad([D - 12, D - 8, D - 5, D], w, 2.6, .085));
-  for (let i = 0; i < 10; i++) ev(52 + i * .857, w => drum(w, .32));
-  ev(55.9, shing); ev(56.0, w => horn(w, 62, 1.6, .12)); ev(56.0, w => horn(w, 69, 1.6, .09));
-  ev(57.1, w => clash(w));
-  ev(58.4, w => horn(w, 65, 1.0)); ev(59.6, w => horn(w, 67, 1.2));
-  ev(61, w => pad([D - 4, D, D + 3, D + 8], w, 2.4, .08));
-  ev(63.3, w => pad([D - 2, D + 2, D + 5, D + 10], w, 2.4, .085));
-  ev(65.6, w => pad([D, D + 3, D + 7, D + 12], w, 2.5, .09));
-  for (let i = 0; i < 16; i++) { const x = 61 + i * .428; ev(x, w => drum(w, i % 4 === 0 ? .8 : .45)); }
-  ev(62.0, clash);
-  for (const x of [63.6, 63.8, 64.0, 64.6, 64.8, 65.0]) ev(x, w => whoosh(w, .14));
-  ev(65.1, w => thud(w, .5));
-  ev(67.0, swish); ev(67.05, w => shimmer(w, 1));
-  ev(68, w => pad([D, D + 4, D + 7, D + 12], w, 5.4, .12, { a: 4, r: .8, lp: 3200 }));
-  ev(68, w => pad([D - 12, D - 5], w, 5.4, .08, { a: 3, r: .8 }));
-  ev(69.2, w => horn(w, 62, 3.6, .1)); ev(70.2, w => horn(w, 69, 2.6, .1)); ev(71.2, w => horn(w, 74, 1.6, .09));
-  ev(69.4, w => nz(w, .2, { type: 'bandpass', f: 200, f2: 6000, q: 1, a: 3.6, r: .2 }));
-  for (let i = 0; i < 12; i++) ev(70 + i * .25, w => drum(w, .25 + i * .04));
-  ev(73.2, w => boom(w, 1.5)); ev(73.2, w => nz(w, .2, { type: 'highpass', f: 3500, r: 3.4 }));
+  for (let k = 0; k < 9; k++) ev(7.6 + k * .62, puff);
+  ev(17.6, caw); ev(18.7, caw); ev(20.2, w => shimmer(w, 1.2));
+  [23.3, 24.0, 24.9, 25.8].forEach(x => ev(x, groan));
+  for (let x = 27.3; x < 30.8; x += .35 + Math.random() * .3) ev(x, tick);
+  [32.2, 32.95, 33.7].forEach(x => ev(x, w => thud(w, .8)));
+  ev(33.95, roar); ev(34.1, w => thud(w, 1));
+  ev(36.55, w => tear(w, 2.9));
+  ev(49.6, shing); ev(51.1, w => clash(w));
+  ev(59.0, clash);
+  [61.3, 61.5, 61.7, 62.5, 62.7, 62.9].forEach(x => ev(x, w => whoosh(w, .14)));
+  ev(72.5, swish); ev(72.55, w => shimmer(w, 1));
 }
-function scheduleEnd(w) { const b = A.bus; A.bus = A.end; pad([D, D + 4, D + 7], w, 16, .05, { a: 3, r: 5 }); pad([D - 12], w, 16, .04, { a: 3, r: 5 }); A.bus = b; }
 
 // ========== player ==========
 const ui = { sub: document.getElementById('sub'), place: document.getElementById('place'), placeName: document.getElementById('placeName'), placeSub: document.getElementById('placeSub'),
@@ -1170,12 +1149,13 @@ function now() { return A.on ? A.ctx.currentTime - audio0 : performance.now() / 
 function build() {
   initMats(); buildA(); buildB(); buildC(); buildD(); buildE(); buildF(); buildScore();
   for (const k in scenes) { const sh = SHOTS.find(s => s.sc === k); if (sh && sh.cp) { camera.position.copy(sh.cp.getPoint(0)); camera.lookAt(sh.cl ? sh.cl.getPoint(0) : F.flamePos); } R.compile(scenes[k], camera); }
-  built = true; ui.play.disabled = false; ui.play.textContent = 'Spill av';
+  const ready = () => { built = true; ui.play.disabled = false; ui.play.textContent = 'Spill av'; };
+  if (initAudio()) loadSong().then(ready); else ready();
 }
 function start(withSound) {
   rnd = mulberry32(1777);
-  if (withSound && !A.ctx) initAudio();
-  if (A.ctx && withSound) { A.on = true; A.ctx.resume(); A.intro.gain.cancelScheduledValues(A.ctx.currentTime); A.intro.gain.setValueAtTime(1, A.ctx.currentTime); A.end.gain.setValueAtTime(1, A.ctx.currentTime); audio0 = A.ctx.currentTime + .15; }
+  if (A.src) { try { A.src.stop(); } catch (e) {} A.src = null; }
+  if (A.ctx && withSound) { A.on = true; A.ctx.resume(); const c = A.ctx.currentTime; A.intro.gain.cancelScheduledValues(c); A.intro.gain.setValueAtTime(.5, c); audio0 = c + .15; playSong(audio0); }
   else A.on = false;
   clock0 = performance.now() / 1000 + .15; evI = 0; endShown = false; curSub = -1; curPlace = -1;
   for (const s of Object.values(scenes)) { /* reset one-shot flags */ }
@@ -1189,22 +1169,25 @@ function showEnd() {
   try { localStorage.setItem('lf-intro-seen', '1'); } catch (e) {}
 }
 function skip() {
-  if (A.on) { const c = A.ctx.currentTime; A.intro.gain.cancelScheduledValues(c); A.intro.gain.setValueAtTime(A.intro.gain.value, c); A.intro.gain.linearRampToValueAtTime(0, c + .4); evI = EVENTS.length; scheduleEnd(c + .3); }
-  const target = 76.4;
+  if (A.on) { const c = A.ctx.currentTime; A.intro.gain.cancelScheduledValues(c); A.intro.gain.setValueAtTime(A.intro.gain.value, c); A.intro.gain.linearRampToValueAtTime(0, c + .3); evI = EVENTS.length;
+    // jump the song to its last words, «Vi står her. Vi holder porten.»
+    A.songGain.gain.cancelScheduledValues(c); A.songGain.gain.setValueAtTime(A.songGain.gain.value, c); A.songGain.gain.linearRampToValueAtTime(.0001, c + .35); playSong(c + .4, 83.6, .6); }
+  const target = END_T + 1.5;
   if (A.on) audio0 = A.ctx.currentTime - target; clock0 = performance.now() / 1000 - target; last = target - .02;
   showEnd();
 }
 document.getElementById('play').addEventListener('click', () => built && start(true));
 document.getElementById('playMute').addEventListener('click', () => built && start(false));
 ui.skip.addEventListener('click', skip);
-document.getElementById('again').addEventListener('click', () => start(!!A.ctx));
+document.getElementById('again').addEventListener('click', () => start(!!(A.ctx && A.on)));
 addEventListener('keydown', e => { if (e.key === 'Escape' && playing && !endShown) skip(); });
 
 function step(t, dt) {
   T = t; U.time.value = t;
-  const sh = shotAt(t);
-  scenes[sh.sc].userData.update(t, dt);
-  applyShot(sh, t, dt);
+  const sh = shotAt(t), st = sceneT(sh, t);
+  U.time.value = st;
+  scenes[sh.sc].userData.update(st, dt * (sh.rate ?? 1));
+  applyShot(sh, t, dt, st);
   FU.time.value = t;
 }
 function loop() {
@@ -1215,7 +1198,6 @@ function loop() {
     t = now(); if (t < 0) t = 0;
     dt = last < 0 ? 1 / 60 : clamp(t - last, 0, .06); last = t;
     if (A.on) { const ahead = t + 1.0; while (evI < EVENTS.length && EVENTS[evI].t <= ahead) { const e = EVENTS[evI++]; if (e.t >= t - .05) e.fn(audio0 + e.t); } }
-    if (A.on && !endShown && t >= END_T - .4 && evI >= EVENTS.length && !A.endQueued) { A.endQueued = true; scheduleEnd(audio0 + END_T); }
     if (t >= END_T) showEnd();
     // subtitles and place names
     let si = SUBS.findIndex(s => t >= s[0] && t < s[1]);
@@ -1230,7 +1212,7 @@ function loop() {
 }
 // sort events
 const evSort = () => EVENTS.sort((a, b) => a.t - b.t);
-window.__intro = { audioCheck() { if (!A.ctx) initAudio(); A.master.gain.value = 0; for (const e of EVENTS) e.fn(A.ctx.currentTime + e.t); scheduleEnd(A.ctx.currentTime + 75); return EVENTS.length; }, seek(t, frames = 20) { paused = true; playing = true; ui.start.hidden = true; for (let i = 0; i < frames; i++) step(t - (frames - i) / 60, 1 / 60); step(t, 1 / 60); last = t; clock0 = performance.now() / 1000 - t; A.on = false; composer.render(); }, shots: SHOTS };
+window.__intro = { audioCheck() { A.master.gain.value = 0; for (const e of EVENTS) e.fn(A.ctx.currentTime + e.t); playSong(A.ctx.currentTime); return [EVENTS.length, !!A.song, A.song && A.song.duration]; }, seek(t, frames = 20) { paused = true; playing = true; ui.start.hidden = true; for (let i = 0; i < frames; i++) step(t - (frames - i) / 60, 1 / 60); step(t, 1 / 60); last = t; clock0 = performance.now() / 1000 - t; A.on = false; composer.render(); }, shots: SHOTS };
 setTimeout(() => { try { build(); evSort(); } catch (e) { ui.play.textContent = 'Kunne ikke laste'; console.error(e); } requestAnimationFrame(loop); }, 30);
 })();
 </script>
