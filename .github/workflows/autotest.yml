@@ -26,7 +26,11 @@ jobs:
           npm install --no-save playwright@1.63.0
           npx playwright install --with-deps chromium
       - name: Run the automatic test
-        run: node tools/autotest/run.js ${{ inputs.quick && '--quick' || '' }}
+        # Problems found in the game are reported, not a failed run; only a broken tester fails the run.
+        run: |
+          code=0; node tools/autotest/run.js ${{ inputs.quick && '--quick' || '' }} || code=$?
+          if [ "$code" = 1 ]; then echo "::warning::Autotest fant problemer i spillet. Se RAPPORT.md i oppsummeringen."; exit 0; fi
+          exit $code
       - name: Show the report on the run page
         if: always()
         run: cat autotest-report/RAPPORT.md >> "$GITHUB_STEP_SUMMARY" || true

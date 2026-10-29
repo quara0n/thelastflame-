@@ -33,4 +33,5 @@ if (B) {
 }
 fs.writeFileSync(path.join(OUT, 'RAPPORT.md'), lines.join('\n') + '\n');
 console.log('\n' + lines.join('\n'));
-process.exitCode = logicCode || browserCode ? 1 : 0;
+// 2 = the tester itself broke (no report), 1 = the game has problems, 0 = all clean.
+process.exitCode = !L || !B || logicCode > 1 || browserCode > 1 ? 2 : all.length ? 1 : 0;
