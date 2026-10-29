@@ -1116,7 +1116,7 @@ const WAVES = [
   { style: 'Boss', groups: [['fallenWarden', 1, 'boss'], ['serpent', 20, 'flank'], ['spitter', 8, 'back'], ['husk', 11, 'front']], boss: true },
   { style: 'Flokk', groups: [['wolf', 40, 'front']], world: 2 },
   { style: 'Stampede', groups: [['boar', 40, 'front']], world: 2 },
-  { style: 'Tornkratt', groups: [['thornling', 28, 'front'], ['locust', 12, 'flank']], world: 2 },
+  { style: 'Tornkratt', groups: [['thornling', 40, 'front']], world: 2 },
   { style: 'Ljåer', groups: [['mantis', 40, 'front']], world: 2 },
   { style: 'Sverm', groups: [['locust', 40, 'front']], world: 2, flyers: true },
   { style: 'Råtne røtter', groups: [['treant', 14, 'boss']], world: 2, heavy: true },
@@ -1509,7 +1509,8 @@ class Sim {
       // Skyttere som avanserer går ikke forbi egen front.
       if (this._engage(u, enemies, attackers, dt, u.T.range)) return;
       const front = this._frontZ();
-      const tz = front == null ? u.z - 3 : Math.max(front + 1.5, Math.min(u.z, u.homeZ) - 3);
+      if (front == null) { if (this._engage(u, enemies, attackers, dt, 80)) return; this._returnHome(u, dt); return; }
+      const tz = Math.max(front + 1.5, Math.min(u.z, u.homeZ) - 3);
       this._moveTo(u, u.homeX, tz, dt); return;
     }
     if (order === 'advance') {
@@ -7138,7 +7139,7 @@ Object.assign(UP_PIC, {
     const W = WAVES[bench.wave - 1];
     $('#pane-test').innerHTML = `<section><h2>Testbenk ${tipIcon('Sett sammen en hær, velg en wave, og kjør kampen mange ganger på et øyeblikk. Resultatet viser hvor ofte hæren vinner og hvor mye hver unit gir for pengene. Forrige kjøring vises under, så du kan sammenligne.')}</h2>
       <div class="bctl">
-        <label>Wave <select id="bench-wave">${WAVES.map(w => `<option value="${w.n}" ${w.n === bench.wave ? 'selected' : ''}>${w.n} · ${TYPES[w.newType].name}${w.boss ? ' (boss)' : ''}</option>`).join('')}</select></label>
+        <label>Wave <select id="bench-wave">${WAVES.map(w => `<option value="${w.n}" ${w.n === bench.wave ? 'selected' : ''}>${w.n} · ${(TYPES[w.newType] || TYPES[w.groups[0][0]]).name}${w.boss ? ' (boss)' : ''}</option>`).join('')}</select></label>
         <label>Kjøringer <select id="bench-runs">${[10, 20, 50].map(n => `<option ${n === bench.runs ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
       </div>
       <div class="bfoes">${W.groups.map(([t, n]) => `<span data-tip="${TYPES[t].role}"><img alt="" src="${portraits[t] || ''}">${n}× ${TYPES[t].name}</span>`).join('')}</div>
