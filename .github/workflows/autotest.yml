@@ -1,0 +1,37 @@
+# Automatic playtest of The Last Flame on every push (and by hand from the Actions tab).
+# The report and screenshots are kept as the run's artifact "autotest-report".
+name: Autotest
+
+on:
+  push:
+    paths: ['prototype/**', 'tools/**', '.github/workflows/autotest.yml']
+  workflow_dispatch:
+    inputs:
+      quick:
+        description: 'Quick run (5 waves in the browser)'
+        type: boolean
+        default: false
+
+jobs:
+  autotest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Run the automatic test
+        run: node tools/autotest/run.js ${{ inputs.quick && '--quick' || '' }}
+      - name: Show the report on the run page
+        if: always()
+        run: cat autotest-report/RAPPORT.md >> "$GITHUB_STEP_SUMMARY" || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: autotest-report
+          path: autotest-report/
