@@ -52,3 +52,9 @@ Delene lages som egne små modeller som festes på skjelettet.
 4. **Inn i spillet:** .glb lastes i three.js i stedet for dagens klosser, testet på mobil (390 px) med 60 figurer samtidig.
 
 Rekkefølge: Tier 1 (4 stk) først, så Warden, så heltene, så Tier 2–4.
+
+## Blender (29. okt 2026)
+- Blender kjører i Claude-økta som Python-modul: `pip install bpy` (Blender 5.2). Ingen Blender-connector trengs.
+- `tools/blender/figur.py` har byggeklossene (former, materialer, felles menneskeskjelett, animasjoner, eksport til .glb, bilder). `tools/blender/shieldguard.py UTMAPPE --render` bygger Shieldguard.
+- Figuren er leddet: hver del henger på ett bein, så alle to-beinte units deler skjelett og bevegelser (idle, walk, attack, hit, die). Ca. 15 000 trekanter; kan senkes for mange units.
+- Visning: «Shieldguard i 3D» (https://claude.ai/artifact/J4MZsrXowY4aQztpzi9zJW), `prototype/shieldguard-3d.html`. Artifacts serverer ikke .glb-filer, så modellen ligger som base64 i siden.
