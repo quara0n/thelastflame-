@@ -5,7 +5,7 @@ function load(extra) {
   const html = fs.readFileSync(__dirname + '/../prototype/kamptest-2.html', 'utf8');
   const a = html.indexOf('// ===== The Last Flame — kampsimulering'), b = html.indexOf('// ===== The Last Flame — musikk');
   const code = html.slice(a, b).replace(/if \(typeof module !== 'undefined'\) module.exports/g, '//') + (extra || '');
-  return new Function(code + ';return { Sim, Econ, TYPES, WAVES, BARRACKS, NODES, TRACKS, BOUNTY, waveBonus, UPGRADES, MAX_LEVEL, supplyOf, ARCHERS, buildWave, upgradeSpent, REFUND, WALLS, Rival: typeof Rival !== "undefined" ? Rival : null, sendable: typeof sendable !== "undefined" ? sendable : null, arenaSim: typeof arenaSim !== "undefined" ? arenaSim : null, arenaOutcome: typeof arenaOutcome !== "undefined" ? arenaOutcome : null };')();
+  return new Function(code + ';return { Sim, Econ, TYPES, WAVES, BARRACKS, NODES, TRACKS, BOUNTY, waveBonus, UPGRADES, MAX_LEVEL, supplyOf, ARCHERS, buildWave, upgradeSpent, REFUND, WALLS, Rival: typeof Rival !== "undefined" ? Rival : null, sendable: typeof sendable !== "undefined" ? sendable : null, arenaSim: typeof arenaSim !== "undefined" ? arenaSim : null, arenaOutcome: typeof arenaOutcome !== "undefined" ? arenaOutcome : null, heroBot: typeof heroBot !== "undefined" ? heroBot : () => {}, withHero: typeof withHero !== "undefined" ? withHero : a => a, armyNeed: typeof BOT_ARMY_NEED !== "undefined" ? BOT_ARMY_NEED : null, workerCap: typeof BOT_WORKER_CAP !== "undefined" ? BOT_WORKER_CAP : null, botSpend: typeof botSpend !== "undefined" ? botSpend : null, heroAfterWave: typeof heroAfterWave !== "undefined" ? heroAfterWave : () => null };')();
 }
 
 function bot(L, ec, army, waveIdx) {
@@ -20,18 +20,37 @@ function bot(L, ec, army, waveIdx) {
   };
   const buy = type => {
     const p = ec.unitPrice(T[type]);
-    if (!ec.unitUnlocked(type) || sup() + L.supplyOf(T[type]) > ec.supplyCap() || !ec.can(p)) return false;
+    if (!ec.unitUnlocked(type) || sup() + L.supplyOf(T[type]) > ec.supplyCap() || !afford(p)) return false;
     const spot = free(T[type].ranged); if (!spot) return false;
     ec.pay(p); army.push({ type, level: 0, ...spot, order: T[type].ranged ? 'follow' : 'advance' }); return true;
   };
   const upgrade = a => {
     if ((a.level || 0) >= L.MAX_LEVEL) return false;
     const c = L.UPGRADES[a.type][a.level || 0].cost;
-    if (!ec.can(c)) return false; ec.pay(c); a.level = (a.level || 0) + 1; return true;
+    if (!afford(c)) return false; ec.pay(c); a.level = (a.level || 0) + 1; return true;
   };
   const w = waveIdx + 1;
+  // Version 33: Barracks come first. Once the next Barracks is due, its timber, stone, iron and coal are held back from
+  // units, upgrades and everything else (before, the bot spent them and often never reached Tier 3 or 4).
+  const due = () => (w >= 5 && ec.barracks === 0) || (w >= 9 && ec.barracks === 1) || (w >= 16 && ec.barracks === 2);
+  const keep = r => { const b = L.BARRACKS[ec.barracks + 1]; return r !== 'gold' && due() && b && b.cost && !b.future ? b.cost[r] || 0 : 0; };
+  const afford = c => Object.keys(c || {}).every(r => (ec.res[r] || 0) - keep(r) >= c[r]);
+  // Version 24: a random hero at wave 2; talents and doctrines picked at random.
+  L.heroBot(ec, w);
+  // Army: keep roughly half melee, half ranged; buy the best tier that is open.
+  const buyArmy = () => {
+    const nMel = army.filter(melee).length, wantRanged = nMel > army.length - nMel;
+    for (let tier = ec.barracks + 1; tier >= 1; tier--) {
+      const opts = unitsOf(tier).filter(t => !!T[t].ranged === wantRanged);
+      if (buy(opts[(army.length + w) % opts.length])) return true;
+    }
+    return false;
+  };
+  // Version 34: the early waves are hard, so a minimum army comes before workers (6 + 2 per wave, up to the army space).
+  const armyNeed = Math.min(ec.supplyCap(), L.armyNeed ? L.armyNeed(w) : 6 + 2 * w);
   for (let guard = 0; guard < 80; guard++) {
     let did = false;
+    if (sup() < armyNeed) did = buyArmy();
     // Economy (version 22): fill each mine while the next worker is cheap compared to how far the game has come.
     // Workers get dearer one by one, so a sensible player stops when the price outruns the payback.
     if (!did && w >= 3 && !ec.nodes.iron.unlocked && ec.can(L.NODES.iron.unlock)) did = ec.unlockNode('iron');
@@ -42,32 +61,27 @@ function bot(L, ec, army, waveIdx) {
       const n = ec.nodes[k];
       if (!n.unlocked || n.workers >= ec.cap(k) || n.workers >= wantW[k]) continue;
       const pr = ec.workerPrice(k);
-      if (pr <= 10 + 2.5 * w && ec.res.gold >= pr + (w <= 4 ? 8 : 18)) did = ec.addWorker(k);
+      // Version 28: workers cost more (a real investment), so the bot accepts a higher price as the game goes on.
+      if (pr <= (L.workerCap ? L.workerCap(w) : 16 + 3 * w) && ec.res.gold >= pr + (w <= 4 ? 8 : 18)) did = ec.addWorker(k);
     }
     // A full mine gets more places as soon as the Barracks allows it.
     for (const k of ['gold', 'iron', 'timber', 'stone', 'coal']) if (!did && ec.nodes[k].unlocked && !ec.nodes[k].expanded && ec.nodes[k].workers >= ec.cap(k)) did = ec.expandNode(k);
     if (!did && w >= 6 && !ec.nodes.coal.unlocked && ec.can(L.NODES.coal.unlock)) did = ec.unlockNode('coal');
-    if (!did && w >= 5 && ec.barracks === 0 && ec.can(L.BARRACKS[1].cost)) did = ec.buyBarracks();
-    if (!did && w >= 11 && ec.barracks === 1 && ec.can(L.BARRACKS[2].cost)) did = ec.buyBarracks();
-    if (!did && w >= 20 && ec.barracks === 2 && ec.can(L.BARRACKS[3].cost)) did = ec.buyBarracks();
+    // Version 40: repair costs gold too, so a sensible player mends the gate before buying the next Barracks.
     if (!did && ec.gateHp < ec.gateMax() * 0.7) did = ec.repair();
+    if (!did && w >= 5 && ec.barracks === 0 && ec.can(L.BARRACKS[1].cost)) did = ec.buyBarracks();
+    if (!did && w >= 9 && ec.barracks === 1 && ec.can(L.BARRACKS[2].cost)) did = ec.buyBarracks();
+    if (!did && w >= 16 && ec.barracks === 2 && ec.can(L.BARRACKS[3].cost)) did = ec.buyBarracks();
     if (!did && w >= 3 && ec.archers === 0) did = ec.buyArchers();
     // Army: keep roughly half melee, half ranged; buy the best tier that is open.
-    if (!did && sup() < ec.supplyCap()) {
-      const nMel = army.filter(melee).length, wantRanged = nMel > army.length - nMel;
-      for (let tier = ec.barracks + 1; tier >= 1 && !did; tier--) {
-        const opts = unitsOf(tier).filter(t => !!T[t].ranged === wantRanged);
-        const pick = opts[(army.length + w) % opts.length];
-        did = buy(pick);
-      }
-    }
+    if (!did && sup() < ec.supplyCap()) did = buyArmy();
     // Upgrades: cheapest-level units of the highest tier first.
     if (!did) {
       const cand = army.filter(a => (a.level || 0) < L.MAX_LEVEL).sort((a, b) => (T[b.type].tier || 1) - (T[a.type].tier || 1) || (a.level || 0) - (b.level || 0));
       for (const a of cand) if (upgrade(a)) { did = true; break; }
     }
     // When the next Barracks is due, save timber, stone and iron for it.
-    const saving = ((ec.barracks === 1 && w >= 12) || (ec.barracks === 2 && w >= 20)) && !ec.can(L.BARRACKS[ec.barracks + 1].cost);
+    const saving = due() && !ec.can(L.BARRACKS[ec.barracks + 1].cost);
     // Forge when there is iron to spare.
     if (!did && !saving && ec.res.iron >= 25) for (const k of ['melee', 'ranged', 'armor']) if (ec.buyTrack(k)) { did = true; break; }
     // Full army: sell maxed lower-tier units until a unit of the newest tier fits, if it can be afforded.
@@ -102,15 +116,16 @@ function playGame(L, opts) {
     ec.tick(t);
     bot(L, ec, army, wi);
     const W = L.WAVES[wi];
-    const sim = new L.Sim(army, { types: ec.types(L.TYPES, W.scale), enemies: L.buildWave(W), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: L.ARCHERS[ec.archers].count });
+    const sim = new L.Sim(L.withHero(army, ec), { types: ec.types(L.TYPES, W.scale), enemies: L.buildWave(W), gateHp: ec.gateHp, gateMax: ec.gateMax(), archers: L.ARCHERS[ec.archers].count, wallgear: ec.wallgear, bot: ec });
     while (!sim.result) sim.step(1 / 15);
     ec.tick(sim.t);
     ec.gateHp = sim.gateHp;
     let bounty = 0; sim.units.forEach(u => { if (u.side === 'e' && !u.alive) bounty += L.BOUNTY[u.type] || 0; });
     ec.add({ gold: bounty });
     if (sim.result.win) ec.add({ gold: L.waveBonus(W.n) });
+    L.heroAfterWave(ec, sim, true);
     const value = army.reduce((s, a) => s + (L.TYPES[a.type].cost || 0) + (L.upgradeSpent(a.type, a.level).gold || 0), 0);
-    log.push({ w: W.n, win: sim.result.win, flame: sim.result.reason === 'Fienden nådde flammen', gate: Math.round(sim.gateHp), army: army.length, value, lv: +(army.reduce((s, a) => s + (a.level || 0), 0) / Math.max(1, army.length)).toFixed(1), tiers: [1, 2, 3].map(k => army.filter(a => (L.TYPES[a.type].tier || 1) === k).length).join('/'), gold: Math.round(ec.res.gold) });
+    log.push({ w: W.n, win: sim.result.win, flame: sim.result.reason === 'Fienden nådde flammen', gate: Math.round(sim.gateHp), army: army.length, value, lv: +(army.reduce((s, a) => s + (a.level || 0), 0) / Math.max(1, army.length)).toFixed(1), tiers: [1, 2, 3].map(k => army.filter(a => (L.TYPES[a.type].tier || 1) === k).length).join('/'), gold: Math.round(ec.res.gold), hero: ec.hero ? ec.heroLevel() : 0 });
     if (sim.result.reason === 'Fienden nådde flammen') break;
     t = 55;
   }
