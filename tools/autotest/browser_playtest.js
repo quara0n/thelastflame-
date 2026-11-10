@@ -87,6 +87,9 @@ async function monkey(page) {
   const page = await ctx.newPage();
   // With --three the run is offline: three.js comes from the local file and everything else on the net is skipped.
   if (THREE) await page.route('**/*', r => { const u = r.request().url();
+    // Version 51+: three is an ES module from jsdelivr; --three is then the unpacked npm package folder (npm pack three@<version>).
+    const m = u.match(/\/npm\/three@[^/]+\/(.*)$/);
+    if (m) return r.fulfill({ path: path.resolve(THREE, m[1]), contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' } });
     if (/three(\.min)?\.js$/.test(u)) return r.fulfill({ path: path.resolve(THREE), contentType: 'text/javascript' });
     return u.startsWith('file:') ? r.continue() : r.abort(); });
   page.on('pageerror', e => problem('krasj', `JavaScript-feil: ${e.message}`, { stack: String(e.stack || '').split('\n').slice(0, 3).join(' | ') }));

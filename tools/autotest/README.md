@@ -17,7 +17,7 @@ node tools/autotest/run.js --quick    # rask sjekk (noen minutter)
 
 Kjører av seg selv på GitHub ved hver push (`.github/workflows/autotest.yml`); rapporten står på kjøringens side og
 skjermbildene ligger som artifact «autotest-report».
-I en Claude-sandbox er cdnjs sperret: hent three.js med `npm pack three@0.128.0` og bruk `--three package/build/three.min.js`.
+I en Claude-sandbox er CDN-ene sperret: fra versjon 51 hentes three som modul; kjør `npm pack three@0.187.0`, pakk ut og bruk `--three package` (mappen).
 
 Testspilleren er `bot()` fra `tools/game_sim.js`, så den følger med når boten endres. `--html` tester en annen side enn
 `prototype/kamptest-2.html`.
