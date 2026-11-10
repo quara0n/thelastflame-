@@ -149,5 +149,47 @@ import online
 s = online.apply(s)
 import scarcity
 s = scarcity.apply(s)
+import bastion
+s = bastion.apply(s)
+import biomes
+s = biomes.apply(s)
+import hero
+s = hero.apply(s)
+import ui_tidy
+s = ui_tidy.apply(s)
+import hardmode
+s = hardmode.apply(s)
+import village
+s = village.apply(s)
+import hud
+s = hud.apply(s)
+import botplay
+s = botplay.apply(s)
+import late_armor
+s = late_armor.apply(s)
+import citadel
+s = citadel.apply(s)
+import onboarding
+s = onboarding.apply(s)
+import touch_tips
+s = touch_tips.apply(s)
+import group_select
+s = group_select.apply(s)
+import repair_gold
+s = repair_gold.apply(s)
+import popup_close
+s = popup_close.apply(s)
+import hud_compact
+s = hud_compact.apply(s)
+import intro
+s = intro.apply(s)
+import undo
+s = undo.apply(s)
+import playtest15
+s = playtest15.apply(s)
+import resume
+s = resume.apply(s)
+import bugfix49
+s = bugfix49.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))
