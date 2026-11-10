@@ -193,5 +193,7 @@ import bugfix49
 s = bugfix49.apply(s)
 import models3d
 s = models3d.apply(s)
+import three_new
+s = three_new.apply(s)
 (HERE / '../prototype/kamptest-2.html').write_text(s)
 print('ok', len(s))
